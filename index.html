@@ -223,7 +223,7 @@
 
         /* ===== PORTAL PRÉ-VENDAS (ESTRUTURADO) ===== */
         .portal-section {
-            margin-top: 40px;
+            margin-top: 60px;
             text-align: left;
         }
 
@@ -610,7 +610,7 @@
             color: #1a2f4f;
         }
 
-        /* ===== COLLAPSE PARA SEÇÕES (se ainda for usado) ===== */
+        /* ===== COLLAPSE PARA SEÇÕES ===== */
         .collapsible-section {
             cursor: pointer;
             user-select: none;
@@ -719,70 +719,76 @@
             </div>
             <p class="subtitle">Conheça nosso ecossistema, soluções e time</p>
 
-            <!-- ===== SEÇÃO MAPA DO PORTAL (UNIFICADA) ===== -->
+            <!-- ===== SEÇÃO MAPA DO PORTAL COM COLLAPSE ===== -->
             <div class="portal-section" style="margin-top: 0;">
-                <h2>🧭 Mapa do Portal</h2>
+                <h2 class="collapsible-section" onclick="toggleSection(this)">
+                    Mapa do Portal
+                    <span class="toggle-icon collapsed">▼</span>
+                </h2>
+                <div class="collapsible-content hidden-content" id="mapaContent">
 
-                <!-- Frase incorporada (sem bloco colapsável, apenas texto) -->
-                <div style="background: #f8faff; padding: 18px 25px; border-radius: 12px; border-left: 6px solid #1a2f4f; font-size: 15px; line-height: 1.7; color: #333; margin-bottom: 10px;">
-                    <strong>Este portal foi criado para ser o seu ponto central de acesso</strong> a todas as informações, ferramentas e contatos do time de Pré-Vendas da NDD. Aqui você encontra tudo o que precisa para conhecer nossas soluções, agilizar seu trabalho e se conectar com os especialistas de cada vertical.
-                </div>
+                    <!-- Frase incorporada como texto puro -->
+                    <p style="font-size: 15px; line-height: 1.7; color: #333; margin-bottom: 20px; text-align: left;">
+                        <strong>Este portal foi criado para ser o seu ponto central de acesso</strong> a todas as informações, ferramentas e contatos do time de Pré-Vendas da NDD. Aqui você encontra tudo o que precisa para conhecer nossas soluções, agilizar seu trabalho e se conectar com os especialistas de cada vertical.
+                    </p>
 
-                <div style="margin-bottom: 15px; font-size: 14px; color: #555; text-align: left;">
-                    Explore tudo o que o Portal Pré-Vendas oferece. Os cards abaixo resumem os principais recursos disponíveis.
-                </div>
-
-                <div class="mapa-portal-grid">
-
-                    <div class="mapa-card vertical-log">
-                        <div class="card-icon">🚛</div>
-                        <h4>Verticais e Produtos</h4>
-                        <p>Soluções de <strong>Logística</strong> (CARGO, ELOG, MOVE) e <strong>Fiscal</strong> (SPACE). Cada vertical agrupa suas ferramentas.</p>
-                        <span class="badge">Disponível</span>
+                    <div style="margin-bottom: 15px; font-size: 14px; color: #555; text-align: left;">
+                        Explore tudo o que o Portal Pré-Vendas oferece. Os cards abaixo resumem os principais recursos disponíveis.
                     </div>
 
-                    <div class="mapa-card ferramenta">
-                        <div class="card-icon">🛠️</div>
-                        <h4>Ferramentas e Links</h4>
-                        <p>Dentro de cada produto: <strong>Extratos</strong>, <strong>Portais</strong>, <strong>Dashboards</strong>, <strong>Calculadoras</strong>, <strong>Help Centers</strong> e mais.</p>
-                        <span class="badge">Menu lateral</span>
+                    <div class="mapa-portal-grid">
+
+                        <div class="mapa-card vertical-log">
+                            <div class="card-icon">🚛</div>
+                            <h4>Verticais e Produtos</h4>
+                            <p>Soluções de <strong>Logística</strong> (CARGO, ELOG, MOVE) e <strong>Fiscal</strong> (SPACE). Cada vertical agrupa suas ferramentas.</p>
+                            <span class="badge">Disponível</span>
+                        </div>
+
+                        <div class="mapa-card ferramenta">
+                            <div class="card-icon">🛠️</div>
+                            <h4>Ferramentas e Links</h4>
+                            <p>Dentro de cada produto: <strong>Extratos</strong>, <strong>Portais</strong>, <strong>Dashboards</strong>, <strong>Calculadoras</strong>, <strong>Help Centers</strong> e mais.</p>
+                            <span class="badge">Menu lateral</span>
+                        </div>
+
+                        <div class="mapa-card contato">
+                            <div class="card-icon">📇</div>
+                            <h4>Contatos dos Executivos</h4>
+                            <p>Clique no cartão do profissional para acioná-lo via <strong>Teams</strong> ou <strong>E-mail</strong> (Outlook).</p>
+                            <span class="badge">Role para baixo</span>
+                        </div>
+
+                        <div class="mapa-card ferramenta">
+                            <div class="card-icon">📊</div>
+                            <h4>Extratos de Horas</h4>
+                            <p>Consulte os extratos de cada produto para verificar esforços de implantação e planejamento.</p>
+                            <span class="badge">Por produto</span>
+                        </div>
+
+                        <div class="mapa-card ajuda">
+                            <div class="card-icon">🔁</div>
+                            <h4>Fluxogramas</h4>
+                            <p>Visualize os fluxos de processos e integrações das soluções NDD para entender a jornada completa.</p>
+                            <span class="badge">Acesse via menu</span>
+                        </div>
+
+                        <div class="mapa-card ajuda">
+                            <div class="card-icon">📚</div>
+                            <h4>Materiais de Apoio</h4>
+                            <p>Help Centers, documentação de APIs, listas de ERPs integrados e muito mais para consulta técnica.</p>
+                            <span class="badge">Links úteis</span>
+                        </div>
+
                     </div>
 
-                    <div class="mapa-card contato">
-                        <div class="card-icon">📇</div>
-                        <h4>Contatos dos Executivos</h4>
-                        <p>Clique no cartão do profissional para acioná-lo via <strong>Teams</strong> ou <strong>E-mail</strong> (Outlook).</p>
-                        <span class="badge">Role para baixo</span>
+                    <div class="mapa-desc">
+                        <strong>💡 Como usar este portal:</strong> Comece clicando em uma das verticais acima (<strong>Logística</strong> ou <strong>Fiscal</strong>). 
+                        Dentro de cada produto, um <strong>menu lateral escuro</strong> exibe todas as ferramentas disponíveis. 
+                        Para contatar um executivo, clique no card do profissional desejado e escolha entre <strong>Teams</strong> ou <strong>E-mail</strong>. 
+                        Este portal é dinâmico e será atualizado com novos conteúdos.
                     </div>
 
-                    <div class="mapa-card ferramenta">
-                        <div class="card-icon">📊</div>
-                        <h4>Extratos de Horas</h4>
-                        <p>Consulte os extratos de cada produto para verificar esforços de implantação e planejamento.</p>
-                        <span class="badge">Por produto</span>
-                    </div>
-
-                    <div class="mapa-card ajuda">
-                        <div class="card-icon">🔁</div>
-                        <h4>Fluxogramas</h4>
-                        <p>Visualize os fluxos de processos e integrações das soluções NDD para entender a jornada completa.</p>
-                        <span class="badge">Acesse via menu</span>
-                    </div>
-
-                    <div class="mapa-card ajuda">
-                        <div class="card-icon">📚</div>
-                        <h4>Materiais de Apoio</h4>
-                        <p>Help Centers, documentação de APIs, listas de ERPs integrados e muito mais para consulta técnica.</p>
-                        <span class="badge">Links úteis</span>
-                    </div>
-
-                </div>
-
-                <div class="mapa-desc">
-                    <strong>💡 Como usar este portal:</strong> Comece clicando em uma das verticais acima (<strong>Logística</strong> ou <strong>Fiscal</strong>). 
-                    Dentro de cada produto, um <strong>menu lateral escuro</strong> exibe todas as ferramentas disponíveis. 
-                    Para contatar um executivo, clique no card do profissional desejado e escolha entre <strong>Teams</strong> ou <strong>E-mail</strong>. 
-                    Este portal é dinâmico e será atualizado com novos conteúdos.
                 </div>
             </div>
 
@@ -812,9 +818,9 @@
             <div class="portal-section">
                 <h2 class="collapsible-section" onclick="toggleSection(this)">
                     Soluções & Ferramentas
-                    <span class="toggle-icon">▼</span>
+                    <span class="toggle-icon collapsed">▼</span>
                 </h2>
-                <div class="collapsible-content" id="solucoesContent">
+                <div class="collapsible-content hidden-content" id="solucoesContent">
                     <p style="color:#555; margin-bottom: 20px; font-size:14px; text-align:center;">Explore as verticais da NDD e acesse as soluções de cada produto.</p>
                     <div class="grid-geral">
                         <div class="card-geral card-logistica" onclick="selecionarVertical('logistica')">
@@ -1216,8 +1222,6 @@
             };
 
             document.getElementById('modal-btn-email').onclick = function() {
-                // Usa mailto: diretamente, que abrirá o cliente de e-mail padrão do sistema.
-                // Se o Outlook for o padrão, abrirá diretamente; caso contrário, abrirá outro cliente.
                 window.location.href = 'mailto:' + modalEmail;
                 fecharModal();
             };
@@ -1236,7 +1240,7 @@
         }
 
         // ============================================================
-        // FUNÇÃO PARA ALTERNAR COLLAPSE (se ainda for usada)
+        // FUNÇÃO PARA ALTERNAR COLLAPSE
         // ============================================================
         function toggleSection(element) {
             var content = element.nextElementSibling;
