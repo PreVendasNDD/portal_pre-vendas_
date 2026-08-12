@@ -6,6 +6,7 @@
     <title>Portal Pré-Vendas · NDD</title>
 
     <style>
+        /* ===== TODO O CSS ANTERIOR PERMANECE IGUAL ===== */
         * {
             margin: 0;
             padding: 0;
@@ -541,6 +542,104 @@
             background: #ced4da;
         }
 
+        /* ===== ESTILOS DO MAPA DO PORTAL ===== */
+        .mapa-portal-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-top: 25px;
+        }
+
+        .mapa-card {
+            background: #f9f9f9;
+            border-radius: 16px;
+            padding: 20px 18px;
+            border-left: 6px solid #1a2f4f;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            transition: all 0.25s ease;
+            text-align: left;
+        }
+        .mapa-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+        }
+
+        .mapa-card .card-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+        .mapa-card h4 {
+            font-size: 16px;
+            color: #1a2f4f;
+            margin-bottom: 4px;
+        }
+        .mapa-card p {
+            font-size: 13px;
+            color: #555;
+            line-height: 1.5;
+        }
+        .mapa-card .badge {
+            display: inline-block;
+            background: #e9ecef;
+            border-radius: 20px;
+            padding: 2px 12px;
+            font-size: 11px;
+            color: #333;
+            margin-top: 8px;
+            font-weight: 600;
+        }
+
+        .mapa-card.vertical-log { border-left-color: #1a2f4f; }
+        .mapa-card.vertical-fis { border-left-color: #563d7c; }
+        .mapa-card.ferramenta { border-left-color: #28a745; }
+        .mapa-card.contato { border-left-color: #e3062b; }
+        .mapa-card.ajuda { border-left-color: #ffc107; }
+
+        .mapa-desc {
+            background: #f0f4f9;
+            border-radius: 12px;
+            padding: 18px 22px;
+            margin: 20px 0 0 0;
+            border: 1px solid #dde4ed;
+            text-align: left;
+            font-size: 14px;
+            line-height: 1.7;
+            color: #222;
+        }
+        .mapa-desc strong {
+            color: #1a2f4f;
+        }
+
+        /* ===== COLLAPSE PARA SEÇÕES (se ainda for usado) ===== */
+        .collapsible-section {
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .collapsible-section .toggle-icon {
+            font-size: 18px;
+            transition: transform 0.3s ease;
+            margin-left: 10px;
+        }
+        .collapsible-section .toggle-icon.collapsed {
+            transform: rotate(-90deg);
+        }
+        .collapsible-content {
+            max-height: 3000px;
+            overflow: hidden;
+            transition: max-height 0.5s ease, opacity 0.4s ease, margin 0.3s ease;
+            opacity: 1;
+            margin-top: 10px;
+        }
+        .collapsible-content.hidden-content {
+            max-height: 0 !important;
+            opacity: 0;
+            margin-top: 0;
+            padding-top: 0;
+        }
+
         /* ===== RESPONSIVO ===== */
         @media screen and (max-width: 1180px) {
             body { justify-content: center; align-items: center; flex-direction: column; }
@@ -567,6 +666,7 @@
             .team-verticals-container { grid-template-columns: 1fr; }
             .portal-about-grid { grid-template-columns: 1fr; }
             .welcome-executive-grid { grid-template-columns: 1fr; }
+            .mapa-portal-grid { grid-template-columns: 1fr; }
             
             #sidebar-global ul { display: flex; flex-wrap: wrap; gap: 5px; }
             #sidebar-global ul li { padding: 6px 12px; border-bottom: none; background: rgba(255,255,255,0.1); border-radius: 6px; font-size: 13px; }
@@ -619,6 +719,73 @@
             </div>
             <p class="subtitle">Conheça nosso ecossistema, soluções e time</p>
 
+            <!-- ===== SEÇÃO MAPA DO PORTAL (UNIFICADA) ===== -->
+            <div class="portal-section" style="margin-top: 0;">
+                <h2>🧭 Mapa do Portal</h2>
+
+                <!-- Frase incorporada (sem bloco colapsável, apenas texto) -->
+                <div style="background: #f8faff; padding: 18px 25px; border-radius: 12px; border-left: 6px solid #1a2f4f; font-size: 15px; line-height: 1.7; color: #333; margin-bottom: 10px;">
+                    <strong>Este portal foi criado para ser o seu ponto central de acesso</strong> a todas as informações, ferramentas e contatos do time de Pré-Vendas da NDD. Aqui você encontra tudo o que precisa para conhecer nossas soluções, agilizar seu trabalho e se conectar com os especialistas de cada vertical.
+                </div>
+
+                <div style="margin-bottom: 15px; font-size: 14px; color: #555; text-align: left;">
+                    Explore tudo o que o Portal Pré-Vendas oferece. Os cards abaixo resumem os principais recursos disponíveis.
+                </div>
+
+                <div class="mapa-portal-grid">
+
+                    <div class="mapa-card vertical-log">
+                        <div class="card-icon">🚛</div>
+                        <h4>Verticais e Produtos</h4>
+                        <p>Soluções de <strong>Logística</strong> (CARGO, ELOG, MOVE) e <strong>Fiscal</strong> (SPACE). Cada vertical agrupa suas ferramentas.</p>
+                        <span class="badge">Disponível</span>
+                    </div>
+
+                    <div class="mapa-card ferramenta">
+                        <div class="card-icon">🛠️</div>
+                        <h4>Ferramentas e Links</h4>
+                        <p>Dentro de cada produto: <strong>Extratos</strong>, <strong>Portais</strong>, <strong>Dashboards</strong>, <strong>Calculadoras</strong>, <strong>Help Centers</strong> e mais.</p>
+                        <span class="badge">Menu lateral</span>
+                    </div>
+
+                    <div class="mapa-card contato">
+                        <div class="card-icon">📇</div>
+                        <h4>Contatos dos Executivos</h4>
+                        <p>Clique no cartão do profissional para acioná-lo via <strong>Teams</strong> ou <strong>E-mail</strong> (Outlook).</p>
+                        <span class="badge">Role para baixo</span>
+                    </div>
+
+                    <div class="mapa-card ferramenta">
+                        <div class="card-icon">📊</div>
+                        <h4>Extratos de Horas</h4>
+                        <p>Consulte os extratos de cada produto para verificar esforços de implantação e planejamento.</p>
+                        <span class="badge">Por produto</span>
+                    </div>
+
+                    <div class="mapa-card ajuda">
+                        <div class="card-icon">🔁</div>
+                        <h4>Fluxogramas</h4>
+                        <p>Visualize os fluxos de processos e integrações das soluções NDD para entender a jornada completa.</p>
+                        <span class="badge">Acesse via menu</span>
+                    </div>
+
+                    <div class="mapa-card ajuda">
+                        <div class="card-icon">📚</div>
+                        <h4>Materiais de Apoio</h4>
+                        <p>Help Centers, documentação de APIs, listas de ERPs integrados e muito mais para consulta técnica.</p>
+                        <span class="badge">Links úteis</span>
+                    </div>
+
+                </div>
+
+                <div class="mapa-desc">
+                    <strong>💡 Como usar este portal:</strong> Comece clicando em uma das verticais acima (<strong>Logística</strong> ou <strong>Fiscal</strong>). 
+                    Dentro de cada produto, um <strong>menu lateral escuro</strong> exibe todas as ferramentas disponíveis. 
+                    Para contatar um executivo, clique no card do profissional desejado e escolha entre <strong>Teams</strong> ou <strong>E-mail</strong>. 
+                    Este portal é dinâmico e será atualizado com novos conteúdos.
+                </div>
+            </div>
+
             <!-- Bloco 1: Sobre o setor (3 colunas) -->
             <div class="portal-section">
                 <h2>Sobre o Setor de Pré-Vendas (Em breve conteúdo oficial abaixo)</h2>
@@ -641,20 +808,25 @@
                 </div>
             </div>
 
-            <!-- Bloco 2: Soluções & Ferramentas -->
+            <!-- Bloco 2: Soluções & Ferramentas (com collapse) -->
             <div class="portal-section">
-                <h2>Soluções & Ferramentas</h2>
-                <p style="color:#555; margin-bottom: 20px; font-size:14px; text-align:center;">Explore as verticais da NDD e acesse as soluções de cada produto.</p>
-                <div class="grid-geral">
-                    <div class="card-geral card-logistica" onclick="selecionarVertical('logistica')">
-                        <div class="icon-box">🚛</div>
-                        <h2>Logística</h2>
-                        <p>CARGO · ELOG · MOVE</p>
-                    </div>
-                    <div class="card-geral card-fiscal" onclick="selecionarVertical('fiscal')">
-                        <div class="icon-box">📊</div>
-                        <h2>Fiscal</h2>
-                        <p>SPACE</p>
+                <h2 class="collapsible-section" onclick="toggleSection(this)">
+                    Soluções & Ferramentas
+                    <span class="toggle-icon">▼</span>
+                </h2>
+                <div class="collapsible-content" id="solucoesContent">
+                    <p style="color:#555; margin-bottom: 20px; font-size:14px; text-align:center;">Explore as verticais da NDD e acesse as soluções de cada produto.</p>
+                    <div class="grid-geral">
+                        <div class="card-geral card-logistica" onclick="selecionarVertical('logistica')">
+                            <div class="icon-box">🚛</div>
+                            <h2>Logística</h2>
+                            <p>CARGO · ELOG · MOVE</p>
+                        </div>
+                        <div class="card-geral card-fiscal" onclick="selecionarVertical('fiscal')">
+                            <div class="icon-box">📊</div>
+                            <h2>Fiscal</h2>
+                            <p>SPACE</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1060,6 +1232,21 @@
         function fecharModalExterno(event) {
             if (event.target === event.currentTarget) {
                 fecharModal();
+            }
+        }
+
+        // ============================================================
+        // FUNÇÃO PARA ALTERNAR COLLAPSE (se ainda for usada)
+        // ============================================================
+        function toggleSection(element) {
+            var content = element.nextElementSibling;
+            var icon = element.querySelector('.toggle-icon');
+            
+            if (content) {
+                content.classList.toggle('hidden-content');
+                if (icon) {
+                    icon.classList.toggle('collapsed');
+                }
             }
         }
 
