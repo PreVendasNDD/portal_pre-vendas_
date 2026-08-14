@@ -6,7 +6,7 @@
     <title>Portal Pré-Vendas · NDD</title>
 
     <style>
-        /* ===== TODO O CSS ANTERIOR PERMANECE IGUAL ===== */
+        /* ===== TODO O CSS PERMANECE IGUAL ===== */
         * {
             margin: 0;
             padding: 0;
@@ -457,6 +457,37 @@
 
         .hidden { display: none !important; }
 
+        /* ===== ESTILOS PARA DESCRIÇÃO DAS FERRAMENTAS ===== */
+        .ferramentas-desc {
+            margin: 30px 0 20px 0;
+            text-align: left;
+        }
+        .ferramentas-desc h3 {
+            font-size: 18px;
+            color: #1a2f4f;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #e9e9e9;
+            padding-bottom: 8px;
+        }
+        .ferramenta-item {
+            margin-bottom: 16px;
+            padding-left: 10px;
+            border-left: 3px solid #1a2f4f;
+            padding-left: 15px;
+        }
+        .ferramenta-item strong {
+            color: #1a2f4f;
+            font-size: 15px;
+            display: block;
+            margin-bottom: 3px;
+        }
+        .ferramenta-item p {
+            font-size: 14px;
+            color: #555;
+            line-height: 1.6;
+            margin: 0;
+        }
+
         /* ===== MODAL DE CONTATO (OPÇÃO 1) ===== */
         #contact-modal {
             position: fixed;
@@ -727,7 +758,6 @@
                 </h2>
                 <div class="collapsible-content hidden-content" id="mapaContent">
 
-                    <!-- Frase incorporada como texto puro -->
                     <p style="font-size: 15px; line-height: 1.7; color: #333; margin-bottom: 20px; text-align: left;">
                         <strong>Este portal foi criado para ser o seu ponto central de acesso</strong> a todas as informações, ferramentas e contatos do time de Pré-Vendas da NDD. Aqui você encontra tudo o que precisa para conhecer nossas soluções, agilizar seu trabalho e se conectar com os especialistas de cada vertical.
                     </p>
@@ -913,7 +943,6 @@
 
         <!-- TELA 3: CONTEÚDO DO PRODUTO (WELCOME + EXECUTIVO + FERRAMENTAS) -->
         <div id="tela-conteudo" class="hidden">
-            <!-- O cabeçalho com logo é opcional, removemos para não poluir -->
             <div class="content-area">
                 <!-- Welcome Container (aparece por padrão) -->
                 <div id="welcome-content">
@@ -963,6 +992,7 @@
                             { nome: 'Dash ESG', tipo: 'externo', url: 'https://www.figma.com/proto/tYe7lTBhnQvMWCMBEeSCM9/Dashboard?page-id=0%3A1&type=design&node-id=1315-18538&viewport=585%2C3526%2C0.08&t=7WiAalvHtsTgc96H-9&scaling=scale-down&starting-point-node-id=1315%3A18538' },
                             { nome: 'Help Center MOVE', tipo: 'externo', url: 'https://helpcenter.nddmove.com.br/' },
                             { nome: 'XML Editor', tipo: 'externo', url: 'https://prevendasndd.github.io/XmlEditor/' },
+                            { nome: 'API MOVE', tipo: 'externo', url: 'https://developer.nddmove.com.br/' },
                             { separador: true },
                             { nome: 'Fluxograma', tipo: 'externo', url: 'https://prevendasndd.github.io/fluxograma//fluxograma_ndd_log%C3%ADstica.html' },
                             { separador: true },
@@ -1003,7 +1033,8 @@
                             { nome: 'Help Center ELOG', tipo: 'externo', url: 'https://helpcenter.nddelog.com/?l=pt' },
                             { nome: 'API ELOG', tipo: 'externo', url: 'https://developer.nddelog.com/' },
                             { separador: true },
-                            { nome: 'Fluxograma', tipo: 'externo', url: 'https://prevendasndd.github.io/fluxograma//fluxograma_ndd_log%C3%ADstica.html' },
+                            // ===== CORREÇÃO: Fluxograma agora é "em breve" =====
+                            { nome: 'Fluxograma', tipo: 'em breve' },
                             { separador: true },
                             { nome: 'Pré-Vendas', tipo: 'portal' }
                         ]
@@ -1031,6 +1062,37 @@
                     }
                 ]
             }
+        };
+
+        // ===== DESCRIÇÕES DAS FERRAMENTAS POR PRODUTO =====
+        const descricoesFerramentas = {
+            cargo: [
+                { nome: 'Extrato CARGO', descricao: 'O Extrato CARGO apresenta o cálculo detalhado do esforço de implantação, permitindo planejar recursos e prazos para a integração da solução.' },
+                { nome: 'Portal CARGO', descricao: 'Portal web da solução CARGO, onde o cliente pode gerenciar fretes, emitir CIOT, controlar pagamentos e acessar relatórios. Ideal para demonstrações e uso diário.' },
+                { nome: 'Calculadora de ROI', descricao: 'Ferramenta que calcula a economia obtida com a aquisição do CARGO, considerando cenários como a separação do Vale Pedágio do frete, evitando bitributação e otimizando custos.' },
+                { nome: 'Calc. Frete Mínimo ANTT', descricao: 'Link direto para a calculadora oficial de frete mínimo da ANTT, utilizada para consultar pisos mínimos de transporte rodoviário de cargas.' },
+                { nome: 'Help Center CARGO', descricao: 'Central de ajuda e suporte do NDD CARGO, com artigos, tutoriais e documentação para esclarecer dúvidas sobre a plataforma.' },
+                { nome: 'Lista de ERP/TMS Integrados', descricao: 'Relação de sistemas ERP e TMS que já possuem integração com o CARGO, seja apenas para VPO, CIOT ou integração completa, facilitando a adoção.' },
+                { nome: 'API Cargo', descricao: 'Documentação e materiais da API do CARGO, permitindo que sistemas de clientes (ERP/TMS) se integrem com nossa solução de forma padronizada e automatizada.' },
+                { nome: 'Fluxograma', descricao: 'Fluxograma que ilustra a comunicação entre o sistema do cliente (ERP/TMS) e a solução CARGO, mostrando o fluxo de dados e integração.' }
+            ],
+            move: [
+                { nome: 'Extrato MOVE', descricao: 'O Extrato MOVE detalha o esforço de implantação, fornecendo uma visão clara das etapas e recursos necessários para a implementação da solução.' },
+                { nome: 'Portal MOVE', descricao: 'Portal web do MOVE, onde o cliente acompanha rastreamentos em tempo real, comprovação de entrega e gestão de documentos, com validade jurídica.' },
+                { nome: 'Dash Move', descricao: 'Dashboard com indicadores de desempenho do MOVE, apresentando dados gerenciais como entregas realizadas, prazos, e outras métricas operacionais.' },
+                { nome: 'Dash ESG', descricao: 'Dashboard focado em indicadores ambientais, como emissão de CO₂, alinhado à agenda ESG, para monitorar o impacto sustentável das operações.' },
+                { nome: 'Help Center MOVE', descricao: 'Central de ajuda do NDD MOVE, com materiais de suporte, perguntas frequentes e tutoriais para utilização da plataforma.' },
+                { nome: 'XML Editor', descricao: 'Ambiente para criação e edição de XMLs de Nota Fiscal (NF), Conhecimento de Transporte (CTe) e Manifesto Eletrônico (MDFe) genéricos, útil para simulações e apresentações.' },
+                { nome: 'API MOVE', descricao: 'Documentação da API do MOVE, permitindo integração com sistemas de terceiros para troca de dados e automação de processos.' },
+                { nome: 'Fluxograma', descricao: 'Fluxograma padrão que mostra a integração entre o sistema do cliente (ERP/TMS) e o MOVE, detalhando a comunicação e o fluxo de informações.' }
+            ],
+            elog: [
+                { nome: 'Extrato ELOG', descricao: 'O Extrato ELOG apresenta o cálculo detalhado do esforço de implantação, auxiliando no planejamento da integração e configuração do TMS Embarcador.' },
+                { nome: 'Portal ELOG', descricao: 'Portal web do ELOG, solução TMS Embarcador que integra processos de transporte, pagamento e gestão logística completa.' },
+                { nome: 'Help Center ELOG', descricao: 'Central de suporte do NDD ELOG, com documentação, guias e materiais de ajuda para utilização da plataforma.' },
+                { nome: 'API ELOG', descricao: 'Documentação da API do ELOG, permitindo integração com sistemas de clientes (ERP/TMS) para troca de dados e automação de processos.' },
+                { nome: 'Fluxograma', descricao: 'Em breve – Fluxograma que ilustrará a integração entre o sistema do cliente e o ELOG. Aguarde novidades.' }
+            ]
         };
 
         // ===== DADOS DOS EXECUTIVOS POR VERTICAL =====
@@ -1071,7 +1133,6 @@
 
         let verticalAtual = '';
         let produtoAtual = '';
-        let welcomeVisible = true;
 
         function selecionarVertical(vertical) {
             verticalAtual = vertical;
@@ -1107,7 +1168,7 @@
             const produto = dados[vertical].produtos.find(p => p.id === produtoId);
             if (!produto) return;
 
-            // Renderizar welcome content (ícone, descrição e executivos)
+            // Renderizar welcome content (ícone, descrição, descrições das ferramentas e executivos)
             renderizarWelcome(vertical, produto);
 
             // Gerar sidebar
@@ -1129,23 +1190,31 @@
             html += `</ul>`;
             html += `<button class="btn-voltar-sidebar" onclick="voltarParaProdutos()">⬅ Voltar para produtos</button>`;
             sidebarContent.innerHTML = html;
-
-            // Adicionar evento para ocultar o welcome ao clicar em qualquer item da lista (exceto separadores)
-            const lis = sidebarContent.querySelectorAll('ul li:not(.separator)');
-            lis.forEach(li => {
-                li.addEventListener('click', function() {
-                    if (welcomeVisible) {
-                        document.getElementById('welcome-content').classList.add('hidden');
-                        welcomeVisible = false;
-                    }
-                });
-            });
         }
 
         function renderizarWelcome(vertical, produto) {
             const container = document.getElementById('welcome-content');
             const execs = executivos[vertical] || [];
 
+            // Buscar descrições das ferramentas para este produto
+            const descs = descricoesFerramentas[produto.id] || [];
+
+            // Montar HTML das descrições
+            let descHtml = '';
+            if (descs.length > 0) {
+                descHtml = `<div class="ferramentas-desc"><h3>📌 Sobre as ferramentas disponíveis</h3>`;
+                descs.forEach(item => {
+                    descHtml += `
+                        <div class="ferramenta-item">
+                            <strong>${item.nome}</strong>
+                            <p>${item.descricao}</p>
+                        </div>
+                    `;
+                });
+                descHtml += `</div>`;
+            }
+
+            // Montar cards dos executivos
             let execHtml = '';
             execs.forEach(ex => {
                 execHtml += `
@@ -1166,13 +1235,13 @@
                     <span>NDD ${produto.nome}</span>
                 </div>
                 <p class="welcome-desc">${produto.descricao}</p>
+                ${descHtml}
                 <div class="welcome-contact-title">Ficou com alguma dúvida ou tem sugestões? Acione o Executivo da Vertical:</div>
                 <div class="welcome-executive-grid">${execHtml}</div>
             `;
 
-            // Tornar o welcome visível
+            // Garantir que o container esteja visível
             container.classList.remove('hidden');
-            welcomeVisible = true;
         }
 
         function irParaPortal() {
@@ -1181,8 +1250,6 @@
             document.getElementById('tela-conteudo').classList.add('hidden');
             document.getElementById('tela-produtos').classList.add('hidden');
             document.getElementById('tela-portal').classList.remove('hidden');
-            // Reset welcome visibility
-            welcomeVisible = false;
         }
 
         function voltarParaProdutos() {
