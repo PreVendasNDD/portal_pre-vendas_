@@ -6,10 +6,6 @@
     <title>Extrato de Horas · NDD Cargo</title>
 
     <style>
-
-
-
-
         /* ------------ REMOVER CABEÇALHOS E RODAPÉS DO NAVEGADOR NA IMPRESSÃO ------------ */
         @page {
             margin: 0;
@@ -24,8 +20,7 @@
         }
 
         body {
-            /* Remove o linear-gradient e deixa só a imagem */
-            background-image: url('../assets/fundoazul.png'); /* No index.html */
+            background-image: url('../assets/fundoazul.png');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -55,7 +50,7 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
             gap: 15px;
-            margin-bottom: 40px; /* Espaço extra entre inputs e colunas */
+            margin-bottom: 40px;
         }
 
         .controls .campo {
@@ -90,7 +85,6 @@
             color: #555;
         }
 
-        /* --- CLASSES ORIGINAIS PRESERVADAS (NÃO UTILIZADAS NO NOVO LAYOUT) --- */
         .controls .check-group {
             display: flex;
             flex-wrap: wrap;
@@ -454,7 +448,6 @@
                 justify-content: flex-start !important;
             }
 
-            /* ===== ESCONDE A SIDEBAR E RESETA A MARGEM NA IMPRESSÃO ===== */
             #sidebar-global {
                 display: none !important;
             }
@@ -570,14 +563,12 @@
                 font-weight: bold !important;
             }
 
-
-	   /* Oculta a seção de contato e o modal na impressão */
-	   .contato-section {
-    	       display: none !important;
-	   }
-	   #contact-modal {
-    	       display: none !important;
-	   }
+            .contato-section {
+                display: none !important;
+            }
+            #contact-modal {
+                display: none !important;
+            }
         }
 
         @media screen and (max-width: 800px) {
@@ -600,162 +591,156 @@
             }
         }
 
+        /* ===== ESTILOS PARA OS CARDS DE CONTATO ===== */
+        .welcome-contact-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #ffffff;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
 
-/* ===== ESTILOS PARA OS CARDS DE CONTATO ===== */
-.welcome-contact-title {
-    font-size: 16px;
-    font-weight: bold;
-    color: #ffffff;
-    margin-top: 25px;
-    margin-bottom: 15px;
-    text-align: center;
-}
+        .welcome-executive-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            justify-content: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
 
-.welcome-executive-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 15px;
-    justify-content: center;
-    max-width: 800px;
-    margin: 0 auto;
-}
+        .welcome-executive-card {
+            background: #f9f9f9;
+            padding: 15px 20px;
+            border-radius: 12px;
+            border: 1px solid #e9e9e9;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-align: left;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .welcome-executive-card:hover {
+            background: #e9ecef;
+        }
 
-.welcome-executive-card {
-    background: #f9f9f9;
-    padding: 15px 20px;
-    border-radius: 12px;
-    border: 1px solid #e9e9e9;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    text-align: left;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-.welcome-executive-card:hover {
-    background: #e9ecef;
-}
+        .welcome-executive-card .team-photo {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
 
-.welcome-executive-card .team-photo {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    object-fit: cover;
-    flex-shrink: 0;
-}
+        .welcome-executive-card > div {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            flex: 1;
+            min-width: 0;
+        }
 
-.welcome-executive-card > div {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    flex: 1;
-    min-width: 0;
-}
+        .welcome-executive-card h4 {
+            font-size: 15px;
+            color: #1a2f4f;
+            margin-bottom: 2px;
+            word-break: break-word;
+        }
 
-.welcome-executive-card h4 {
-    font-size: 15px;
-    color: #1a2f4f;
-    margin-bottom: 2px;
-    word-break: break-word;
-}
+        .welcome-executive-card p {
+            font-size: 13px;
+            color: #777;
+            margin: 2px 0;
+            word-break: break-word;
+        }
 
-.welcome-executive-card p {
-    font-size: 13px;
-    color: #777;
-    margin: 2px 0;
-    word-break: break-word;
-}
+        .welcome-executive-card .email-text {
+            font-size: 12px;
+            color: #777;
+            margin-top: 2px;
+            word-break: break-all;
+        }
 
-.welcome-executive-card .email-text {
-    font-size: 12px;
-    color: #777;
-    margin-top: 2px;
-    word-break: break-all;
-}
-
-/* ===== MODAL ===== */
-#contact-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.5);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-}
-#contact-modal.show {
-    display: flex;
-}
-.modal-box {
-    background: #ffffff;
-    padding: 30px 40px;
-    border-radius: 20px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-    max-width: 450px;
-    width: 90%;
-    text-align: center;
-}
-.modal-box h3 {
-    font-size: 20px;
-    color: #1a2f4f;
-    margin-bottom: 5px;
-}
-.modal-box p {
-    font-size: 14px;
-    color: #777;
-    margin-bottom: 20px;
-}
-.modal-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-.modal-btn {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 25px;
-    font-weight: 700;
-    font-size: 14px;
-    cursor: pointer;
-    transition: 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-.modal-btn-teams {
-    background: #1a2f4f;
-    color: #fff;
-}
-.modal-btn-teams:hover {
-    background: #0b1a33;
-}
-.modal-btn-email {
-    background: #6c757d;
-    color: #fff;
-}
-.modal-btn-email:hover {
-    background: #495057;
-}
-.modal-btn-cancel {
-    background: #e9ecef;
-    color: #333;
-    margin-top: 5px;
-}
-.modal-btn-cancel:hover {
-    background: #ced4da;
-}
-
-
-
-
+        /* ===== MODAL ===== */
+        #contact-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        #contact-modal.show {
+            display: flex;
+        }
+        .modal-box {
+            background: #ffffff;
+            padding: 30px 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            max-width: 450px;
+            width: 90%;
+            text-align: center;
+        }
+        .modal-box h3 {
+            font-size: 20px;
+            color: #1a2f4f;
+            margin-bottom: 5px;
+        }
+        .modal-box p {
+            font-size: 14px;
+            color: #777;
+            margin-bottom: 20px;
+        }
+        .modal-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .modal-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .modal-btn-teams {
+            background: #1a2f4f;
+            color: #fff;
+        }
+        .modal-btn-teams:hover {
+            background: #0b1a33;
+        }
+        .modal-btn-email {
+            background: #6c757d;
+            color: #fff;
+        }
+        .modal-btn-email:hover {
+            background: #495057;
+        }
+        .modal-btn-cancel {
+            background: #e9ecef;
+            color: #333;
+            margin-top: 5px;
+        }
+        .modal-btn-cancel:hover {
+            background: #ced4da;
+        }
     </style>
 </head>
 <body>
-
 
 <!-- ===== MODAL DE CONTATO ===== -->
 <div id="contact-modal" onclick="fecharModalExterno(event)">
@@ -776,623 +761,733 @@
     </div>
 </div>
 
-
-
-
-
-    <!-- SIDEBAR LATERAL DO CARGO -->
-    <div id="sidebar-global">
-        <h3>CARGO</h3>
-        <ul>
-            <li onclick="irPara('Extrato_CARGO.html')">Extrato CARGO</li>
-	    <li onclick="irPara('PT_CARGO.html')">Propósta Técnica CARGO</li>
-            <li class="separator"></li>
-            <li onclick="abrirLink('https://web.nddcargo.com.br/portalcontratante/#/login')">Portal CARGO</li>
-            <li onclick="abrirLink('https://prevendasndd.github.io/ROIcalculator/')">Calculadora de ROI</li>
-            <li onclick="abrirLink('https://calculadorafrete.antt.gov.br/?Length=4')">Calc. Frete Mínimo ANTT</li>
-            <li onclick="abrirLink('https://helpcenter.nddcargo.com.br/?l=pt')">Help Center CARGO</li>
-            <li onclick="abrirLink('https://nddtech.notion.site/Lista-de-TMS-ERP-integrados-1921d5158ce6816c8ca8f4a1e8837756')">Lista de ERP/TMS Integrados</li>
-            <li onclick="abrirLink('https://nddtech.notion.site/Nova-API-NDD-Cargo-1d81d5158ce680b4966dfcc02f1bffdf')">API Cargo</li>
-            <li class="separator"></li>
-            <li class="destaque" onclick="alert('Em breve, conteúdo de Pré-Vendas.')">Pré-Vendas</li>
-        </ul>
-        <button class="btn-voltar-sidebar" onclick="sessionStorage.setItem('destino', 'logistica'); window.location.href='../index.html'">⬅ Voltar</button>
-    </div>
-
-    <!-- ========================================== -->
-    <!-- ENVOLTÓRIO DO CONTAINER PRINCIPAL -->
-    <!-- ========================================== -->
-    <div class="container" id="container-principal">
-
-        <!-- CONTROLES -->
-        <div class="controls" id="controles">
-            <!-- Linha 1: Inputs de texto -->
-            <div class="linha-inputs">
-                <div class="campo">
-                    <label for="cliente">Cliente</label>
-                    <input type="text" id="cliente" value="Empresa Exemplo">
-                </div>
-                <div class="campo">
-                    <label for="data">Data</label>
-                    <input type="date" id="data" readonly>
-                </div>
-                <div class="campo">
-                    <label for="cnpjs">CNPJ's</label>
-                    <input type="number" id="cnpjs" value="2" min="0">
-                </div>
-                <div class="campo">
-                    <label for="usuarios">Usuários</label>
-                    <input type="number" id="usuarios" value="15" min="0">
-                </div>
-                <div class="campo">
-                    <label for="pontos">Pontos Emissores</label>
-                    <input type="number" id="pontos" value="3" min="0" placeholder="opcional">
-                </div>
-            </div>
-
-            <!-- Linha 2: Duas colunas (Módulos e Layout) -->
-            <div class="modulos-row">
-                <!-- Coluna 1: Módulos -->
-                <div class="modulos-col">
-                    <h3>Módulos</h3>
-                    <label><input type="checkbox" id="modCIOT" checked> Emissão CIOT</label>
-                    <label><input type="checkbox" id="modFrete" checked> Pagamento de Frete</label>
-                    <label><input type="checkbox" id="modVale" checked> Vale Pedágio</label>
-                </div>
-
-                <!-- Coluna 2: Layout de Impressão -->
-                <div class="modulos-col">
-                    <h3>Escolha o layout de impressão</h3>
-                    <label><input type="radio" name="modelo" value="1" checked> Modelo 1 - Resumido</label>
-                    <label><input type="radio" name="modelo" value="2"> Modelo 2 - Detalhado</label>
-                </div>
-            </div>
-
-            <!-- Linha 3: Botões -->
-            <div class="botoes-row">
-                <button class="btn btn-calcular" id="calcularBtn">▶ Calcular</button>
-                <button class="btn btn-imprimir" id="imprimirBtn">🖨️ Imprimir</button>
-                <button class="btn btn-limpar" id="limparBtn">✕ Limpar</button>
-                
-            </div>
-
-<!-- LOG DE HORAS -->
-<div id="logHoras" style="margin-top: 20px; font-size: 18px; font-weight: bold; color: #1a2f4f; text-align: center; padding: 10px; background: #f0f4f9; border-radius: 8px;">
-    <!-- O total será exibido aqui -->
+<!-- SIDEBAR LATERAL DO CARGO -->
+<div id="sidebar-global">
+    <h3>CARGO</h3>
+    <ul>
+        <li onclick="irPara('Extrato_CARGO.html')">Extrato CARGO</li>
+        <li onclick="irPara('PT_CARGO.html')">Propósta Técnica CARGO</li>
+        <li class="separator"></li>
+        <li onclick="abrirLink('https://web.nddcargo.com.br/portalcontratante/#/login')">Portal CARGO</li>
+        <li onclick="abrirLink('https://prevendasndd.github.io/ROIcalculator/')">Calculadora de ROI</li>
+        <li onclick="abrirLink('https://calculadorafrete.antt.gov.br/?Length=4')">Calc. Frete Mínimo ANTT</li>
+        <li onclick="abrirLink('https://helpcenter.nddcargo.com.br/?l=pt')">Help Center CARGO</li>
+        <li onclick="abrirLink('https://nddtech.notion.site/Lista-de-TMS-ERP-integrados-1921d5158ce6816c8ca8f4a1e8837756')">Lista de ERP/TMS Integrados</li>
+        <li onclick="abrirLink('https://nddtech.notion.site/Nova-API-NDD-Cargo-1d81d5158ce680b4966dfcc02f1bffdf')">API Cargo</li>
+        <li class="separator"></li>
+        <li class="destaque" onclick="alert('Em breve, conteúdo de Pré-Vendas.')">Pré-Vendas</li>
+    </ul>
+    <button class="btn-voltar-sidebar" onclick="sessionStorage.setItem('destino', 'logistica'); window.location.href='../index.html'">⬅ Voltar</button>
 </div>
 
-<!-- POP-UP CUSTOMIZADO -->
-<div id="popup-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center;">
-    <div style="background: #fff; padding: 30px 40px; border-radius: 16px; max-width: 400px; width: 90%; text-align: center; box-shadow: 0 8px 24px rgba(0,0,0,0.2);">
-        <h3 style="margin: 0 0 10px; color: #1a2f4f;">✅ Cálculo concluído</h3>
-        <p style="font-size: 16px; color: #333; margin: 10px 0 20px;" id="popup-mensagem">Total de horas: 0</p>
-        <button onclick="fecharPopup()" style="background: #ff7079; color: #fff; border: none; padding: 10px 30px; border-radius: 25px; font-weight: 700; font-size: 14px; cursor: pointer;">OK</button>
+<!-- ========================================== -->
+<!-- ENVOLTÓRIO DO CONTAINER PRINCIPAL -->
+<!-- ========================================== -->
+<div class="container" id="container-principal">
+
+    <!-- CONTROLES -->
+    <div class="controls" id="controles">
+        <!-- Linha 1: Inputs de texto -->
+        <div class="linha-inputs">
+            <div class="campo">
+                <label for="cliente">Cliente</label>
+                <input type="text" id="cliente" value="Empresa Exemplo">
+            </div>
+            <div class="campo">
+                <label for="data">Data</label>
+                <input type="date" id="data" readonly>
+            </div>
+            <div class="campo">
+                <label for="cnpjs">CNPJ's</label>
+                <input type="number" id="cnpjs" value="2" min="0">
+            </div>
+            <div class="campo">
+                <label for="usuarios">Usuários</label>
+                <input type="number" id="usuarios" value="15" min="0">
+            </div>
+            <div class="campo">
+                <label for="pontos">Pontos Emissores</label>
+                <input type="number" id="pontos" value="3" min="0" placeholder="opcional">
+            </div>
+        </div>
+
+        <!-- Linha 2: Duas colunas (Módulos e Layout) -->
+        <div class="modulos-row">
+            <!-- Coluna 1: Módulos -->
+            <div class="modulos-col">
+                <h3>Módulos</h3>
+                <label><input type="checkbox" id="modCIOT" checked> Emissão CIOT</label>
+                <label><input type="checkbox" id="modFrete" checked> Pagamento de Frete</label>
+                <label><input type="checkbox" id="modVale" checked> Vale Pedágio</label>
+            </div>
+
+            <!-- Coluna 2: Layout de Impressão -->
+            <div class="modulos-col">
+                <h3>Escolha o layout de impressão</h3>
+                <label><input type="radio" name="modelo" value="1" checked> Modelo 1 - Resumido</label>
+                <label><input type="radio" name="modelo" value="2"> Modelo 2 - Detalhado</label>
+            </div>
+        </div>
+
+        <!-- Linha 3: Botões -->
+        <div class="botoes-row">
+            <button class="btn btn-calcular" id="calcularBtn">▶ Calcular</button>
+            <button class="btn btn-imprimir" id="imprimirBtn">🖨️ Imprimir</button>
+            <button class="btn btn-limpar" id="limparBtn">✕ Limpar</button>
+        </div>
+
+        <!-- LOG DE HORAS -->
+        <div id="logHoras" style="margin-top: 20px; font-size: 18px; font-weight: bold; color: #1a2f4f; text-align: center; padding: 10px; background: #f0f4f9; border-radius: 8px;">
+            <!-- O total será exibido aqui -->
+        </div>
+
+        <!-- POP-UP CUSTOMIZADO -->
+        <div id="popup-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center;">
+            <div style="background: #fff; padding: 30px 40px; border-radius: 16px; max-width: 400px; width: 90%; text-align: center; box-shadow: 0 8px 24px rgba(0,0,0,0.2);">
+                <h3 style="margin: 0 0 10px; color: #1a2f4f;">✅ Cálculo concluído</h3>
+                <p style="font-size: 16px; color: #333; margin: 10px 0 20px;" id="popup-mensagem">Total de horas: 0</p>
+                <button onclick="fecharPopup()" style="background: #ff7079; color: #fff; border: none; padding: 10px 30px; border-radius: 25px; font-weight: 700; font-size: 14px; cursor: pointer;">OK</button>
+            </div>
+        </div>
     </div>
-</div>
 
-
-
+    <!-- Seção de contato com os executivos -->
+    <div class="contato-section" style="margin-top: 30px; border-top: 1px solid #e9e9e9; padding-top: 25px;">
+        <div class="welcome-contact-title">Ficou com alguma dúvida ou tem sugestões? Acione o Executivo da Vertical:</div>
+        <div class="welcome-executive-grid" id="executiveGrid">
+            <!-- Os cards serão preenchidos via JavaScript -->
         </div>
-
-<!-- Seção de contato com os executivos -->
-<div class="contato-section" style="margin-top: 30px; border-top: 1px solid #e9e9e9; padding-top: 25px;">
-    <div class="welcome-contact-title">Ficou com alguma dúvida ou tem sugestões? Acione o Executivo da Vertical:</div>
-    <div class="welcome-executive-grid" id="executiveGrid">
-        <!-- Os cards serão preenchidos via JavaScript -->
     </div>
-</div>
 
+    <!-- ========== EXTRATO MODELO 1 ========== -->
+    <div class="page active" id="extrato-modelo1">
+        <div class="logo">
+            <img src="https://raw.githubusercontent.com/PreVendasNDD/Extrato_de_Horas/main/assets/logoNDD.png" alt="Logo NDD">
+        </div>
+        <div class="titulo">EXTRATO DE HORAS</div>
+        <div class="subtitulo">Implantação Plataforma Logística – NDD CARGO</div>
+        <div class="info">
+            <strong>Cliente:</strong> <span id="spanCliente1">Empresa Exemplo</span>
+            <br>
+            <strong>Data:</strong> <span id="spanData1">04/08/2026</span>
+        </div>
+        <div class="linha-vermelha"></div>
+        <div class="section-title">Consolidação Geral do Projeto</div>
+        <table>
+            <tr><th align="left">Item</th><th>Informação</th></tr>
+            <tr><td>CNPJs envolvidos</td><td class="center" id="infoCnpjs1">2</td></tr>
+            <tr><td>Usuários</td><td class="center" id="infoUsuarios1">15</td></tr>
+        </table>
+        <table>
+            <thead><tr><th align="left">Etapa</th><th>Horas</th><th>Dias</th><th>Semanas</th></tr></thead>
+            <tbody id="corpoEtapas1"></tbody>
+        </table>
+        <div class="linha-vermelha rodape"></div>
+    </div>
 
-        <!-- ========== EXTRATO MODELO 1 ========== -->
-        <div class="page active" id="extrato-modelo1">
-            <div class="logo">
-                <img src="https://raw.githubusercontent.com/PreVendasNDD/Extrato_de_Horas/main/assets/logoNDD.png" alt="Logo NDD">
-            </div>
-            <div class="titulo">EXTRATO DE HORAS</div>
-            <div class="subtitulo">Implantação Plataforma Logística – NDD CARGO</div>
-            <div class="info">
-                <strong>Cliente:</strong> <span id="spanCliente1">Empresa Exemplo</span>
-                <br>
-                <strong>Data:</strong> <span id="spanData1">04/08/2026</span>
-            </div>
-            <div class="linha-vermelha"></div>
-            <div class="section-title">Consolidação Geral do Projeto</div>
-            <table>
-                <tr><th align="left">Item</th><th>Informação</th></tr>
-                <tr><td>CNPJs envolvidos</td><td class="center" id="infoCnpjs1">2</td></tr>
-                <tr><td>Usuários</td><td class="center" id="infoUsuarios1">15</td></tr>
-            </table>
-            <table>
-                <thead><tr><th align="left">Etapa</th><th>Horas</th><th>Dias</th><th>Semanas</th></tr></thead>
-                <tbody id="corpoEtapas1"></tbody>
-            </table>
-            <div class="linha-vermelha rodape"></div>
+    <!-- ========== EXTRATO MODELO 2 ========== -->
+    <div class="page" id="extrato-modelo2">
+        <div class="logo">
+            <img src="https://raw.githubusercontent.com/PreVendasNDD/Extrato_de_Horas/main/assets/logoNDD.png" alt="Logo NDD">
+        </div>
+        <div class="titulo">EXTRATO DE HORAS</div>
+        <div class="subtitulo">Implantação Plataforma Logística – NDD CARGO</div>
+        <div class="info">
+            <strong>Cliente:</strong> <span id="spanCliente2">Empresa Exemplo</span>
+            <br>
+            <strong>Data:</strong> <span id="spanData2">04/08/2026</span>
+        </div>
+        <div class="linha-vermelha"></div>
+        <div class="section-title">Consolidação Geral do Projeto</div>
+        <table>
+            <tr><th align="left">Item</th><th>Informação</th></tr>
+            <tr><td>CNPJs envolvidos</td><td class="center" id="infoCnpjs2">2</td></tr>
+            <tr><td>Usuários</td><td class="center" id="infoUsuarios2">15</td></tr>
+        </table>
+        <table>
+            <thead><tr><th align="left">Etapa</th><th>Horas</th><th>Dias</th><th>Semanas</th></tr></thead>
+            <tbody id="corpoEtapasResumo2"></tbody>
+        </table>
+
+        <!-- LINHA DIVISÓRIA ENTRE OS TÍTULOS -->
+        <div class="linha-vermelha entre-titulos"></div>
+
+        <div class="section-title" style="margin-top:0;">Consolidação Detalhada do Projeto</div>
+        <div id="detalhamentoEtapas2"></div>
+
+        <div class="total-projeto" id="totalProjeto2">Total do Projeto: 41 horas</div>
+        <div class="equivalente" id="equivDias2">Equivalente a aproximadamente: 5 dias úteis</div>
+        <div class="equivalente" id="equivSemanas2">Equivalente a aproximadamente: 1 semana(s)</div>
+
+        <div class="observacoes">
+            <strong>Observações</strong>
+            <ul>
+                <li>O cálculo de horas foi elaborado considerando o cenário atual apresentado pela <span id="obsCliente2">Empresa Exemplo</span>.</li>
+                <li>Eventuais customizações, integrações adicionais ou alterações de escopo poderão gerar revisão do esforço estimado.</li>
+                <li>O projeto contempla acompanhamento técnico durante a fase de implantação e estabilização operacional.</li>
+                <li>As horas apresentadas consideram atividades funcionais, técnicas, testes, homologação e suporte pós implantação.</li>
+                <li>Sobre a criação da Conta Digital, tempo varia conforme qualidade dos documentos do cliente, no caso de reenvio de documentação para correção, pode haver aumento no tempo de espera.</li>
+                <li>Treinamento é no modelo de vídeo aula, onde é mostrado passo a passo como realizar as emissões dentro do portal NDD CARGO.</li>
+            </ul>
         </div>
 
-        <!-- ========== EXTRATO MODELO 2 ========== -->
-        <div class="page" id="extrato-modelo2">
-            <div class="logo">
-                <img src="https://raw.githubusercontent.com/PreVendasNDD/Extrato_de_Horas/main/assets/logoNDD.png" alt="Logo NDD">
-            </div>
-            <div class="titulo">EXTRATO DE HORAS</div>
-            <div class="subtitulo">Implantação Plataforma Logística – NDD CARGO</div>
-            <div class="info">
-                <strong>Cliente:</strong> <span id="spanCliente2">Empresa Exemplo</span>
-                <br>
-                <strong>Data:</strong> <span id="spanData2">04/08/2026</span>
-            </div>
-            <div class="linha-vermelha"></div>
-            <div class="section-title">Consolidação Geral do Projeto</div>
-            <table>
-                <tr><th align="left">Item</th><th>Informação</th></tr>
-                <tr><td>CNPJs envolvidos</td><td class="center" id="infoCnpjs2">2</td></tr>
-                <tr><td>Usuários</td><td class="center" id="infoUsuarios2">15</td></tr>
-            </table>
-            <table>
-                <thead><tr><th align="left">Etapa</th><th>Horas</th><th>Dias</th><th>Semanas</th></tr></thead>
-                <tbody id="corpoEtapasResumo2"></tbody>
-            </table>
+        <div class="linha-vermelha rodape"></div>
+    </div>
 
-            <!-- LINHA DIVISÓRIA ENTRE OS TÍTULOS -->
-            <div class="linha-vermelha entre-titulos"></div>
+</div> <!-- FIM DO ENVOLTÓRIO container-principal -->
 
-            <div class="section-title" style="margin-top:0;">Consolidação Detalhada do Projeto</div>
-            <div id="detalhamentoEtapas2"></div>
+<script>
+    (function() {
+        'use strict';
 
-            <div class="total-projeto" id="totalProjeto2">Total do Projeto: 41 horas</div>
-            <div class="equivalente" id="equivDias2">Equivalente a aproximadamente: 5 dias úteis</div>
-            <div class="equivalente" id="equivSemanas2">Equivalente a aproximadamente: 1 semana(s)</div>
+        // ---- Variáveis de controle ----
+        let base = null;
+        let carregando = false;
 
-            <div class="observacoes">
-                <strong>Observações</strong>
-                <ul>
-                    <li>O cálculo de horas foi elaborado considerando o cenário atual apresentado pela <span id="obsCliente2">Empresa Exemplo</span>.</li>
-                    <li>Eventuais customizações, integrações adicionais ou alterações de escopo poderão gerar revisão do esforço estimado.</li>
-                    <li>O projeto contempla acompanhamento técnico durante a fase de implantação e estabilização operacional.</li>
-                    <li>As horas apresentadas consideram atividades funcionais, técnicas, testes, homologação e suporte pós implantação.</li>
-                    <li>Sobre a criação da Conta Digital, tempo varia conforme qualidade dos documentos do cliente, no caso de reenvio de documentação para correção, pode haver aumento no tempo de espera.</li>
-                    <li>Treinamento é no modelo de vídeo aula, onde é mostrado passo a passo como realizar as emissões dentro do portal NDD CARGO.</li>
-                </ul>
-            </div>
-
-            <div class="linha-vermelha rodape"></div>
-        </div>
-
-    </div> <!-- FIM DO ENVOLTÓRIO container-principal -->
-
-    <script>
-        (function() {
-            'use strict';
-
-            // ---- Elementos do formulário ----
-            const inputCliente = document.getElementById('cliente');
-            const inputData = document.getElementById('data');
-            const inputCNPJs = document.getElementById('cnpjs');
-            const inputPontos = document.getElementById('pontos');
-            const inputUsuarios = document.getElementById('usuarios');
-            const modCIOT = document.getElementById('modCIOT');
-            const modFrete = document.getElementById('modFrete');
-            const modVale = document.getElementById('modVale');
-            const radioModelo = document.querySelectorAll('input[name="modelo"]');
-
-            // ---- Elementos do modelo 1 ----
-            const spanCliente1 = document.getElementById('spanCliente1');
-            const spanData1 = document.getElementById('spanData1');
-            const infoCnpjs1 = document.getElementById('infoCnpjs1');
-            const infoUsuarios1 = document.getElementById('infoUsuarios1');
-            const corpoEtapas1 = document.getElementById('corpoEtapas1');
-
-            // ---- Elementos do modelo 2 ----
-            const spanCliente2 = document.getElementById('spanCliente2');
-            const spanData2 = document.getElementById('spanData2');
-            const infoCnpjs2 = document.getElementById('infoCnpjs2');
-            const infoUsuarios2 = document.getElementById('infoUsuarios2');
-            const corpoEtapasResumo2 = document.getElementById('corpoEtapasResumo2');
-            const detalhamentoEtapas2 = document.getElementById('detalhamentoEtapas2');
-            const totalProjeto2 = document.getElementById('totalProjeto2');
-            const equivDias2 = document.getElementById('equivDias2');
-            const equivSemanas2 = document.getElementById('equivSemanas2');
-            const obsCliente2 = document.getElementById('obsCliente2');
-
-            // ---- Botões ----
-            const calcularBtn = document.getElementById('calcularBtn');
-            const imprimirBtn = document.getElementById('imprimirBtn');
-            const limparBtn = document.getElementById('limparBtn');
-
-            // ---- Elementos das páginas ----
-            const extrato1 = document.getElementById('extrato-modelo1');
-            const extrato2 = document.getElementById('extrato-modelo2');
-
-            // ---- Data atual ----
-            function setDataAtual() {
-                const hoje = new Date();
-                const dia = String(hoje.getDate()).padStart(2, '0');
-                const mes = String(hoje.getMonth() + 1).padStart(2, '0');
-                const ano = hoje.getFullYear();
-                const dataFormatada = `${dia}/${mes}/${ano}`;
-                const dataISO = `${ano}-${mes}-${dia}`;
-                inputData.value = dataISO;
-                spanData1.textContent = dataFormatada;
-                spanData2.textContent = dataFormatada;
-                return dataFormatada;
-            }
-            const dataExibicao = setDataAtual();
-
-            // ---- Utilitários ----
-            function getNumber(id) {
-                const val = document.getElementById(id).value.trim();
-                if (val === '') return NaN;
-                return parseFloat(val);
+        // ---- Função para carregar a base (compatível com file:// e servidor) ----
+        function carregarBase() {
+            // Se já carregou, não faz nada
+            if (base) {
+                console.log('✅ Base já carregada.');
+                return Promise.resolve(base);
             }
 
-            function round1(v) {
-                return Math.round(v * 10) / 10;
+            // Se já está carregando, aguarda
+            if (carregando) {
+                console.log('⏳ Carregamento já em andamento...');
+                // Retorna uma promise que resolve quando a base for carregada
+                return new Promise((resolve) => {
+                    const checkInterval = setInterval(() => {
+                        if (base) {
+                            clearInterval(checkInterval);
+                            resolve(base);
+                        }
+                    }, 100);
+                });
             }
 
-            // ---- Limpar ----
-            function limparCampos() {
-                inputCliente.value = '';
-                inputCNPJs.value = '';
-                inputPontos.value = '';
-                inputUsuarios.value = '';
-                modCIOT.checked = false;
-                modFrete.checked = false;
-                modVale.checked = false;
-                calcular();
+            carregando = true;
+            console.log('🔍 Tentando carregar BASE_CARGO.json...');
+
+            // Função para processar os dados
+            function processarDados(data) {
+                base = data;
+                carregando = false;
+                console.log('✅ Base carregada:', base);
+                // Dispara o cálculo se houver listeners
+                if (window._calcularPending) {
+                    calcular();
+                    window._calcularPending = false;
+                }
+                return base;
             }
 
-            // ---- Obter modelo selecionado ----
-            function getModeloSelecionado() {
-                for (const radio of radioModelo) {
-                    if (radio.checked) return parseInt(radio.value);
+            // Função para lidar com erro (fallback)
+            function handleError(erro) {
+                console.warn('⚠️ Erro ao carregar JSON, usando valores padrão:', erro);
+                base = {
+                    horasPorCnpj: 1,
+                    horasPorUsuario: 0.5,
+                    horasPorCnpjModulo: 8,
+                    horasContaDigital: 6,
+                    horasTreinamento: 2,
+                    jornadaDiaria: 8,
+                    jornadaSemanal: 40
+                };
+                carregando = false;
+                console.log('✅ Base fallback aplicada:', base);
+                if (window._calcularPending) {
+                    calcular();
+                    window._calcularPending = false;
                 }
-                return 1;
+                return base;
             }
 
-            // ---- Cálculo principal ----
-            function calcular() {
-                const cliente = inputCliente.value.trim() || 'Não informado';
-                const cnpjs = getNumber('cnpjs');
-                const pontosRaw = getNumber('pontos');
-                const usuarios = getNumber('usuarios');
+            // Tentativa com fetch (funciona em servidores)
+            return fetch('BASE_CARGO.json')
+                .then(response => {
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    return response.json();
+                })
+                .then(processarDados)
+                .catch(fetchError => {
+                    console.warn('⚠️ Fetch falhou, tentando XMLHttpRequest...', fetchError);
+                    // Fallback com XMLHttpRequest (pode funcionar localmente)
+                    return new Promise((resolve, reject) => {
+                        const xhr = new XMLHttpRequest();
+                        xhr.open('GET', 'BASE_CARGO.json', true);
+                        xhr.onreadystatechange = function() {
+                            if (xhr.readyState === 4) {
+                                if (xhr.status === 200) {
+                                    try {
+                                        const data = JSON.parse(xhr.responseText);
+                                        resolve(data);
+                                    } catch (e) {
+                                        reject(e);
+                                    }
+                                } else {
+                                    reject(new Error(`XHR status ${xhr.status}`));
+                                }
+                            }
+                        };
+                        xhr.onerror = function() {
+                            reject(new Error('XHR network error'));
+                        };
+                        xhr.send();
+                    })
+                    .then(processarDados)
+                    .catch(xhrError => {
+                        console.error('❌ Todas as tentativas falharam:', xhrError);
+                        return handleError(xhrError);
+                    });
+                });
+        }
 
-                if (isNaN(cnpjs) || cnpjs < 0 || isNaN(usuarios) || usuarios < 0) {
-                    alert('Preencha CNPJ\'s e Usuários com valores válidos (0 ou mais).');
-                    return;
-                }
+        // ---- Elementos do formulário ----
+        const inputCliente = document.getElementById('cliente');
+        const inputData = document.getElementById('data');
+        const inputCNPJs = document.getElementById('cnpjs');
+        const inputPontos = document.getElementById('pontos');
+        const inputUsuarios = document.getElementById('usuarios');
+        const modCIOT = document.getElementById('modCIOT');
+        const modFrete = document.getElementById('modFrete');
+        const modVale = document.getElementById('modVale');
+        const radioModelo = document.querySelectorAll('input[name="modelo"]');
 
-                const temPontos = !isNaN(pontosRaw) && pontosRaw >= 0;
-                const pontos = temPontos ? pontosRaw : 0;
+        // ---- Elementos do modelo 1 ----
+        const spanCliente1 = document.getElementById('spanCliente1');
+        const spanData1 = document.getElementById('spanData1');
+        const infoCnpjs1 = document.getElementById('infoCnpjs1');
+        const infoUsuarios1 = document.getElementById('infoUsuarios1');
+        const corpoEtapas1 = document.getElementById('corpoEtapas1');
 
-                const ciotAtivo = modCIOT.checked;
-                const freteAtivo = modFrete.checked;
-                const valeAtivo = modVale.checked;
+        // ---- Elementos do modelo 2 ----
+        const spanCliente2 = document.getElementById('spanCliente2');
+        const spanData2 = document.getElementById('spanData2');
+        const infoCnpjs2 = document.getElementById('infoCnpjs2');
+        const infoUsuarios2 = document.getElementById('infoUsuarios2');
+        const corpoEtapasResumo2 = document.getElementById('corpoEtapasResumo2');
+        const detalhamentoEtapas2 = document.getElementById('detalhamentoEtapas2');
+        const totalProjeto2 = document.getElementById('totalProjeto2');
+        const equivDias2 = document.getElementById('equivDias2');
+        const equivSemanas2 = document.getElementById('equivSemanas2');
+        const obsCliente2 = document.getElementById('obsCliente2');
 
-                // ---- Cálculos ----
-                let cadastroReal = temPontos ? Math.abs(cnpjs - pontos) * 1 : cnpjs * 1;
-                const cadastroExibido = cadastroReal;
+        // ---- Botões ----
+        const calcularBtn = document.getElementById('calcularBtn');
+        const imprimirBtn = document.getElementById('imprimirBtn');
+        const limparBtn = document.getElementById('limparBtn');
 
-                const usuariosReal = usuarios * 0.5;
-                const usuariosExibido = Math.ceil(usuariosReal);
+        // ---- Elementos das páginas ----
+        const extrato1 = document.getElementById('extrato-modelo1');
+        const extrato2 = document.getElementById('extrato-modelo2');
 
-                let ciotReal = 0;
-                if (ciotAtivo) {
-                    ciotReal = temPontos ? Math.abs(cnpjs - pontos) * 8 : cnpjs * 8;
-                }
-                const ciotExibido = ciotReal;
+        // ---- Data atual ----
+        function setDataAtual() {
+            const hoje = new Date();
+            const dia = String(hoje.getDate()).padStart(2, '0');
+            const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+            const ano = hoje.getFullYear();
+            const dataFormatada = `${dia}/${mes}/${ano}`;
+            const dataISO = `${ano}-${mes}-${dia}`;
+            inputData.value = dataISO;
+            spanData1.textContent = dataFormatada;
+            spanData2.textContent = dataFormatada;
+            return dataFormatada;
+        }
+        setDataAtual();
 
-                let freteReal = 0;
-                if (freteAtivo) {
-                    freteReal = temPontos ? Math.abs(cnpjs - pontos) * 8 : cnpjs * 8;
-                }
-                const freteExibido = freteReal;
+        // ---- Utilitários ----
+        function getNumber(id) {
+            const val = document.getElementById(id).value.trim();
+            if (val === '') return NaN;
+            return parseFloat(val);
+        }
 
-                let valeReal = 0;
-                if (valeAtivo) {
-                    valeReal = temPontos ? Math.abs(cnpjs - pontos) * 8 : cnpjs * 8;
-                }
-                const valeExibido = valeReal;
+        function round1(v) {
+            return Math.round(v * 10) / 10;
+        }
 
-                const contaDigitalReal = (freteAtivo || valeAtivo) ? 6 : 0;
-                const contaDigitalExibido = contaDigitalReal;
+        // ---- Limpar ----
+        function limparCampos() {
+            inputCliente.value = '';
+            inputCNPJs.value = '';
+            inputPontos.value = '';
+            inputUsuarios.value = '';
+            modCIOT.checked = false;
+            modFrete.checked = false;
+            modVale.checked = false;
+            calcular();
+        }
 
-                const treinamentoReal = 2;
-                const treinamentoExibido = 2;
+        // ---- Obter modelo selecionado ----
+        function getModeloSelecionado() {
+            for (const radio of radioModelo) {
+                if (radio.checked) return parseInt(radio.value);
+            }
+            return 1;
+        }
 
-                // ---- Itens para resumo ----
-                const itens = [
-                    { nome: 'Cadastro e Parametrização Operacional', real: cadastroReal, exibido: cadastroExibido, ativo: true },
-                    { nome: 'Criação e Configuração de Usuários', real: usuariosReal, exibido: usuariosExibido, ativo: true },
-                    { nome: 'Módulo Emissão de CIOT', real: ciotReal, exibido: ciotExibido, ativo: ciotAtivo },
-                    { nome: 'Módulo Pagamento de Frete', real: freteReal, exibido: freteExibido, ativo: freteAtivo },
-                    { nome: 'Módulo Vale Pedágio', real: valeReal, exibido: valeExibido, ativo: valeAtivo },
-                    { nome: 'Criação de Conta Digital', real: contaDigitalReal, exibido: contaDigitalExibido, ativo: (freteAtivo || valeAtivo) },
-                    { nome: 'Acompanhamento e Treinamento', real: treinamentoReal, exibido: treinamentoExibido, ativo: true }
-                ];
+        // ---- Mostrar/esconder modelos ----
+        function mostrarModelo(modelo) {
+            if (modelo === 1) {
+                extrato1.classList.add('active');
+                extrato2.classList.remove('active');
+            } else {
+                extrato1.classList.remove('active');
+                extrato2.classList.add('active');
+            }
+        }
 
-                const totalExibido = itens.reduce((acc, item) => {
-                    if (item.ativo) return acc + item.exibido;
-                    return acc;
-                }, 0);
+        // ============================================================
+        // CÁLCULO PRINCIPAL (usando base)
+        // ============================================================
+        function calcular() {
+            if (!base) {
+                console.warn('⏳ Base não carregada, carregando...');
+                window._calcularPending = true;
+                carregarBase().then(() => {
+                    if (window._calcularPending) {
+                        window._calcularPending = false;
+                        calcular();
+                    }
+                });
+                return;
+            }
 
-                // ---- Atualizar dados comuns ----
-                spanCliente1.textContent = cliente;
-                spanCliente2.textContent = cliente;
-                obsCliente2.textContent = cliente;
-                infoCnpjs1.textContent = cnpjs;
-                infoCnpjs2.textContent = cnpjs;
-                infoUsuarios1.textContent = usuarios;
-                infoUsuarios2.textContent = usuarios;
+            const cliente = inputCliente.value.trim() || 'Não informado';
+            const cnpjs = getNumber('cnpjs');
+            const pontosRaw = getNumber('pontos');
+            const usuarios = getNumber('usuarios');
 
-                // ---- Gerar resumo (tabela) para ambos ----
-                function gerarLinhasResumo() {
-                    let html = '';
-                    itens.forEach((item) => {
-                        if (item.ativo) {
-                            const horas = item.exibido;
-                            const dias = round1(item.real / 8);
-                            const semanas = round1(item.real / 40);
-                            html += `<tr>
-                                <td>${item.nome}</td>
-                                <td class="center">${horas.toFixed(0)}h</td>
+            if (isNaN(cnpjs) || cnpjs < 0 || isNaN(usuarios) || usuarios < 0) {
+                alert('Preencha CNPJ\'s e Usuários com valores válidos (0 ou mais).');
+                return;
+            }
+
+            const temPontos = !isNaN(pontosRaw) && pontosRaw >= 0;
+            const pontos = temPontos ? pontosRaw : 0;
+
+            const ciotAtivo = modCIOT.checked;
+            const freteAtivo = modFrete.checked;
+            const valeAtivo = modVale.checked;
+
+            // ---- Extrair valores da base ----
+            const hCnpj = base.horasPorCnpj || 1;
+            const hUsuario = base.horasPorUsuario || 0.5;
+            const hModulo = base.horasPorCnpjModulo || 8;
+            const hConta = base.horasContaDigital || 6;
+            const hTreino = base.horasTreinamento || 2;
+            const jornadaDia = base.jornadaDiaria || 8;
+            const jornadaSemana = base.jornadaSemanal || 40;
+
+            // ---- Cálculos ----
+            let cadastroReal = temPontos ? Math.abs(cnpjs - pontos) * hCnpj : cnpjs * hCnpj;
+            const cadastroExibido = cadastroReal;
+
+            const usuariosReal = usuarios * hUsuario;
+            const usuariosExibido = Math.ceil(usuariosReal);
+
+            let ciotReal = 0;
+            if (ciotAtivo) {
+                ciotReal = temPontos ? Math.abs(cnpjs - pontos) * hModulo : cnpjs * hModulo;
+            }
+            const ciotExibido = ciotReal;
+
+            let freteReal = 0;
+            if (freteAtivo) {
+                freteReal = temPontos ? Math.abs(cnpjs - pontos) * hModulo : cnpjs * hModulo;
+            }
+            const freteExibido = freteReal;
+
+            let valeReal = 0;
+            if (valeAtivo) {
+                valeReal = temPontos ? Math.abs(cnpjs - pontos) * hModulo : cnpjs * hModulo;
+            }
+            const valeExibido = valeReal;
+
+            const contaDigitalReal = (freteAtivo || valeAtivo) ? hConta : 0;
+            const contaDigitalExibido = contaDigitalReal;
+
+            const treinamentoReal = hTreino;
+            const treinamentoExibido = hTreino;
+
+            // ---- Itens para resumo ----
+            const itens = [
+                { nome: 'Cadastro e Parametrização Operacional', real: cadastroReal, exibido: cadastroExibido, ativo: true },
+                { nome: 'Criação e Configuração de Usuários', real: usuariosReal, exibido: usuariosExibido, ativo: true },
+                { nome: 'Módulo Emissão de CIOT', real: ciotReal, exibido: ciotExibido, ativo: ciotAtivo },
+                { nome: 'Módulo Pagamento de Frete', real: freteReal, exibido: freteExibido, ativo: freteAtivo },
+                { nome: 'Módulo Vale Pedágio', real: valeReal, exibido: valeExibido, ativo: valeAtivo },
+                { nome: 'Criação de Conta Digital', real: contaDigitalReal, exibido: contaDigitalExibido, ativo: (freteAtivo || valeAtivo) },
+                { nome: 'Acompanhamento e Treinamento', real: treinamentoReal, exibido: treinamentoExibido, ativo: true }
+            ];
+
+            const totalExibido = itens.reduce((acc, item) => {
+                if (item.ativo) return acc + item.exibido;
+                return acc;
+            }, 0);
+
+            // ---- Atualizar dados comuns ----
+            spanCliente1.textContent = cliente;
+            spanCliente2.textContent = cliente;
+            obsCliente2.textContent = cliente;
+            infoCnpjs1.textContent = cnpjs;
+            infoCnpjs2.textContent = cnpjs;
+            infoUsuarios1.textContent = usuarios;
+            infoUsuarios2.textContent = usuarios;
+
+            // ---- Gerar resumo (tabela) para ambos ----
+            function gerarLinhasResumo() {
+                let html = '';
+                itens.forEach((item) => {
+                    if (item.ativo) {
+                        const horas = item.exibido;
+                        const dias = round1(item.real / jornadaDia);
+                        const semanas = round1(item.real / jornadaSemana);
+                        html += `<tr>
+                            <td>${item.nome}</td>
+                            <td class="center">${horas.toFixed(0)}h</td>
+                            <td class="center">${dias.toFixed(1)}</td>
+                            <td class="center">${semanas.toFixed(1)}</td>
+                        </tr>`;
+                    } else {
+                        html += `<tr class="nao-aplicavel">
+                            <td>${item.nome}</td>
+                            <td class="center texto-na">*não aplicável</td>
+                            <td class="center">-</td>
+                            <td class="center">-</td>
+                        </tr>`;
+                    }
+                });
+                const totalDias = Math.ceil(totalExibido / jornadaDia);
+                const totalSemanas = Math.ceil(totalExibido / jornadaSemana);
+                html += `<tr class="total">
+                    <td>Total</td>
+                    <td class="center">${totalExibido.toFixed(0)} horas</td>
+                    <td class="center">${totalDias} dia(s)</td>
+                    <td class="center">${totalSemanas} semana(s)</td>
+                </tr>`;
+                return html;
+            }
+
+            const resumoHTML = gerarLinhasResumo();
+            corpoEtapas1.innerHTML = resumoHTML;
+            corpoEtapasResumo2.innerHTML = resumoHTML;
+
+            // ---- Modelo 2: Detalhamento com linhas divisoras entre etapas ----
+            const subitensConfig = [
+                { nome: 'Cadastro e Parametrização Operacional', sub: [ { nome: 'Cadastro dos CNPJ\'s', pct: 0.50 }, { nome: 'Parametrização logística', pct: 0.25 }, { nome: 'Testes e validações', pct: 0.25 } ] },
+                { nome: 'Criação e Configuração de Usuários', sub: [ { nome: 'Criação de usuários', pct: 0.50 }, { nome: 'Configuração de perfis', pct: 0.35 }, { nome: 'Validação com cliente', pct: 0.15 } ] },
+                { nome: 'Módulo Emissão de CIOT', sub: [ { nome: 'Configuração de Ambiente PRD', pct: 0.25 }, { nome: 'Ajustes e estabilização', pct: 0.75 } ] },
+                { nome: 'Módulo de Pagamento de Frete', sub: [ { nome: 'Configuração de Ambiente PRD', pct: 0.25 }, { nome: 'Ajustes e estabilização', pct: 0.75 } ] },
+                { nome: 'Módulo de VPO', sub: [ { nome: 'Configuração de Ambiente PRD', pct: 0.25 }, { nome: 'Ajustes e estabilização', pct: 0.75 } ] },
+                { nome: 'Criação Conta Digital', sub: [ { nome: 'Recepção e análise da documentação (interno)', pct: 0.25 }, { nome: 'Revisão e envio para abertura', pct: 0.75 } ] },
+                { nome: 'Acompanhamento e Treinamento', sub: [] }
+            ];
+
+            let detalhamentoHTML = '';
+            itens.forEach((item, i) => {
+                const config = subitensConfig[i];
+                if (!config) return;
+                const totalHoras = item.exibido;
+                const totalDias = round1(item.real / jornadaDia);
+                const totalSemanas = round1(item.real / jornadaSemana);
+
+                detalhamentoHTML += `<div class="sub-section-title">${i+1}. ${config.nome}</div>`;
+
+                if (item.ativo) {
+                    if (config.sub.length > 0) {
+                        detalhamentoHTML += `<table>
+                            <tr><th align="left">Etapa</th><th>Horas</th><th>Dias</th><th>Semanas</th></tr>`;
+                        config.sub.forEach(sub => {
+                            const horas = totalHoras * sub.pct;
+                            const dias = round1(horas / jornadaDia);
+                            const semanas = round1(horas / jornadaSemana);
+                            detalhamentoHTML += `<tr>
+                                <td>${sub.nome}</td>
+                                <td class="center">${horas.toFixed(1)}h</td>
                                 <td class="center">${dias.toFixed(1)}</td>
                                 <td class="center">${semanas.toFixed(1)}</td>
                             </tr>`;
-                        } else {
-                            html += `<tr class="nao-aplicavel">
-                                <td>${item.nome}</td>
-                                <td class="center texto-na">*não aplicável</td>
-                                <td class="center">-</td>
-                                <td class="center">-</td>
-                            </tr>`;
-                        }
-                    });
-                    const totalDias = Math.ceil(totalExibido / 8);
-                    const totalSemanas = Math.ceil(totalExibido / 40);
-                    html += `<tr class="total">
-                        <td>Total</td>
-                        <td class="center">${totalExibido.toFixed(0)} horas</td>
-                        <td class="center">${totalDias} dia(s)</td>
-                        <td class="center">${totalSemanas} semana(s)</td>
-                    </tr>`;
-                    return html;
-                }
-
-                const resumoHTML = gerarLinhasResumo();
-                corpoEtapas1.innerHTML = resumoHTML;
-                corpoEtapasResumo2.innerHTML = resumoHTML;
-
-                // ---- Modelo 2: Detalhamento com linhas divisoras entre etapas ----
-                const subitensConfig = [
-                    { nome: 'Cadastro e Parametrização Operacional', sub: [ { nome: 'Cadastro dos CNPJ\'s', pct: 0.50 }, { nome: 'Parametrização logística', pct: 0.25 }, { nome: 'Testes e validações', pct: 0.25 } ] },
-                    { nome: 'Criação e Configuração de Usuários', sub: [ { nome: 'Criação de usuários', pct: 0.50 }, { nome: 'Configuração de perfis', pct: 0.35 }, { nome: 'Validação com cliente', pct: 0.15 } ] },
-                    { nome: 'Módulo Emissão de CIOT', sub: [ { nome: 'Configuração de Ambiente PRD', pct: 0.25 }, { nome: 'Ajustes e estabilização', pct: 0.75 } ] },
-                    { nome: 'Módulo de Pagamento de Frete', sub: [ { nome: 'Configuração de Ambiente PRD', pct: 0.25 }, { nome: 'Ajustes e estabilização', pct: 0.75 } ] },
-                    { nome: 'Módulo de VPO', sub: [ { nome: 'Configuração de Ambiente PRD', pct: 0.25 }, { nome: 'Ajustes e estabilização', pct: 0.75 } ] },
-                    { nome: 'Criação Conta Digital', sub: [ { nome: 'Recepção e análise da documentação (interno)', pct: 0.25 }, { nome: 'Revisão e envio para abertura', pct: 0.75 } ] },
-                    { nome: 'Acompanhamento e Treinamento', sub: [] }
-                ];
-
-                let detalhamentoHTML = '';
-                itens.forEach((item, i) => {
-                    const config = subitensConfig[i];
-                    if (!config) return;
-                    const totalHoras = item.exibido;
-                    const totalDias = round1(item.real / 8);
-                    const totalSemanas = round1(item.real / 40);
-
-                    detalhamentoHTML += `<div class="sub-section-title">${i+1}. ${config.nome}</div>`;
-
-                    if (item.ativo) {
-                        if (config.sub.length > 0) {
-                            detalhamentoHTML += `<table>
-                                <tr><th align="left">Etapa</th><th>Horas</th><th>Dias</th><th>Semanas</th></tr>`;
-                            config.sub.forEach(sub => {
-                                const horas = totalHoras * sub.pct;
-                                const dias = round1(horas / 8);
-                                const semanas = round1(horas / 40);
-                                detalhamentoHTML += `<tr>
-                                    <td>${sub.nome}</td>
-                                    <td class="center">${horas.toFixed(1)}h</td>
-                                    <td class="center">${dias.toFixed(1)}</td>
-                                    <td class="center">${semanas.toFixed(1)}</td>
-                                </tr>`;
-                            });
-                            detalhamentoHTML += `</table>`;
-                        } else {
-                            detalhamentoHTML += `<table>
-                                <tr><th align="left">Etapa</th><th>Horas</th><th>Dias</th><th>Semanas</th></tr>
-                                <tr>
-                                    <td>Total</td>
-                                    <td class="center">${totalHoras.toFixed(0)}h</td>
-                                    <td class="center">${totalDias.toFixed(1)}</td>
-                                    <td class="center">${totalSemanas.toFixed(1)}</td>
-                                </tr>
-                            </table>`;
-                        }
-                        detalhamentoHTML += `<div class="total-etapa">Total da etapa: ${totalHoras.toFixed(0)}h ( ${Math.ceil(totalDias)} dia(s) / ${Math.ceil(totalSemanas)} semana(s) )</div>`;
+                        });
+                        detalhamentoHTML += `</table>`;
                     } else {
-                        detalhamentoHTML += `<table class="nao-aplicavel">
+                        detalhamentoHTML += `<table>
                             <tr><th align="left">Etapa</th><th>Horas</th><th>Dias</th><th>Semanas</th></tr>
                             <tr>
                                 <td>Total</td>
-                                <td class="center texto-na">*não aplicável</td>
-                                <td class="center">-</td>
-                                <td class="center">-</td>
+                                <td class="center">${totalHoras.toFixed(0)}h</td>
+                                <td class="center">${totalDias.toFixed(1)}</td>
+                                <td class="center">${totalSemanas.toFixed(1)}</td>
                             </tr>
                         </table>`;
-                        detalhamentoHTML += `<div class="total-etapa">Total da etapa: *não aplicável</div>`;
                     }
-
-                    // Linha divisória vermelha ENTRE as etapas (exceto após a última)
-                    if (i < itens.length - 1) {
-                        detalhamentoHTML += `<div class="linha-vermelha entre-etapas"></div>`;
-                    }
-                });
-
-                detalhamentoEtapas2.innerHTML = detalhamentoHTML;
-
-                // ---- Totais e equivalentes (Modelo 2) ----
-                const totalDiasInt = Math.ceil(totalExibido / 8);
-                const totalSemanasInt = Math.ceil(totalExibido / 40);
-                totalProjeto2.textContent = `Total do Projeto: ${totalExibido.toFixed(0)} horas`;
-                equivDias2.textContent = `Equivalente a aproximadamente: ${totalDiasInt} dias úteis`;
-                equivSemanas2.textContent = `Equivalente a aproximadamente: ${totalSemanasInt} semana(s)`;
-
-// ---- LOG E POP-UP ----
-const logDiv = document.getElementById('logHoras');
-if (logDiv) {
-    logDiv.innerHTML = '✅ Total de horas calculadas: <strong>' + totalExibido + ' horas</strong>';
-}
-
-// Só abre pop-up se foi clique do usuário
-if (window._isUserClick) {
-    abrirPopup('Total de horas calculadas: ' + totalExibido + ' horas');
-}
-
-
-
-
-
-                mostrarModelo(getModeloSelecionado());
-            }
-
-            // ---- Mostrar/esconder modelos ----
-            function mostrarModelo(modelo) {
-                if (modelo === 1) {
-                    extrato1.classList.add('active');
-                    extrato2.classList.remove('active');
+                    detalhamentoHTML += `<div class="total-etapa">Total da etapa: ${totalHoras.toFixed(0)}h ( ${Math.ceil(totalDias)} dia(s) / ${Math.ceil(totalSemanas)} semana(s) )</div>`;
                 } else {
-                    extrato1.classList.remove('active');
-                    extrato2.classList.add('active');
+                    detalhamentoHTML += `<table class="nao-aplicavel">
+                        <tr><th align="left">Etapa</th><th>Horas</th><th>Dias</th><th>Semanas</th></tr>
+                        <tr>
+                            <td>Total</td>
+                            <td class="center texto-na">*não aplicável</td>
+                            <td class="center">-</td>
+                            <td class="center">-</td>
+                        </tr>
+                    </table>`;
+                    detalhamentoHTML += `<div class="total-etapa">Total da etapa: *não aplicável</div>`;
                 }
+
+                if (i < itens.length - 1) {
+                    detalhamentoHTML += `<div class="linha-vermelha entre-etapas"></div>`;
+                }
+            });
+
+            detalhamentoEtapas2.innerHTML = detalhamentoHTML;
+
+            // ---- Totais e equivalentes (Modelo 2) ----
+            const totalDiasInt = Math.ceil(totalExibido / jornadaDia);
+            const totalSemanasInt = Math.ceil(totalExibido / jornadaSemana);
+            totalProjeto2.textContent = `Total do Projeto: ${totalExibido.toFixed(0)} horas`;
+            equivDias2.textContent = `Equivalente a aproximadamente: ${totalDiasInt} dias úteis`;
+            equivSemanas2.textContent = `Equivalente a aproximadamente: ${totalSemanasInt} semana(s)`;
+
+            // ---- LOG E POP-UP ----
+            const logDiv = document.getElementById('logHoras');
+            if (logDiv) {
+                logDiv.innerHTML = '✅ Total de horas calculadas: <strong>' + totalExibido + ' horas</strong>';
             }
 
-            // ---- Eventos ----
-            calcularBtn.addEventListener('click', function() {
-	        window._isUserClick = true;
-	        calcular();
-	        window._isUserClick = false;
-	    });
-            limparBtn.addEventListener('click', limparCampos);
+            if (window._isUserClick) {
+                abrirPopup('Total de horas calculadas: ' + totalExibido + ' horas');
+                window._isUserClick = false;
+            }
 
-            radioModelo.forEach(radio => {
-                radio.addEventListener('change', function() {
-                    if (this.checked) mostrarModelo(parseInt(this.value));
-                });
+            mostrarModelo(getModeloSelecionado());
+        }
+
+        // ---- Eventos ----
+        calcularBtn.addEventListener('click', function() {
+            window._isUserClick = true;
+            calcular();
+        });
+
+        limparBtn.addEventListener('click', limparCampos);
+
+        radioModelo.forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.checked) mostrarModelo(parseInt(this.value));
             });
+        });
 
-            imprimirBtn.addEventListener('click', function() {
-                const modelo = getModeloSelecionado();
-                mostrarModelo(modelo);
-                window.print();
+        imprimirBtn.addEventListener('click', function() {
+            const modelo = getModeloSelecionado();
+            mostrarModelo(modelo);
+            window.print();
+        });
+
+        // ---- Inicialização ----
+        window.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('container-principal').classList.add('sidebar-active');
+            document.getElementById('sidebar-global').style.display = 'flex';
+
+            // Carrega a base e depois calcula
+            carregarBase().then(() => {
+                if (!window._calcularPending) {
+                    calcular();
+                }
             });
+        });
 
-            window.addEventListener('DOMContentLoaded', calcular);
-        })();
+        // ---- Funções globais (sidebar, contatos, etc.) ----
+        window.irPara = function(destino) { window.location.href = destino; };
+        window.abrirLink = function(url) { window.open(url, '_blank'); };
 
+        // ============================================================
+        // DADOS DOS EXECUTIVOS DA VERTICAL LOGÍSTICA
+        // ============================================================
+        const executivosLogistica = [
+            {
+                nome: 'João Victor Nunes Pinheiro',
+                cargo: 'Executivo Técnico de Negócios Pleno',
+                email: 'joao.pinheiro@ndd.tech',
+                foto: '../assets/joao.jpeg'
+            }
+        ];
 
-       // ===== ATIVAÇÃO DA SIDEBAR E NAVEGAÇÃO =====
-       window.addEventListener('DOMContentLoaded', function() {
-           document.getElementById('container-principal').classList.add('sidebar-active');
-           document.getElementById('sidebar-global').style.display = 'flex';
-       });
+        // ============================================================
+        // FUNÇÕES DO MODAL
+        // ============================================================
+        let modalEmail = '';
 
-       function voltarIndex() { window.location.href = '../index.html'; }
-       function irPara(destino) { window.location.href = destino; }
-       function abrirLink(url) { window.open(url, '_blank'); }
+        window.abrirModal = function(email, nome) {
+            modalEmail = email;
 
+            document.getElementById('modal-btn-teams').onclick = function() {
+                window.location.href = 'msteams://teams.microsoft.com/l/chat/0/0?users=' + modalEmail;
+                fecharModal();
+            };
 
+            document.getElementById('modal-btn-email').onclick = function() {
+                window.location.href = 'mailto:' + modalEmail;
+                fecharModal();
+            };
 
-// ============================================================
-// DADOS DOS EXECUTIVOS DA VERTICAL LOGÍSTICA
-// ============================================================
-const executivosLogistica = [
-    {
-        nome: 'João Victor Nunes Pinheiro',
-        cargo: 'Executivo Técnico de Negócios Pleno',
-        email: 'joao.pinheiro@ndd.tech',
-        foto: '../assets/joao.jpeg'   // caminho relativo para a pasta assets (um nível acima)
-    }
-];
+            document.getElementById('contact-modal').classList.add('show');
+        };
 
-// ============================================================
-// FUNÇÕES DO MODAL
-// ============================================================
-let modalEmail = '';
+        function fecharModal() {
+            document.getElementById('contact-modal').classList.remove('show');
+        }
 
-function abrirModal(email, nome) {
-    modalEmail = email;
+        window.fecharModalExterno = function(event) {
+            if (event.target === event.currentTarget) {
+                fecharModal();
+            }
+        };
 
-    document.getElementById('modal-btn-teams').onclick = function() {
-        window.location.href = 'msteams://teams.microsoft.com/l/chat/0/0?users=' + modalEmail;
-        fecharModal();
-    };
+        // ============================================================
+        // RENDERIZAR OS CARDS DOS EXECUTIVOS
+        // ============================================================
+        function renderizarExecutivos() {
+            const grid = document.getElementById('executiveGrid');
+            if (!grid) return;
 
-    document.getElementById('modal-btn-email').onclick = function() {
-        window.location.href = 'mailto:' + modalEmail;
-        fecharModal();
-    };
+            let html = '';
+            executivosLogistica.forEach(ex => {
+                html += `
+                    <div class="welcome-executive-card" onclick="abrirModal('${ex.email}', '${ex.nome}')">
+                        <img src="${ex.foto}" alt="${ex.nome}" class="team-photo">
+                        <div>
+                            <h4>${ex.nome}</h4>
+                            <p>${ex.cargo}</p>
+                            <span class="email-text">${ex.email}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            grid.innerHTML = html;
+        }
 
-    document.getElementById('contact-modal').classList.add('show');
-}
+        document.addEventListener('DOMContentLoaded', renderizarExecutivos);
 
-function fecharModal() {
-    document.getElementById('contact-modal').classList.remove('show');
-}
+        // ============================================================
+        // POP-UP CUSTOMIZADO
+        // ============================================================
+        function abrirPopup(mensagem) {
+            document.getElementById('popup-mensagem').textContent = mensagem;
+            document.getElementById('popup-overlay').style.display = 'flex';
+        }
 
-function fecharModalExterno(event) {
-    if (event.target === event.currentTarget) {
-        fecharModal();
-    }
-}
+        window.fecharPopup = function() {
+            document.getElementById('popup-overlay').style.display = 'none';
+        };
 
-// ============================================================
-// RENDERIZAR OS CARDS DOS EXECUTIVOS
-// ============================================================
-function renderizarExecutivos() {
-    const grid = document.getElementById('executiveGrid');
-    if (!grid) return;
+        document.getElementById('popup-overlay').addEventListener('click', function(e) {
+            if (e.target === this) fecharPopup();
+        });
 
-    let html = '';
-    executivosLogistica.forEach(ex => {
-        html += `
-            <div class="welcome-executive-card" onclick="abrirModal('${ex.email}', '${ex.nome}')">
-                <img src="${ex.foto}" alt="${ex.nome}" class="team-photo">
-                <div>
-                    <h4>${ex.nome}</h4>
-                    <p>${ex.cargo}</p>
-                    <span class="email-text">${ex.email}</span>
-                </div>
-            </div>
-        `;
-    });
-    grid.innerHTML = html;
-}
-
-// Chamar a função quando a página carregar
-document.addEventListener('DOMContentLoaded', renderizarExecutivos);
-
-
-// ===== POP-UP CUSTOMIZADO =====
-function abrirPopup(mensagem) {
-    document.getElementById('popup-mensagem').textContent = mensagem;
-    document.getElementById('popup-overlay').style.display = 'flex';
-}
-
-function fecharPopup() {
-    document.getElementById('popup-overlay').style.display = 'none';
-}
-
-// Fechar pop-up ao clicar fora
-document.getElementById('popup-overlay').addEventListener('click', function(e) {
-    if (e.target === this) fecharPopup();
-});
-
-
-
-
-   </script>
+    })();
+</script>
 
 </body>
 </html>
