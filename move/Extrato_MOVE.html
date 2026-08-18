@@ -1,0 +1,1389 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extrato de Horas · NDD MOVE</title>
+
+    <style>
+        /* ----------- REMOVER CABEÇALHOS E RODAPÉS DO NAVEGADOR NA IMPRESSÃO ----------- */
+        @page {
+            margin: 0;
+            size: A4;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            /* Remove o linear-gradient e deixa só a imagem */
+            background-image: url('../assets/fundoazul.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* ---------- CONTROLES (NOVO LAYOUT) ---------- */
+        .controls {
+            max-width: 1000px;
+            width: 100%;
+            background: #fff;
+            padding: 30px 40px;
+            border-radius: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            margin: 0 auto 25px auto;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .controls .linha-inputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 15px;
+            margin-bottom: 40px; /* Espaço extra entre inputs e colunas */
+        }
+
+        .controls .campo {
+            width: 100%;
+        }
+
+        .controls .campo label {
+            display: block;
+            font-weight: 600;
+            font-size: 12px;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .controls .campo input {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 13px;
+            background: #fafafa;
+        }
+
+        .controls .campo input:focus {
+            border-color: #74ed45;
+            outline: none;
+            background: #fff;
+        }
+
+        .controls .campo input[readonly] {
+            background: #f0f0f0;
+            color: #555;
+        }
+
+        /* --- CLASSES ORIGINAIS PRESERVADAS --- */
+        .controls .check-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 25px;
+            padding: 12px 0;
+            border-top: 1px solid #e9e9e9;
+            border-bottom: 1px solid #e9e9e9;
+        }
+
+        .controls .check-group label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .controls .check-group input[type="checkbox"] {
+            width: 15px;
+            height: 15px;
+            accent-color: #74ed45;
+            cursor: pointer;
+        }
+
+        .controls .action-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-top: 5px;
+        }
+
+        .controls .modelo-group {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .controls .modelo-group label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            color: #1a2f4f;
+        }
+
+        .controls .modelo-group input[type="radio"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #74ed45;
+            cursor: pointer;
+        }
+
+        .controls .botoes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .controls .btn {
+            padding: 7px 20px;
+            border: none;
+            border-radius: 25px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-calcular { background: #74ed45; color: #fff; }
+        .btn-calcular:hover { background: #5ccb32; }
+
+        .btn-imprimir { background: #6c757d; color: #fff; }
+        .btn-imprimir:hover { background: #495057; }
+
+        .btn-limpar { background: #e9ecef; color: #333; }
+        .btn-limpar:hover { background: #ced4da; }
+
+        /* ---------- NOVAS CLASSES PARA O LAYOUT DE DUAS COLUNAS ---------- */
+        .modulos-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 5px;
+        }
+
+        .modulos-col {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .modulos-col h3 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1a2f4f;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #e9e9e9;
+            padding-bottom: 4px;
+        }
+
+        .modulos-col label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .modulos-col input[type="checkbox"],
+        .modulos-col input[type="radio"] {
+            width: 15px;
+            height: 15px;
+            accent-color: #74ed45;
+            cursor: pointer;
+        }
+
+        /* ---------- NOVOS BOTÕES CENTRALIZADOS ---------- */
+        .botoes-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 30px;
+            justify-content: center;
+        }
+
+        .btn-voltar {
+            background: #6c757d;
+            color: #fff;
+        }
+        .btn-voltar:hover {
+            background: #495057;
+        }
+
+        /* ===== SIDEBAR LATERAL ESCURA ===== */
+        #sidebar-global {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 260px;
+            height: 100vh;
+            background: #0a1727;
+            padding: 30px 20px;
+            display: none;
+            flex-direction: column;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+            z-index: 1000;
+            overflow-y: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        #sidebar-global::-webkit-scrollbar { display: none; }
+
+        #sidebar-global h3 {
+            color: #fff;
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            border-bottom: 2px solid rgba(255,255,255,0.2);
+            padding-bottom: 10px;
+        }
+
+        #sidebar-global ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #sidebar-global ul li {
+            padding: 12px 0;
+            margin-bottom: 2px;
+            cursor: pointer;
+            color: #e0e0e0;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            border-bottom: none;
+        }
+
+        #sidebar-global ul li:hover {
+            color: #fff;
+            background: rgba(255,255,255,0.1);
+            padding-left: 5px;
+            border-radius: 4px;
+        }
+
+        #sidebar-global ul li.separator {
+            border-bottom: 2px solid rgba(255,255,255,0.2);
+            margin: 10px 0;
+            padding: 0;
+            height: 0;
+            cursor: default;
+            pointer-events: none;
+        }
+
+        #sidebar-global ul li.destaque {
+            color: #6fb8fc;
+            font-weight: bold;
+        }
+        #sidebar-global ul li.destaque:hover {
+            background: rgba(111, 184, 252, 0.1);
+        }
+
+        .btn-voltar-sidebar {
+            margin-top: 20px;
+            padding: 10px 0;
+            border: none;
+            background: transparent;
+            color: #b0b0b0;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            text-align: left;
+            transition: 0.2s;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 15px;
+        }
+        .btn-voltar-sidebar:hover {
+            color: #fff;
+        }
+
+        /* ===== CORREÇÃO DE CENTRALIZAÇÃO DO CARD ===== */
+        .container.sidebar-active {
+            margin-left: calc((100vw - 260px - 1000px) / 2 + 260px) !important;
+            margin-right: auto !important;
+            width: 100% !important;
+            max-width: 1000px !important;
+        }
+
+        /* ---------- EXTRATO (ESTILIZAÇÃO DE TELA) ---------- */
+        .page {
+            max-width: 1000px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 40px 50px;
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        .page.active {
+            display: none;
+        }
+
+        /* ---- LINHAS VERMELHAS COM LARGURA UM POUCO MAIOR ---- */
+        .linha-vermelha {
+            width: calc(100% + 20px);
+            height: 3px;
+            background: #e3062b;
+            margin: 32px -10px 28px -10px;
+        }
+
+        .linha-vermelha.rodape {
+            margin: 32px -10px 0 -10px;
+        }
+
+        .linha-vermelha.entre-etapas {
+            margin: 24px -10px 20px -10px;
+        }
+
+        .linha-vermelha.entre-titulos {
+            margin: 28px -10px 24px -10px;
+        }
+
+        .section-title {
+            font-size: 19px;
+            font-weight: bold;
+            margin-bottom: 14px;
+        }
+
+        .sub-section-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin: 18px 0 10px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 18px;
+        }
+
+        th {
+            background: #74ed45; /* VERDE CLARO DO NDD MOVE */
+            color: #000;
+            border: 2px solid #9ec0ea;
+            padding: 6px 8px;
+            font-size: 14px;
+        }
+
+        td {
+            border: 2px solid #9ec0ea;
+            padding: 5px 8px;
+            font-size: 14px;
+        }
+
+        .center {
+            text-align: center;
+        }
+
+        .total td {
+            background: #74ed45; /* VERDE CLARO DO NDD MOVE */
+            font-weight: bold;
+        }
+
+        .total-etapa {
+            font-weight: bold;
+            margin: 4px 0 12px 0;
+            font-size: 14px;
+        }
+
+        .observacoes {
+            margin-top: 24px;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .observacoes ul {
+            padding-left: 20px;
+        }
+
+        .observacoes li {
+            margin-bottom: 4px;
+        }
+
+        .total-projeto {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 20px 0 8px 0;
+        }
+
+        .equivalente {
+            font-size: 15px;
+            font-weight: bold;
+            margin: 4px 0;
+        }
+
+        .nao-aplicavel {
+            background-color: #f0f0f0 !important;
+        }
+        .nao-aplicavel td {
+            background-color: #f0f0f0 !important;
+        }
+        .nao-aplicavel .texto-na {
+            color: #e3062b !important;
+            font-weight: bold !important;
+        }
+
+        /* ---------- IMPRESSÃO (REGRAS PADRÃO DO WINDOWS) ---------- */
+        @media print {
+            html, body {
+                margin: 0 !important;
+                padding: 0 !important;
+                background: white !important;
+                display: block !important;
+                min-height: auto !important;
+                justify-content: flex-start !important;
+            }
+
+            /* ===== ESCONDE A SIDEBAR E RESETA A MARGEM NA IMPRESSÃO ===== */
+            #sidebar-global {
+                display: none !important;
+            }
+            .container.sidebar-active {
+                margin-left: 0 !important;
+                margin-right: auto !important;
+                width: 100% !important;
+                max-width: 1000px !important;
+            }
+
+            .controls {
+                display: none !important;
+            }
+
+            @page {
+                margin: 30mm 20mm 30mm 20mm !important;
+                size: A4;
+            }
+
+            .page {
+                width: 100% !important;
+                min-height: auto !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                box-shadow: none !important;
+                display: block !important;
+            }
+
+            .page:not(.active) {
+                display: none !important;
+            }
+
+            table, .etapa-bloco, .sub-section-title, .total-etapa,
+            .observacoes, .total-projeto, .equivalente {
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+
+            .section-title, .sub-section-title {
+                page-break-after: avoid !important;
+                break-after: avoid !important;
+            }
+
+            .linha-vermelha {
+                box-sizing: content-box !important;
+                width: calc(100% + 40mm) !important;
+                margin-left: -20mm !important;
+                margin-right: -20mm !important;
+                margin-top: 32px !important;
+                margin-bottom: 28px !important;
+                height: 3px !important;
+            }
+            .linha-vermelha.rodape {
+                box-sizing: content-box !important;
+                width: calc(100% + 40mm) !important;
+                margin-left: -20mm !important;
+                margin-right: -20mm !important;
+                margin-top: 32px !important;
+                margin-bottom: 0 !important;
+            }
+            .linha-vermelha.entre-etapas {
+                box-sizing: content-box !important;
+                width: calc(100% + 40mm) !important;
+                margin-left: -20mm !important;
+                margin-right: -20mm !important;
+                margin-top: 24px !important;
+                margin-bottom: 20px !important;
+            }
+            .linha-vermelha.entre-titulos {
+                box-sizing: content-box !important;
+                width: calc(100% + 40mm) !important;
+                margin-left: -20mm !important;
+                margin-right: -20mm !important;
+                margin-top: 28px !important;
+                margin-bottom: 24px !important;
+            }
+
+            .linha-vermelha,
+            th, .total td, .total-etapa {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .nao-aplicavel {
+                background-color: #f0f0f0 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .nao-aplicavel td {
+                background-color: #f0f0f0 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .nao-aplicavel .texto-na {
+                color: #e3062b !important;
+                font-weight: bold !important;
+            }
+
+            .logo, .titulo, .subtitulo {
+                margin-top: 0 !important;
+                text-align: center !important;
+                font-weight: bold !important;
+            }
+            .logo img {
+                display: block !important;
+                margin: 0 auto !important;
+            }
+            .info {
+                margin-top: 30px !important;
+                text-align: left !important;
+            }
+            .info strong {
+                font-weight: bold !important;
+            }
+
+	   /* Oculta a seção de contato e o modal na impressão */
+	   .contato-section {
+	       display: none !important;
+	   }
+	   #contact-modal {
+    	       display: none !important;
+	   }
+
+        }
+
+        @media screen and (max-width: 800px) {
+            .page {
+                width: 100%;
+                padding: 16px;
+            }
+            .controls {
+                padding: 14px;
+            }
+            .controls .campo {
+                flex: 1 1 100%;
+            }
+            .modulos-row {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            .botoes-row {
+                justify-content: center;
+            }
+        }
+
+
+/* ===== ESTILOS PARA OS CARDS DE CONTATO ===== */
+.welcome-contact-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #ffffff;
+    margin-top: 25px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.welcome-executive-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 15px;
+    justify-content: center;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.welcome-executive-card {
+    background: #f9f9f9;
+    padding: 15px 20px;
+    border-radius: 12px;
+    border: 1px solid #e9e9e9;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.welcome-executive-card:hover {
+    background: #e9ecef;
+}
+
+.welcome-executive-card .team-photo {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.welcome-executive-card > div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 1;
+    min-width: 0;
+}
+
+.welcome-executive-card h4 {
+    font-size: 15px;
+    color: #1a2f4f;
+    margin-bottom: 2px;
+    word-break: break-word;
+}
+
+.welcome-executive-card p {
+    font-size: 13px;
+    color: #777;
+    margin: 2px 0;
+    word-break: break-word;
+}
+
+.welcome-executive-card .email-text {
+    font-size: 12px;
+    color: #777;
+    margin-top: 2px;
+    word-break: break-all;
+}
+
+/* ===== MODAL ===== */
+#contact-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+#contact-modal.show {
+    display: flex;
+}
+.modal-box {
+    background: #ffffff;
+    padding: 30px 40px;
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    max-width: 450px;
+    width: 90%;
+    text-align: center;
+}
+.modal-box h3 {
+    font-size: 20px;
+    color: #1a2f4f;
+    margin-bottom: 5px;
+}
+.modal-box p {
+    font-size: 14px;
+    color: #777;
+    margin-bottom: 20px;
+}
+.modal-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.modal-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 25px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+.modal-btn-teams {
+    background: #1a2f4f;
+    color: #fff;
+}
+.modal-btn-teams:hover {
+    background: #0b1a33;
+}
+.modal-btn-email {
+    background: #6c757d;
+    color: #fff;
+}
+.modal-btn-email:hover {
+    background: #495057;
+}
+.modal-btn-cancel {
+    background: #e9ecef;
+    color: #333;
+    margin-top: 5px;
+}
+.modal-btn-cancel:hover {
+    background: #ced4da;
+}
+
+
+
+    </style>
+</head>
+<body>
+
+
+<!-- ===== MODAL DE CONTATO ===== -->
+<div id="contact-modal" onclick="fecharModalExterno(event)">
+    <div class="modal-box">
+        <h3>📬 Contato</h3>
+        <p>Escolha como deseja acionar o profissional:</p>
+        <div class="modal-actions">
+            <button class="modal-btn modal-btn-teams" id="modal-btn-teams">
+                💬 Acionar pelo Teams
+            </button>
+            <button class="modal-btn modal-btn-email" id="modal-btn-email">
+                ✉️ Enviar E-mail (Outlook)
+            </button>
+            <button class="modal-btn modal-btn-cancel" onclick="fecharModal()">
+                Cancelar
+            </button>
+        </div>
+    </div>
+</div>
+
+
+
+    <!-- SIDEBAR LATERAL DO MOVE -->
+    <div id="sidebar-global">
+        <h3>MOVE</h3>
+        <ul>
+            <li onclick="irPara('Extrato_MOVE.html')">Extrato MOVE</li>
+	    <li onclick="irPara('PT_MOVE.html')">Proposta Técnica MOVE</li>
+            <li class="separator"></li>
+            <li onclick="abrirLink('https://icomprova.nddcargo.com.br/core/dashboard')">Portal MOVE</li>
+            <li onclick="abrirLink('https://app.powerbi.com/view?r=eyJrIjoiYWJiOGU4OTktNzJjZS00NGIxLTg5ZTctOWQ2YWQ4ZjQxZjBlIiwidCI6IjcxNzE0NGQyLTZkOWYtNDJhMS1iNTZkLTQyYWZjMzc1M2VjMyJ9')">Dash Move</li>
+            <li onclick="abrirLink('https://www.figma.com/proto/tYe7lTBhnQvMWCMBEeSCM9/Dashboard?page-id=0%3A1&type=design&node-id=1315-18538&viewport=585%2C3526%2C0.08&t=7WiAalvHtsTgc96H-9&scaling=scale-down&starting-point-node-id=1315%3A18538')">Dash ESG</li>
+            <li onclick="abrirLink('https://helpcenter.nddmove.com.br/')">Help Center MOVE</li>
+            <li onclick="abrirLink('https://prevendasndd.github.io/XmlEditor/')">XML Editor</li>
+            <li class="separator"></li>
+            <li class="destaque" onclick="alert('Em breve, conteúdo de Pré-Vendas.')">Pré-Vendas</li>
+        </ul>
+        <button class="btn-voltar-sidebar" onclick="sessionStorage.setItem('destino', 'logistica'); window.location.href='../index.html'">⬅ Voltar</button>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- ENVOLTÓRIO DO CONTAINER PRINCIPAL -->
+    <!-- ========================================== -->
+    <div class="container" id="container-principal">
+
+        <!-- CONTROLES -->
+        <div class="controls" id="controles">
+            <!-- Linha 1: Inputs de texto -->
+            <div class="linha-inputs">
+                <div class="campo">
+                    <label for="cliente">Cliente</label>
+                    <input type="text" id="cliente" value="Empresa Exemplo">
+                </div>
+                <div class="campo">
+                    <label for="data">Data</label>
+                    <input type="date" id="data" readonly>
+                </div>
+                <div class="campo">
+                    <label for="cnpjs">CNPJ's</label>
+                    <input type="number" id="cnpjs" value="2" min="0">
+                </div>
+                <div class="campo">
+                    <label for="usuarios">Usuários</label>
+                    <input type="number" id="usuarios" value="15" min="0">
+                </div>
+            </div>
+
+            <!-- Linha 2: Duas colunas (Meio de comunicação e Layout) -->
+            <div class="modulos-row">
+                <!-- Coluna 1: Meio de comunicação -->
+                <div class="modulos-col">
+                    <h3>Comunicação (se é portal, desmarque as opções abaixo)</h3>
+                    <label><input type="checkbox" id="modIntegracao"> Integração</label>
+                    <label><input type="checkbox" id="modApp" checked> App Conector</label>
+                </div>
+
+                <!-- Coluna 2: Layout de Impressão -->
+                <div class="modulos-col">
+                    <h3>Escolha o layout de impressão</h3>
+                    <label><input type="radio" name="modelo" value="1" checked> Modelo 1 - Resumido</label>
+                    <label><input type="radio" name="modelo" value="2"> Modelo 2 - Detalhado</label>
+                </div>
+            </div>
+
+            <!-- Linha 3: Botões -->
+            <div class="botoes-row">
+                <button class="btn btn-calcular" id="calcularBtn">▶ Calcular</button>
+                <button class="btn btn-imprimir" id="imprimirBtn">🖨️ Imprimir</button>
+                <button class="btn btn-limpar" id="limparBtn">✕ Limpar</button>
+            </div>
+
+
+            <!-- ⬇️ COLE AQUI O POP-UP E O LOG ⬇️ -->
+
+            <!-- LOG DE HORAS -->
+            <div id="logHoras" style="margin-top: 20px; font-size: 18px; font-weight: bold; color: #1a2f4f; text-align: center; padding: 10px; background: #f0f4f9; border-radius: 8px;">
+                <!-- O total será exibido aqui -->
+            </div>
+
+            <!-- POP-UP CUSTOMIZADO -->
+            <div id="popup-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center;">
+                <div style="background: #fff; padding: 30px 40px; border-radius: 16px; max-width: 400px; width: 90%; text-align: center; box-shadow: 0 8px 24px rgba(0,0,0,0.2);">
+                    <h3 style="margin: 0 0 10px; color: #1a2f4f;">✅ Cálculo concluído</h3>
+                    <p style="font-size: 16px; color: #333; margin: 10px 0 20px;" id="popup-mensagem">Total de horas: 0</p>
+                    <button onclick="fecharPopup()" style="background: #ff7079; color: #fff; border: none; padding: 10px 30px; border-radius: 25px; font-weight: 700; font-size: 14px; cursor: pointer;">OK</button>
+                </div>
+            </div>
+
+
+
+
+
+
+        </div>
+
+
+<!-- Seção de contato com os executivos -->
+<div class="contato-section" style="margin-top: 30px; border-top: 1px solid #e9e9e9; padding-top: 25px;">
+    <div class="welcome-contact-title">Ficou com alguma dúvida ou tem sugestões? Acione o Executivo da Vertical:</div>
+    <div class="welcome-executive-grid" id="executiveGrid">
+        <!-- Os cards serão preenchidos via JavaScript -->
+    </div>
+</div>
+
+
+        <!-- ========== EXTRATO MODELO 1 ========== -->
+        <div class="page active" id="extrato-modelo1">
+            <div class="logo">
+                <img src="https://raw.githubusercontent.com/PreVendasNDD/Extrato_de_Horas/main/assets/logoNDD.png" alt="Logo NDD">
+            </div>
+            <div class="titulo">EXTRATO DE HORAS</div>
+            <div class="subtitulo">Implantação Plataforma Logística – NDD MOVE</div>
+            <div class="info">
+                <strong>Cliente:</strong> <span id="spanCliente1">Empresa Exemplo</span>
+                <br>
+                <strong>Data:</strong> <span id="spanData1">04/08/2026</span>
+            </div>
+            <div class="linha-vermelha"></div>
+            <div class="section-title">Consolidação Geral do Projeto</div>
+            <table>
+                <tr><th align="left">Item</th><th>Informação</th></tr>
+                <tr><td>CNPJs envolvidos</td><td class="center" id="infoCnpjs1">2</td></tr>
+                <tr><td>Usuários</td><td class="center" id="infoUsuarios1">15</td></tr>
+                <tr><td>Integração</td><td class="center" id="infoIntegracao1">Não</td></tr>
+                <tr><td>App Conector</td><td class="center" id="infoApp1">Sim</td></tr>
+            </table>
+            <table>
+                <thead><tr><th align="left">Etapa</th><th>Horas</th><th>Dias</th><th>Semanas</th></tr></thead>
+                <tbody id="corpoEtapas1"></tbody>
+            </table>
+            <div class="linha-vermelha rodape"></div>
+        </div>
+
+        <!-- ========== EXTRATO MODELO 2 ========== -->
+        <div class="page" id="extrato-modelo2">
+            <div class="logo">
+                <img src="https://raw.githubusercontent.com/PreVendasNDD/Extrato_de_Horas/main/assets/logoNDD.png" alt="Logo NDD">
+            </div>
+            <div class="titulo">EXTRATO DE HORAS</div>
+            <div class="subtitulo">Implantação Plataforma Logística – NDD MOVE</div>
+            <div class="info">
+                <strong>Cliente:</strong> <span id="spanCliente2">Empresa Exemplo</span>
+                <br>
+                <strong>Data:</strong> <span id="spanData2">04/08/2026</span>
+            </div>
+            <div class="linha-vermelha"></div>
+            <div class="section-title">Consolidação Geral do Projeto</div>
+            <table>
+                <tr><th align="left">Item</th><th>Informação</th></tr>
+                <tr><td>CNPJs envolvidos</td><td class="center" id="infoCnpjs2">2</td></tr>
+                <tr><td>Usuários</td><td class="center" id="infoUsuarios2">15</td></tr>
+                <tr><td>Integração</td><td class="center" id="infoIntegracao2">Não</td></tr>
+                <tr><td>App Conector</td><td class="center" id="infoApp2">Sim</td></tr>
+            </table>
+            <table>
+                <thead><tr><th align="left">Etapa</th><th>Horas</th><th>Dias</th><th>Semanas</th></tr></thead>
+                <tbody id="corpoEtapasResumo2"></tbody>
+            </table>
+
+            <div class="linha-vermelha entre-titulos"></div>
+
+            <div class="section-title" style="margin-top:0;">Consolidação Detalhada do Projeto</div>
+            <div id="detalhamentoEtapas2"></div>
+
+            <div class="total-projeto" id="totalProjeto2">Total do Projeto: 41 horas</div>
+            <div class="equivalente" id="equivDias2">Equivalente a aproximadamente: 5 dias úteis</div>
+            <div class="equivalente" id="equivSemanas2">Equivalente a aproximadamente: 1 semana(s)</div>
+
+            <div class="observacoes">
+                <strong>Observações</strong>
+                <ul>
+                    <li>O cálculo de horas foi elaborado considerando o cenário atual apresentado pela <span id="obsCliente2">Empresa Exemplo</span>.</li>
+                    <li>Eventuais customizações, integrações adicionais ou alterações de escopo poderão gerar revisão do esforço estimado.</li>
+                    <li>O projeto contempla acompanhamento técnico durante a fase de implantação e estabilização operacional.</li>
+                    <li>As horas apresentadas consideram atividades funcionais, técnicas, testes, homologação e suporte pós implantação.</li>
+                </ul>
+            </div>
+
+            <div class="linha-vermelha rodape"></div>
+        </div>
+
+    </div> <!-- FIM DO ENVOLTÓRIO container-principal -->
+
+    <script>
+        (function() {
+            'use strict';
+
+            // ---- Variáveis de controle ----
+            let base = null;
+            let carregando = false;
+
+            // ---- Função para carregar o JSON (compatível com file://) ----
+            function carregarBase() {
+                if (carregando) {
+                    console.log('⏳ Carregamento já em andamento...');
+                    return;
+                }
+                carregando = true;
+                
+                console.log('🔍 Tentando carregar BASE_MOVE.json...');
+                
+                // Tenta fetch primeiro (funciona em servidores)
+                fetch('BASE_MOVE.json')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        base = data;
+                        carregando = false;
+                        console.log('✅ BASE CARREGADA (fetch):', base);
+                        calcular();
+                    })
+                    .catch(fetchError => {
+                        console.warn('⚠️ Fetch falhou, tentando XMLHttpRequest...', fetchError);
+                        
+                        // Fallback para XMLHttpRequest
+                        const xhr = new XMLHttpRequest();
+                        xhr.open('GET', 'BASE_MOVE.json', true);
+                        xhr.onreadystatechange = function() {
+                            if (xhr.readyState === 4) {
+                                carregando = false;
+                                if (xhr.status === 200) {
+                                    try {
+                                        base = JSON.parse(xhr.responseText);
+                                        console.log('✅ BASE CARREGADA (XHR):', base);
+                                        calcular();
+                                    } catch (e) {
+                                        console.error('❌ Erro ao parsear JSON:', e);
+                                        alert('❌ Erro ao ler BASE_MOVE.json: JSON inválido');
+                                    }
+                                } else {
+                                    console.error('❌ Status:', xhr.status);
+                                    alert('❌ Arquivo BASE_MOVE.json não encontrado.\n\nVerifique:\n1. O arquivo está na mesma pasta\n2. O nome é BASE_MOVE.json (maiúsculo)\n3. O arquivo não está corrompido');
+                                }
+                            }
+                        };
+                        xhr.onerror = function() {
+                            carregando = false;
+                            alert('❌ Erro de rede ao carregar BASE_MOVE.json.\n\nSe você está usando Chrome, tente abrir com:\n\n"chrome.exe --allow-file-access-from-files"');
+                        };
+                        xhr.send();
+                    });
+            }
+
+            const inputCliente = document.getElementById('cliente');
+            const inputData = document.getElementById('data');
+            const inputCNPJs = document.getElementById('cnpjs');
+            const inputUsuarios = document.getElementById('usuarios');
+            const modIntegracao = document.getElementById('modIntegracao');
+            const modApp = document.getElementById('modApp');
+            const radioModelo = document.querySelectorAll('input[name="modelo"]');
+
+            const spanCliente1 = document.getElementById('spanCliente1');
+            const spanData1 = document.getElementById('spanData1');
+            const infoCnpjs1 = document.getElementById('infoCnpjs1');
+            const infoUsuarios1 = document.getElementById('infoUsuarios1');
+            const infoIntegracao1 = document.getElementById('infoIntegracao1');
+            const infoApp1 = document.getElementById('infoApp1');
+            const corpoEtapas1 = document.getElementById('corpoEtapas1');
+
+            const spanCliente2 = document.getElementById('spanCliente2');
+            const spanData2 = document.getElementById('spanData2');
+            const infoCnpjs2 = document.getElementById('infoCnpjs2');
+            const infoUsuarios2 = document.getElementById('infoUsuarios2');
+            const infoIntegracao2 = document.getElementById('infoIntegracao2');
+            const infoApp2 = document.getElementById('infoApp2');
+            const corpoEtapasResumo2 = document.getElementById('corpoEtapasResumo2');
+            const detalhamentoEtapas2 = document.getElementById('detalhamentoEtapas2');
+            const totalProjeto2 = document.getElementById('totalProjeto2');
+            const equivDias2 = document.getElementById('equivDias2');
+            const equivSemanas2 = document.getElementById('equivSemanas2');
+            const obsCliente2 = document.getElementById('obsCliente2');
+
+            const calcularBtn = document.getElementById('calcularBtn');
+            const imprimirBtn = document.getElementById('imprimirBtn');
+            const limparBtn = document.getElementById('limparBtn');
+
+            const extrato1 = document.getElementById('extrato-modelo1');
+            const extrato2 = document.getElementById('extrato-modelo2');
+
+            function setDataAtual() {
+                const hoje = new Date();
+                const dia = String(hoje.getDate()).padStart(2, '0');
+                const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+                const ano = hoje.getFullYear();
+                const dataFormatada = `${dia}/${mes}/${ano}`;
+                const dataISO = `${ano}-${mes}-${dia}`;
+                inputData.value = dataISO;
+                spanData1.textContent = dataFormatada;
+                spanData2.textContent = dataFormatada;
+                return dataFormatada;
+            }
+            const dataExibicao = setDataAtual();
+
+            function getNumber(id) {
+                const val = document.getElementById(id).value.trim();
+                if (val === '') return NaN;
+                return parseFloat(val);
+            }
+
+            function round1(v) {
+                return Math.round(v * 10) / 10;
+            }
+
+            function limparCampos() {
+                inputCliente.value = '';
+                inputCNPJs.value = '';
+                inputUsuarios.value = '';
+                modIntegracao.checked = false;
+                modApp.checked = false;
+                calcular();
+            }
+
+            function getModeloSelecionado() {
+                for (const radio of radioModelo) {
+                    if (radio.checked) return parseInt(radio.value);
+                }
+                return 1;
+            }
+
+            function calcular() {
+                if (!base) {
+                    console.warn('⏳ Base não carregada. Tentando carregar...');
+                    carregarBase();
+                    return;
+                }
+
+                const cliente = inputCliente.value.trim() || 'Não informado';
+                const cnpjs = getNumber('cnpjs');
+                const usuarios = getNumber('usuarios');
+
+                if (isNaN(cnpjs) || cnpjs < 0 || isNaN(usuarios) || usuarios < 0) {
+                    alert('Preencha CNPJ\'s e Usuários com valores válidos (0 ou mais).');
+                    return;
+                }
+
+                const integracaoAtivo = modIntegracao.checked;
+                const appAtivo = modApp.checked;
+                
+                const integracaoTexto = integracaoAtivo ? 'Sim' : 'Não';
+                const appTexto = appAtivo ? 'Sim' : 'Não';
+
+                const totalAmbientes = base.baseAmbientes + cnpjs;
+                const totalCadastro = base.baseCadastro + cnpjs;
+                const totalUsuarios = usuarios * base.horasPorUsuario;
+                const totalApp = appAtivo ? base.baseApp : 0;
+                const totalGoLive = base.baseGoLive;
+                const totalSustentacao = base.baseSustentacao;
+                const totalTreinamento = base.baseTreinamento;
+
+                const totalReal = (totalAmbientes * base.fatorAmbientes) + totalCadastro + totalUsuarios + totalApp + totalGoLive + totalSustentacao + totalTreinamento;
+                const totalExibido = Math.round(totalReal);
+
+                spanCliente1.textContent = cliente;
+                spanCliente2.textContent = cliente;
+                obsCliente2.textContent = cliente;
+                
+                infoCnpjs1.textContent = cnpjs;
+                infoCnpjs2.textContent = cnpjs;
+                infoUsuarios1.textContent = usuarios;
+                infoUsuarios2.textContent = usuarios;
+                infoIntegracao1.textContent = integracaoTexto;
+                infoIntegracao2.textContent = integracaoTexto;
+                infoApp1.textContent = appTexto;
+                infoApp2.textContent = appTexto;
+
+                const itens = [
+                    { nome: 'Configuração de Ambientes', real: (totalAmbientes * base.fatorAmbientes), ativo: true },
+                    { nome: 'Cadastro e Parametrização', real: totalCadastro, ativo: true },
+                    { nome: 'Criação e Configuração de Usuários', real: totalUsuarios, ativo: true },
+                    { nome: 'Configuração e instalação do App Conector', real: totalApp, ativo: appAtivo },
+                    { nome: 'Acompanhamento Go Live', real: totalGoLive, ativo: true },
+                    { nome: 'Apoio operacional pós Go Live', real: totalSustentacao, ativo: true },
+                    { nome: 'Treinamento', real: totalTreinamento, ativo: true }
+                ];
+
+                function gerarLinhasResumo() {
+                    let html = '';
+                    itens.forEach((item) => {
+                        if (item.ativo) {
+                            const horas = Math.round(item.real);
+                            const dias = round1(item.real / base.jornadaDiaria);
+                            const semanas = round1(item.real / base.jornadaSemanal);
+                            html += `<tr>
+                                <td>${item.nome}</td>
+                                <td class="center">${horas.toFixed(0)}h</td>
+                                <td class="center">${dias.toFixed(1)}</td>
+                                <td class="center">${semanas.toFixed(1)}</td>
+                            </tr>`;
+                        } else {
+                            html += `<tr class="nao-aplicavel">
+                                <td>${item.nome}</td>
+                                <td class="center texto-na">*não aplicável</td>
+                                <td class="center">-</td>
+                                <td class="center">-</td>
+                            </tr>`;
+                        }
+                    });
+                    const totalDias = Math.ceil(totalReal / base.jornadaDiaria);
+                    const totalSemanas = Math.ceil(totalReal / base.jornadaSemanal);
+                    html += `<tr class="total">
+                        <td>Total</td>
+                        <td class="center">${totalExibido.toFixed(0)} horas</td>
+                        <td class="center">${totalDias} dia(s)</td>
+                        <td class="center">${totalSemanas} semana(s)</td>
+                    </tr>`;
+                    return html;
+                }
+
+                const resumoHTML = gerarLinhasResumo();
+                corpoEtapas1.innerHTML = resumoHTML;
+                corpoEtapasResumo2.innerHTML = resumoHTML;
+
+                const subitensConfig = [
+                    { nome: 'Configuração de Ambientes', sub: base.subetapas.configuracaoAmbientes },
+                    { nome: 'Cadastro e Parametrização', sub: base.subetapas.cadastroParametrizacao },
+                    { nome: 'Criação e Configuração de Usuários', sub: base.subetapas.criacaoUsuarios },
+                    { nome: 'Configuração e instalação do App Conector', sub: [] },
+                    { nome: 'Acompanhamento Go Live', sub: [] },
+                    { nome: 'Apoio operacional pós Go Live', sub: [] },
+                    { nome: 'Treinamento', sub: [] }
+                ];
+
+                let detalhamentoHTML = '';
+                itens.forEach((item, i) => {
+                    const config = subitensConfig[i];
+                    if (!config) return;
+                    const totalHoras = item.real;
+
+                    detalhamentoHTML += `<div class="sub-section-title">${i+1}. ${config.nome}</div>`;
+
+                    if (item.ativo) {
+                        if (config.sub.length > 0) {
+                            detalhamentoHTML += `<table>
+                                <tr><th align="left">Etapa</th><th>Horas</th><th>Dias</th><th>Semanas</th></tr>`;
+                            config.sub.forEach(sub => {
+                                const horas = totalHoras * sub.pct;
+                                const dias = round1(horas / base.jornadaDiaria);
+                                const semanas = round1(horas / base.jornadaSemanal);
+                                detalhamentoHTML += `<tr>
+                                    <td>${sub.nome}</td>
+                                    <td class="center">${horas.toFixed(1)}h</td>
+                                    <td class="center">${dias.toFixed(1)}</td>
+                                    <td class="center">${semanas.toFixed(1)}</td>
+                                </tr>`;
+                            });
+                            detalhamentoHTML += `</table>`;
+                        } else {
+                            detalhamentoHTML += `<table>
+                                <tr><th align="left">Etapa</th><th>Horas</th><th>Dias</th><th>Semanas</th></tr>
+                                <tr>
+                                    <td>Total</td>
+                                    <td class="center">${totalHoras.toFixed(1)}h</td>
+                                    <td class="center">${(totalHoras/base.jornadaDiaria).toFixed(1)}</td>
+                                    <td class="center">${(totalHoras/base.jornadaSemanal).toFixed(1)}</td>
+                                </tr>
+                            </table>`;
+                        }
+                        detalhamentoHTML += `<div class="total-etapa">Total da etapa: ${totalHoras.toFixed(1)}h ( ${Math.ceil(totalHoras/base.jornadaDiaria)} dia(s) / ${Math.ceil(totalHoras/base.jornadaSemanal)} semana(s) )</div>`;
+                    } else {
+                        detalhamentoHTML += `<table class="nao-aplicavel">
+                            <tr><th align="left">Etapa</th><th>Horas</th><th>Dias</th><th>Semanas</th></tr>
+                            <tr>
+                                <td>Total</td>
+                                <td class="center texto-na">*não aplicável</td>
+                                <td class="center">-</td>
+                                <td class="center">-</td>
+                            </tr>
+                        </table>`;
+                        detalhamentoHTML += `<div class="total-etapa">Total da etapa: *não aplicável</div>`;
+                    }
+
+                    if (i < itens.length - 1) {
+                        detalhamentoHTML += `<div class="linha-vermelha entre-etapas"></div>`;
+                    }
+                });
+
+                detalhamentoEtapas2.innerHTML = detalhamentoHTML;
+
+                const totalDiasInt = Math.ceil(totalReal / base.jornadaDiaria);
+                const totalSemanasInt = Math.ceil(totalReal / base.jornadaSemanal);
+                totalProjeto2.textContent = `Total do Projeto: ${totalExibido.toFixed(0)} horas`;
+                equivDias2.textContent = `Equivalente a aproximadamente: ${totalDiasInt} dias úteis`;
+                equivSemanas2.textContent = `Equivalente a aproximadamente: ${totalSemanasInt} semana(s)`;
+
+                mostrarModelo(getModeloSelecionado());
+
+                const logDiv = document.getElementById('logHoras');
+                if (logDiv) {
+                    logDiv.innerHTML = '✅ Total de horas calculadas: <strong>' + totalExibido + ' horas</strong>';
+                }
+
+                if (window._isUserClick) {
+                    abrirPopup('Total de horas calculadas: ' + totalExibido + ' horas');
+                }
+            }
+
+            function mostrarModelo(modelo) {
+                if (modelo === 1) {
+                    extrato1.classList.add('active');
+                    extrato2.classList.remove('active');
+                } else {
+                    extrato1.classList.remove('active');
+                    extrato2.classList.add('active');
+                }
+            }
+
+            calcularBtn.addEventListener('click', function() {
+                window._isUserClick = true;
+                calcular();
+                window._isUserClick = false;
+            });
+            limparBtn.addEventListener('click', limparCampos);
+
+            radioModelo.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (this.checked) mostrarModelo(parseInt(this.value));
+                });
+            });
+
+            imprimirBtn.addEventListener('click', function() {
+                const modelo = getModeloSelecionado();
+                mostrarModelo(modelo);
+                window.print();
+            });
+
+            window.addEventListener('DOMContentLoaded', function() {
+                document.getElementById('container-principal').classList.add('sidebar-active');
+                document.getElementById('sidebar-global').style.display = 'flex';
+                carregarBase();
+            });
+
+            function voltarIndex() { window.location.href = '../index.html'; }
+            function irPara(destino) { window.location.href = destino; }
+            function abrirLink(url) { window.open(url, '_blank'); }
+
+            const executivosLogistica = [
+                {
+                    nome: 'João Victor Nunes Pinheiro',
+                    cargo: 'Executivo Técnico de Negócios Pleno',
+                    email: 'joao.pinheiro@ndd.tech',
+                    foto: '../assets/joao.jpeg'
+                }
+            ];
+
+            let modalEmail = '';
+
+            function abrirModal(email, nome) {
+                modalEmail = email;
+                document.getElementById('modal-btn-teams').onclick = function() {
+                    window.location.href = 'msteams://teams.microsoft.com/l/chat/0/0?users=' + modalEmail;
+                    fecharModal();
+                };
+                document.getElementById('modal-btn-email').onclick = function() {
+                    window.location.href = 'mailto:' + modalEmail;
+                    fecharModal();
+                };
+                document.getElementById('contact-modal').classList.add('show');
+            }
+
+            function fecharModal() {
+                document.getElementById('contact-modal').classList.remove('show');
+            }
+
+            function fecharModalExterno(event) {
+                if (event.target === event.currentTarget) {
+                    fecharModal();
+                }
+            }
+
+            function renderizarExecutivos() {
+                const grid = document.getElementById('executiveGrid');
+                if (!grid) return;
+                let html = '';
+                executivosLogistica.forEach(ex => {
+                    html += `
+                        <div class="welcome-executive-card" onclick="abrirModal('${ex.email}', '${ex.nome}')">
+                            <img src="${ex.foto}" alt="${ex.nome}" class="team-photo">
+                            <div>
+                                <h4>${ex.nome}</h4>
+                                <p>${ex.cargo}</p>
+                                <span class="email-text">${ex.email}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                grid.innerHTML = html;
+            }
+
+            document.addEventListener('DOMContentLoaded', renderizarExecutivos);
+
+            function abrirPopup(mensagem) {
+                document.getElementById('popup-mensagem').textContent = mensagem;
+                document.getElementById('popup-overlay').style.display = 'flex';
+            }
+
+            function fecharPopup() {
+                document.getElementById('popup-overlay').style.display = 'none';
+            }
+
+            window.abrirPopup = abrirPopup;
+            window.fecharPopup = fecharPopup;
+
+            document.getElementById('popup-overlay').addEventListener('click', function(e) {
+                if (e.target === this) fecharPopup();
+            });
+
+        })();
+    </script>
+
+
+</body>
+</html>
