@@ -1,0 +1,9 @@
+{
+  "horasPorCnpj": 1,
+  "horasPorUsuario": 0.5,
+  "horasPorCnpjModulo": 8,
+  "horasContaDigital": 6,
+  "horasTreinamento": 2,
+  "jornadaDiaria": 8,
+  "jornadaSemanal": 40
+}
