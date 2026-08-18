@@ -1,0 +1,23 @@
+{
+  "baseAmbientes": 32,
+  "incrementoAmbientes": 3,
+  "baseCadastro": 16,
+  "incrementoCadastro": 3,
+  "baseUsuarios": 2,
+  "incrementoUsuarios": 1,
+  "horasPedidos": 21,
+  "horasEventos": 21,
+  "horasPagamento": 12,
+  "horasEssencial": 40,
+  "horasTorre": 20,
+  "horasVale": 16,
+  "horasFrete": 22,
+  "horasAuditoria": 15,
+  "horasGoLive": 5,
+  "horasSustentacao": 40,
+  "horasTreinamento": 8,
+  "fatorAmbientes": 0.99,
+  "fatorUsuarios": 0.99,
+  "jornadaDiaria": 8,
+  "jornadaSemanal": 40
+}
