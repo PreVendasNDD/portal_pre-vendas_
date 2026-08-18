@@ -906,524 +906,672 @@
 
     </div> <!-- FIM DO ENVOLTÓRIO container-principal -->
 
-    <script>
-        (function() {
-            'use strict';
+<script>
+    (function() {
+        'use strict';
 
-            const inputCliente = document.getElementById('cliente');
-            const inputData = document.getElementById('data');
-            const inputCNPJs = document.getElementById('cnpjs');
-            const inputUsuarios = document.getElementById('usuarios');
-            const modEssencial = document.getElementById('modEssencial');
-            const modTorre = document.getElementById('modTorre');
-            const modVale = document.getElementById('modVale');
-            const modFrete = document.getElementById('modFrete');
-            const modAuditoria = document.getElementById('modAuditoria');
-            const modPedidos = document.getElementById('modPedidos');
-            const modEventos = document.getElementById('modEventos');
-            const modPagamento = document.getElementById('modPagamento');
-            const radioModelo = document.querySelectorAll('input[name="modelo"]');
+        // ---- Variáveis de controle ----
+        let base = null;
+        let carregando = false;
 
-            const spanCliente1 = document.getElementById('spanCliente1');
-            const spanData1 = document.getElementById('spanData1');
-            const infoCnpjs1 = document.getElementById('infoCnpjs1');
-            const infoUsuarios1 = document.getElementById('infoUsuarios1');
-            const infoEssencial1 = document.getElementById('infoEssencial1');
-            const infoTorre1 = document.getElementById('infoTorre1');
-            const infoVale1 = document.getElementById('infoVale1');
-            const infoFrete1 = document.getElementById('infoFrete1');
-            const infoAuditoria1 = document.getElementById('infoAuditoria1');
-            const infoPedidos1 = document.getElementById('infoPedidos1');
-            const infoEventos1 = document.getElementById('infoEventos1');
-            const infoPagamento1 = document.getElementById('infoPagamento1');
-            const corpoEtapas1 = document.getElementById('corpoEtapas1');
-
-            const spanCliente2 = document.getElementById('spanCliente2');
-            const spanData2 = document.getElementById('spanData2');
-            const infoCnpjs2 = document.getElementById('infoCnpjs2');
-            const infoUsuarios2 = document.getElementById('infoUsuarios2');
-            const infoEssencial2 = document.getElementById('infoEssencial2');
-            const infoTorre2 = document.getElementById('infoTorre2');
-            const infoVale2 = document.getElementById('infoVale2');
-            const infoFrete2 = document.getElementById('infoFrete2');
-            const infoAuditoria2 = document.getElementById('infoAuditoria2');
-            const infoPedidos2 = document.getElementById('infoPedidos2');
-            const infoEventos2 = document.getElementById('infoEventos2');
-            const infoPagamento2 = document.getElementById('infoPagamento2');
-            const corpoEtapasResumo2 = document.getElementById('corpoEtapasResumo2');
-            const detalhamentoEtapas2 = document.getElementById('detalhamentoEtapas2');
-            const totalProjeto2 = document.getElementById('totalProjeto2');
-            const equivDias2 = document.getElementById('equivDias2');
-            const equivSemanas2 = document.getElementById('equivSemanas2');
-            const obsCliente2 = document.getElementById('obsCliente2');
-
-            const calcularBtn = document.getElementById('calcularBtn');
-            const imprimirBtn = document.getElementById('imprimirBtn');
-            const limparBtn = document.getElementById('limparBtn');
-
-            const extrato1 = document.getElementById('extrato-modelo1');
-            const extrato2 = document.getElementById('extrato-modelo2');
-
-            function setDataAtual() {
-                const hoje = new Date();
-                const dia = String(hoje.getDate()).padStart(2, '0');
-                const mes = String(hoje.getMonth() + 1).padStart(2, '0');
-                const ano = hoje.getFullYear();
-                const dataFormatada = `${dia}/${mes}/${ano}`;
-                const dataISO = `${ano}-${mes}-${dia}`;
-                inputData.value = dataISO;
-                spanData1.textContent = dataFormatada;
-                spanData2.textContent = dataFormatada;
-                return dataFormatada;
+        // ---- Função para carregar a base (compatível com file:// e servidor) ----
+        function carregarBase() {
+            if (base) {
+                console.log('✅ Base já carregada.');
+                return Promise.resolve(base);
             }
-            const dataExibicao = setDataAtual();
-
-            function getNumber(id) {
-                const val = document.getElementById(id).value.trim();
-                if (val === '') return NaN;
-                return parseFloat(val);
+            if (carregando) {
+                console.log('⏳ Carregamento já em andamento...');
+                return new Promise((resolve) => {
+                    const checkInterval = setInterval(() => {
+                        if (base) {
+                            clearInterval(checkInterval);
+                            resolve(base);
+                        }
+                    }, 100);
+                });
             }
 
-            function round1(v) {
-                return Math.round(v * 10) / 10;
-            }
+            carregando = true;
+            console.log('🔍 Tentando carregar BASE_ELOG.json...');
 
-            function limparCampos() {
-                inputCliente.value = '';
-                inputCNPJs.value = '';
-                inputUsuarios.value = '';
-                modEssencial.checked = false;
-                modTorre.checked = false;
-                modVale.checked = false;
-                modFrete.checked = false;
-                modAuditoria.checked = false;
-                modPedidos.checked = false;
-                modEventos.checked = false;
-                modPagamento.checked = false;
-                calcular();
-            }
-
-            function getModeloSelecionado() {
-                for (const radio of radioModelo) {
-                    if (radio.checked) return parseInt(radio.value);
+            function processarDados(data) {
+                base = data;
+                carregando = false;
+                console.log('✅ Base carregada:', base);
+                if (window._calcularPending) {
+                    calcular();
+                    window._calcularPending = false;
                 }
-                return 1;
+                return base;
             }
 
-            function calcular() {
-                const cliente = inputCliente.value.trim() || 'Não informado';
-                const cnpjs = getNumber('cnpjs');
-                const usuarios = getNumber('usuarios');
-
-                if (isNaN(cnpjs) || cnpjs < 0 || isNaN(usuarios) || usuarios < 0) {
-                    alert('Preencha CNPJ\'s e Usuários com valores válidos (0 ou mais).');
-                    return;
+            function handleError(erro) {
+                console.warn('⚠️ Erro ao carregar JSON, usando valores padrão:', erro);
+                base = {
+                    baseAmbientes: 32,
+                    incrementoAmbientes: 3,
+                    baseCadastro: 16,
+                    incrementoCadastro: 3,
+                    baseUsuarios: 2,
+                    incrementoUsuarios: 1,
+                    horasPedidos: 21,
+                    horasEventos: 21,
+                    horasPagamento: 12,
+                    horasEssencial: 40,
+                    horasTorre: 20,
+                    horasVale: 16,
+                    horasFrete: 22,
+                    horasAuditoria: 15,
+                    horasGoLive: 5,
+                    horasSustentacao: 40,
+                    horasTreinamento: 8,
+                    fatorAmbientes: 0.99,
+                    fatorUsuarios: 0.99,
+                    jornadaDiaria: 8,
+                    jornadaSemanal: 40
+                };
+                carregando = false;
+                console.log('✅ Base fallback aplicada:', base);
+                if (window._calcularPending) {
+                    calcular();
+                    window._calcularPending = false;
                 }
+                return base;
+            }
 
-                const essencialAtivo = modEssencial.checked;
-                const torreAtivo = modTorre.checked;
-                const valeAtivo = modVale.checked;
-                const freteAtivo = modFrete.checked;
-                const auditoriaAtivo = modAuditoria.checked;
-                const pedidosAtivo = modPedidos.checked;
-                const eventosAtivo = modEventos.checked;
-                const pagamentoAtivo = modPagamento.checked;
+            return fetch('BASE_ELOG.json')
+                .then(response => {
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    return response.json();
+                })
+                .then(processarDados)
+                .catch(fetchError => {
+                    console.warn('⚠️ Fetch falhou, tentando XMLHttpRequest...', fetchError);
+                    return new Promise((resolve, reject) => {
+                        const xhr = new XMLHttpRequest();
+                        xhr.open('GET', 'BASE_ELOG.json', true);
+                        xhr.onreadystatechange = function() {
+                            if (xhr.readyState === 4) {
+                                if (xhr.status === 200) {
+                                    try {
+                                        const data = JSON.parse(xhr.responseText);
+                                        resolve(data);
+                                    } catch (e) {
+                                        reject(e);
+                                    }
+                                } else {
+                                    reject(new Error(`XHR status ${xhr.status}`));
+                                }
+                            }
+                        };
+                        xhr.onerror = function() {
+                            reject(new Error('XHR network error'));
+                        };
+                        xhr.send();
+                    })
+                    .then(processarDados)
+                    .catch(xhrError => {
+                        console.error('❌ Todas as tentativas falharam:', xhrError);
+                        return handleError(xhrError);
+                    });
+                });
+        }
 
-                // ---- Cálculo Base ----
-                const totalAmbientes = 32 + ((cnpjs - 1) * 3);
-                const totalCadastro = 16 + ((cnpjs - 1) * 3);
-                const totalUsuarios = 2 + ((usuarios - 1) * 1);
+        // ---- Elementos do DOM ----
+        const inputCliente = document.getElementById('cliente');
+        const inputData = document.getElementById('data');
+        const inputCNPJs = document.getElementById('cnpjs');
+        const inputUsuarios = document.getElementById('usuarios');
+        const modEssencial = document.getElementById('modEssencial');
+        const modTorre = document.getElementById('modTorre');
+        const modVale = document.getElementById('modVale');
+        const modFrete = document.getElementById('modFrete');
+        const modAuditoria = document.getElementById('modAuditoria');
+        const modPedidos = document.getElementById('modPedidos');
+        const modEventos = document.getElementById('modEventos');
+        const modPagamento = document.getElementById('modPagamento');
+        const radioModelo = document.querySelectorAll('input[name="modelo"]');
 
-                let totalIntegracoes = 0;
-                if (pedidosAtivo) totalIntegracoes += 21;
-                if (eventosAtivo) totalIntegracoes += 21;
-                if (pagamentoAtivo) totalIntegracoes += 12;
+        const spanCliente1 = document.getElementById('spanCliente1');
+        const spanData1 = document.getElementById('spanData1');
+        const infoCnpjs1 = document.getElementById('infoCnpjs1');
+        const infoUsuarios1 = document.getElementById('infoUsuarios1');
+        const infoEssencial1 = document.getElementById('infoEssencial1');
+        const infoTorre1 = document.getElementById('infoTorre1');
+        const infoVale1 = document.getElementById('infoVale1');
+        const infoFrete1 = document.getElementById('infoFrete1');
+        const infoAuditoria1 = document.getElementById('infoAuditoria1');
+        const infoPedidos1 = document.getElementById('infoPedidos1');
+        const infoEventos1 = document.getElementById('infoEventos1');
+        const infoPagamento1 = document.getElementById('infoPagamento1');
+        const corpoEtapas1 = document.getElementById('corpoEtapas1');
 
-                const totalEssencial = essencialAtivo ? 40 : 0;
-                const totalTorre = torreAtivo ? 20 : 0;
-                const totalVale = valeAtivo ? 16 : 0;
-                const totalFrete = freteAtivo ? 22 : 0;
-                const totalAuditoria = auditoriaAtivo ? 15 : 0;
+        const spanCliente2 = document.getElementById('spanCliente2');
+        const spanData2 = document.getElementById('spanData2');
+        const infoCnpjs2 = document.getElementById('infoCnpjs2');
+        const infoUsuarios2 = document.getElementById('infoUsuarios2');
+        const infoEssencial2 = document.getElementById('infoEssencial2');
+        const infoTorre2 = document.getElementById('infoTorre2');
+        const infoVale2 = document.getElementById('infoVale2');
+        const infoFrete2 = document.getElementById('infoFrete2');
+        const infoAuditoria2 = document.getElementById('infoAuditoria2');
+        const infoPedidos2 = document.getElementById('infoPedidos2');
+        const infoEventos2 = document.getElementById('infoEventos2');
+        const infoPagamento2 = document.getElementById('infoPagamento2');
+        const corpoEtapasResumo2 = document.getElementById('corpoEtapasResumo2');
+        const detalhamentoEtapas2 = document.getElementById('detalhamentoEtapas2');
+        const totalProjeto2 = document.getElementById('totalProjeto2');
+        const equivDias2 = document.getElementById('equivDias2');
+        const equivSemanas2 = document.getElementById('equivSemanas2');
+        const obsCliente2 = document.getElementById('obsCliente2');
 
-                const totalGoLive = 5;
-                const totalSustentacao = 40;
-                const totalTreinamento = 8;
+        const calcularBtn = document.getElementById('calcularBtn');
+        const imprimirBtn = document.getElementById('imprimirBtn');
+        const limparBtn = document.getElementById('limparBtn');
 
-                // ---- Total Real (com 99% em ambientes e usuários) ----
-                const totalReal = (totalAmbientes * 0.99) + totalCadastro + (totalUsuarios * 0.99) +
-                    totalIntegracoes + totalEssencial + totalTorre + totalVale +
-                    totalFrete + totalAuditoria + totalGoLive + totalSustentacao + totalTreinamento;
-                const totalExibido = Math.round(totalReal);
+        const extrato1 = document.getElementById('extrato-modelo1');
+        const extrato2 = document.getElementById('extrato-modelo2');
 
-                // ---- Atualizar informações gerais ----
-                spanCliente1.textContent = cliente;
-                spanCliente2.textContent = cliente;
-                obsCliente2.textContent = cliente;
+        // ---- Data atual ----
+        function setDataAtual() {
+            const hoje = new Date();
+            const dia = String(hoje.getDate()).padStart(2, '0');
+            const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+            const ano = hoje.getFullYear();
+            const dataFormatada = `${dia}/${mes}/${ano}`;
+            const dataISO = `${ano}-${mes}-${dia}`;
+            inputData.value = dataISO;
+            spanData1.textContent = dataFormatada;
+            spanData2.textContent = dataFormatada;
+            return dataFormatada;
+        }
+        setDataAtual();
 
-                infoCnpjs1.textContent = cnpjs;
-                infoCnpjs2.textContent = cnpjs;
-                infoUsuarios1.textContent = usuarios;
-                infoUsuarios2.textContent = usuarios;
-                infoEssencial1.textContent = essencialAtivo ? 'Sim' : 'Não';
-                infoEssencial2.textContent = essencialAtivo ? 'Sim' : 'Não';
-                infoTorre1.textContent = torreAtivo ? 'Sim' : 'Não';
-                infoTorre2.textContent = torreAtivo ? 'Sim' : 'Não';
-                infoVale1.textContent = valeAtivo ? 'Sim' : 'Não';
-                infoVale2.textContent = valeAtivo ? 'Sim' : 'Não';
-                infoFrete1.textContent = freteAtivo ? 'Sim' : 'Não';
-                infoFrete2.textContent = freteAtivo ? 'Sim' : 'Não';
-                infoAuditoria1.textContent = auditoriaAtivo ? 'Sim' : 'Não';
-                infoAuditoria2.textContent = auditoriaAtivo ? 'Sim' : 'Não';
-                infoPedidos1.textContent = pedidosAtivo ? 'Sim' : 'Não';
-                infoPedidos2.textContent = pedidosAtivo ? 'Sim' : 'Não';
-                infoEventos1.textContent = eventosAtivo ? 'Sim' : 'Não';
-                infoEventos2.textContent = eventosAtivo ? 'Sim' : 'Não';
-                infoPagamento1.textContent = pagamentoAtivo ? 'Sim' : 'Não';
-                infoPagamento2.textContent = pagamentoAtivo ? 'Sim' : 'Não';
+        // ---- Utilitários ----
+        function getNumber(id) {
+            const val = document.getElementById(id).value.trim();
+            if (val === '') return NaN;
+            return parseFloat(val);
+        }
 
-                // ---- Geração do Resumo ----
-                const itens = [
-                    { nome: 'Configuração de Ambientes (HMG + PRD)', real: (totalAmbientes * 0.99), ativo: true },
-                    { nome: 'Cadastro e Parametrização Operacional', real: totalCadastro, ativo: true },
-                    { nome: 'Criação e Configuração de Usuários', real: (totalUsuarios * 0.99), ativo: true },
-                    { nome: 'Integrações', real: totalIntegracoes, ativo: totalIntegracoes > 0 },
-                    { nome: 'Configuração Essencial', real: totalEssencial, ativo: essencialAtivo },
-                    { nome: 'Configuração Torre de Controle', real: totalTorre, ativo: torreAtivo },
-                    { nome: 'Configuração Vale Pedágio Obrigatório (VPO)', real: totalVale, ativo: valeAtivo },
-                    { nome: 'Configuração Pagamento de Frete', real: totalFrete, ativo: freteAtivo },
-                    { nome: 'Configuração Auditoria de Fretes', real: totalAuditoria, ativo: auditoriaAtivo },
-                    { nome: 'Go Live (Entrada em Produção)', real: totalGoLive, ativo: true },
-                    { nome: 'Sustentação Pós Go Live', real: totalSustentacao, ativo: true },
-                    { nome: 'Treinamento', real: totalTreinamento, ativo: true }
-                ];
+        function round1(v) {
+            return Math.round(v * 10) / 10;
+        }
 
-                function gerarLinhasResumo() {
-                    let html = '';
-                    itens.forEach((item) => {
-                        if (item.ativo) {
-                            const horas = Math.round(item.real);
-                            const dias = round1(item.real / 8);
-                            const semanas = round1(item.real / 40);
-                            html += `<tr>
-                                <td>${item.nome}</td>
-                                <td class="center">${horas.toFixed(0)}h</td>
+        // ---- Limpar ----
+        function limparCampos() {
+            inputCliente.value = '';
+            inputCNPJs.value = '';
+            inputUsuarios.value = '';
+            modEssencial.checked = false;
+            modTorre.checked = false;
+            modVale.checked = false;
+            modFrete.checked = false;
+            modAuditoria.checked = false;
+            modPedidos.checked = false;
+            modEventos.checked = false;
+            modPagamento.checked = false;
+            calcular();
+        }
+
+        // ---- Obter modelo selecionado ----
+        function getModeloSelecionado() {
+            for (const radio of radioModelo) {
+                if (radio.checked) return parseInt(radio.value);
+            }
+            return 1;
+        }
+
+        // ---- Mostrar/esconder modelos ----
+        function mostrarModelo(modelo) {
+            if (modelo === 1) {
+                extrato1.classList.add('active');
+                extrato2.classList.remove('active');
+            } else {
+                extrato1.classList.remove('active');
+                extrato2.classList.add('active');
+            }
+        }
+
+        // ============================================================
+        // CÁLCULO PRINCIPAL (usando base)
+        // ============================================================
+        function calcular() {
+            if (!base) {
+                console.warn('⏳ Base não carregada, carregando...');
+                window._calcularPending = true;
+                carregarBase().then(() => {
+                    if (window._calcularPending) {
+                        window._calcularPending = false;
+                        calcular();
+                    }
+                });
+                return;
+            }
+
+            const cliente = inputCliente.value.trim() || 'Não informado';
+            const cnpjs = getNumber('cnpjs');
+            const usuarios = getNumber('usuarios');
+
+            if (isNaN(cnpjs) || cnpjs < 0 || isNaN(usuarios) || usuarios < 0) {
+                alert('Preencha CNPJ\'s e Usuários com valores válidos (0 ou mais).');
+                return;
+            }
+
+            const essencialAtivo = modEssencial.checked;
+            const torreAtivo = modTorre.checked;
+            const valeAtivo = modVale.checked;
+            const freteAtivo = modFrete.checked;
+            const auditoriaAtivo = modAuditoria.checked;
+            const pedidosAtivo = modPedidos.checked;
+            const eventosAtivo = modEventos.checked;
+            const pagamentoAtivo = modPagamento.checked;
+
+            // ---- Extrair valores da base ----
+            const bAmb = base.baseAmbientes || 32;
+            const incAmb = base.incrementoAmbientes || 3;
+            const bCad = base.baseCadastro || 16;
+            const incCad = base.incrementoCadastro || 3;
+            const bUsu = base.baseUsuarios || 2;
+            const incUsu = base.incrementoUsuarios || 1;
+
+            const hPed = base.horasPedidos || 21;
+            const hEven = base.horasEventos || 21;
+            const hPag = base.horasPagamento || 12;
+            const hEss = base.horasEssencial || 40;
+            const hTorre = base.horasTorre || 20;
+            const hVale = base.horasVale || 16;
+            const hFrete = base.horasFrete || 22;
+            const hAud = base.horasAuditoria || 15;
+            const hGoLive = base.horasGoLive || 5;
+            const hSust = base.horasSustentacao || 40;
+            const hTreino = base.horasTreinamento || 8;
+            const fatorAmb = base.fatorAmbientes || 0.99;
+            const fatorUsu = base.fatorUsuarios || 0.99;
+            const jornadaDia = base.jornadaDiaria || 8;
+            const jornadaSem = base.jornadaSemanal || 40;
+
+            // ---- Cálculos ----
+            const totalAmbientes = bAmb + ((cnpjs - 1) * incAmb);
+            const totalCadastro = bCad + ((cnpjs - 1) * incCad);
+            const totalUsuarios = bUsu + ((usuarios - 1) * incUsu);
+
+            let totalIntegracoes = 0;
+            if (pedidosAtivo) totalIntegracoes += hPed;
+            if (eventosAtivo) totalIntegracoes += hEven;
+            if (pagamentoAtivo) totalIntegracoes += hPag;
+
+            const totalEssencial = essencialAtivo ? hEss : 0;
+            const totalTorre = torreAtivo ? hTorre : 0;
+            const totalVale = valeAtivo ? hVale : 0;
+            const totalFrete = freteAtivo ? hFrete : 0;
+            const totalAuditoria = auditoriaAtivo ? hAud : 0;
+
+            const totalGoLive = hGoLive;
+            const totalSustentacao = hSust;
+            const totalTreinamento = hTreino;
+
+            // ---- Total Real (com fatores) ----
+            const totalReal = (totalAmbientes * fatorAmb) + totalCadastro + (totalUsuarios * fatorUsu) +
+                totalIntegracoes + totalEssencial + totalTorre + totalVale +
+                totalFrete + totalAuditoria + totalGoLive + totalSustentacao + totalTreinamento;
+            const totalExibido = Math.round(totalReal);
+
+            // ---- Atualizar informações gerais ----
+            spanCliente1.textContent = cliente;
+            spanCliente2.textContent = cliente;
+            obsCliente2.textContent = cliente;
+
+            infoCnpjs1.textContent = cnpjs;
+            infoCnpjs2.textContent = cnpjs;
+            infoUsuarios1.textContent = usuarios;
+            infoUsuarios2.textContent = usuarios;
+            infoEssencial1.textContent = essencialAtivo ? 'Sim' : 'Não';
+            infoEssencial2.textContent = essencialAtivo ? 'Sim' : 'Não';
+            infoTorre1.textContent = torreAtivo ? 'Sim' : 'Não';
+            infoTorre2.textContent = torreAtivo ? 'Sim' : 'Não';
+            infoVale1.textContent = valeAtivo ? 'Sim' : 'Não';
+            infoVale2.textContent = valeAtivo ? 'Sim' : 'Não';
+            infoFrete1.textContent = freteAtivo ? 'Sim' : 'Não';
+            infoFrete2.textContent = freteAtivo ? 'Sim' : 'Não';
+            infoAuditoria1.textContent = auditoriaAtivo ? 'Sim' : 'Não';
+            infoAuditoria2.textContent = auditoriaAtivo ? 'Sim' : 'Não';
+            infoPedidos1.textContent = pedidosAtivo ? 'Sim' : 'Não';
+            infoPedidos2.textContent = pedidosAtivo ? 'Sim' : 'Não';
+            infoEventos1.textContent = eventosAtivo ? 'Sim' : 'Não';
+            infoEventos2.textContent = eventosAtivo ? 'Sim' : 'Não';
+            infoPagamento1.textContent = pagamentoAtivo ? 'Sim' : 'Não';
+            infoPagamento2.textContent = pagamentoAtivo ? 'Sim' : 'Não';
+
+            // ---- Geração do Resumo ----
+            const itens = [
+                { nome: 'Configuração de Ambientes (HMG + PRD)', real: (totalAmbientes * fatorAmb), ativo: true },
+                { nome: 'Cadastro e Parametrização Operacional', real: totalCadastro, ativo: true },
+                { nome: 'Criação e Configuração de Usuários', real: (totalUsuarios * fatorUsu), ativo: true },
+                { nome: 'Integrações', real: totalIntegracoes, ativo: totalIntegracoes > 0 },
+                { nome: 'Configuração Essencial', real: totalEssencial, ativo: essencialAtivo },
+                { nome: 'Configuração Torre de Controle', real: totalTorre, ativo: torreAtivo },
+                { nome: 'Configuração Vale Pedágio Obrigatório (VPO)', real: totalVale, ativo: valeAtivo },
+                { nome: 'Configuração Pagamento de Frete', real: totalFrete, ativo: freteAtivo },
+                { nome: 'Configuração Auditoria de Fretes', real: totalAuditoria, ativo: auditoriaAtivo },
+                { nome: 'Go Live (Entrada em Produção)', real: totalGoLive, ativo: true },
+                { nome: 'Sustentação Pós Go Live', real: totalSustentacao, ativo: true },
+                { nome: 'Treinamento', real: totalTreinamento, ativo: true }
+            ];
+
+            function gerarLinhasResumo() {
+                let html = '';
+                itens.forEach((item) => {
+                    if (item.ativo) {
+                        const horas = Math.round(item.real);
+                        const dias = round1(item.real / jornadaDia);
+                        const semanas = round1(item.real / jornadaSem);
+                        html += `<tr>
+                            <td>${item.nome}</td>
+                            <td class="center">${horas.toFixed(0)}h</td>
+                            <td class="center">${dias.toFixed(1)}</td>
+                            <td class="center">${semanas.toFixed(1)}</td>
+                        </tr>`;
+                    } else {
+                        html += `<tr class="nao-aplicavel">
+                            <td>${item.nome}</td>
+                            <td class="center texto-na">*não aplicável</td>
+                            <td class="center">-</td>
+                            <td class="center">-</td>
+                        </tr>`;
+                    }
+                });
+                const totalDias = Math.ceil(totalReal / jornadaDia);
+                const totalSemanas = Math.ceil(totalReal / jornadaSem);
+                html += `<tr class="total">
+                    <td>Total</td>
+                    <td class="center">${totalExibido.toFixed(0)} horas</td>
+                    <td class="center">${totalDias} dia(s)</td>
+                    <td class="center">${totalSemanas} semana(s)</td>
+                </tr>`;
+                return html;
+            }
+
+            const resumoHTML = gerarLinhasResumo();
+            corpoEtapas1.innerHTML = resumoHTML;
+            corpoEtapasResumo2.innerHTML = resumoHTML;
+
+            // ---- Detalhamento (Modelo 2) ----
+            const subitensConfig = [
+                {
+                    nome: 'Configuração de Ambientes (HMG + PRD)',
+                    sub: [
+                        { nome: 'Configuração do ambiente HMG', pct: 0.36 },
+                        { nome: 'Configuração do ambiente PRD', pct: 0.36 },
+                        { nome: 'Ajustes e parametrização', pct: 0.27 }
+                    ]
+                },
+                {
+                    nome: 'Cadastro e Parametrização Operacional',
+                    sub: [
+                        { nome: 'Cadastro dos CNPJ\'s', pct: 0.20 },
+                        { nome: 'Parametrização logística', pct: 0.47 },
+                        { nome: 'Testes e validações', pct: 0.33 }
+                    ]
+                },
+                {
+                    nome: 'Criação e Configuração de Usuários',
+                    sub: [
+                        { nome: 'Criação de usuários', pct: 0.33 },
+                        { nome: 'Configuração de perfis', pct: 0.33 },
+                        { nome: 'Validação com cliente', pct: 0.33 }
+                    ]
+                },
+                {
+                    nome: 'Integrações',
+                    sub: [
+                        { nome: 'Análise técnica', pct: 0.22 },
+                        { nome: 'Configuração da integração', pct: 0.37 },
+                        { nome: 'Testes em homologação', pct: 0.19 },
+                        { nome: 'Testes em produção', pct: 0.11 },
+                        { nome: 'Ajustes finais', pct: 0.11 }
+                    ]
+                },
+                {
+                    nome: 'Configuração Essencial',
+                    sub: [
+                        { nome: 'Configuração da integração', pct: 0.60 },
+                        { nome: 'Testes e validações', pct: 0.40 }
+                    ]
+                },
+                {
+                    nome: 'Configuração Torre de Controle',
+                    sub: [
+                        { nome: 'Configuração', pct: 0.60 },
+                        { nome: 'Testes e validações', pct: 0.40 }
+                    ]
+                },
+                {
+                    nome: 'Configuração Vale Pedágio Obrigatório (VPO)',
+                    sub: [
+                        { nome: 'Configuração', pct: 0.56 },
+                        { nome: 'Testes e validações', pct: 0.44 }
+                    ]
+                },
+                {
+                    nome: 'Configuração Pagamento de Frete',
+                    sub: [
+                        { nome: 'Parametrização financeira', pct: 0.55 },
+                        { nome: 'Testes e validações', pct: 0.45 }
+                    ]
+                },
+                {
+                    nome: 'Configuração Auditoria de Fretes',
+                    sub: [
+                        { nome: 'Configuração', pct: 0.60 },
+                        { nome: 'Testes e validações', pct: 0.40 }
+                    ]
+                },
+                { nome: 'Go Live (Entrada em Produção)', sub: [] },
+                { nome: 'Sustentação Pós Go Live', sub: [] },
+                { nome: 'Treinamento', sub: [] }
+            ];
+
+            let detalhamentoHTML = '';
+            itens.forEach((item, i) => {
+                const config = subitensConfig[i];
+                if (!config) return;
+                const totalHoras = item.real;
+
+                detalhamentoHTML += `<div class="sub-section-title">${i+1}. ${config.nome}</div>`;
+
+                if (item.ativo) {
+                    if (config.sub.length > 0) {
+                        detalhamentoHTML += `<table>
+                            <tr><th align="left">Etapa</th><th>Horas</th><th>Dias</th><th>Semanas</th></tr>`;
+                        config.sub.forEach(sub => {
+                            const horas = totalHoras * sub.pct;
+                            const dias = round1(horas / jornadaDia);
+                            const semanas = round1(horas / jornadaSem);
+                            detalhamentoHTML += `<tr>
+                                <td>${sub.nome}</td>
+                                <td class="center">${horas.toFixed(1)}h</td>
                                 <td class="center">${dias.toFixed(1)}</td>
                                 <td class="center">${semanas.toFixed(1)}</td>
                             </tr>`;
-                        } else {
-                            html += `<tr class="nao-aplicavel">
-                                <td>${item.nome}</td>
-                                <td class="center texto-na">*não aplicável</td>
-                                <td class="center">-</td>
-                                <td class="center">-</td>
-                            </tr>`;
-                        }
-                    });
-                    const totalDias = Math.ceil(totalReal / 8);
-                    const totalSemanas = Math.ceil(totalReal / 40);
-                    html += `<tr class="total">
-                        <td>Total</td>
-                        <td class="center">${totalExibido.toFixed(0)} horas</td>
-                        <td class="center">${totalDias} dia(s)</td>
-                        <td class="center">${totalSemanas} semana(s)</td>
-                    </tr>`;
-                    return html;
-                }
-
-                const resumoHTML = gerarLinhasResumo();
-                corpoEtapas1.innerHTML = resumoHTML;
-                corpoEtapasResumo2.innerHTML = resumoHTML;
-
-                // ---- Detalhamento (Modelo 2) ----
-                const subitensConfig = [
-                    {
-                        nome: 'Configuração de Ambientes (HMG + PRD)',
-                        sub: [
-                            { nome: 'Configuração do ambiente HMG', pct: 0.36 },
-                            { nome: 'Configuração do ambiente PRD', pct: 0.36 },
-                            { nome: 'Ajustes e parametrização', pct: 0.27 }
-                        ]
-                    },
-                    {
-                        nome: 'Cadastro e Parametrização Operacional',
-                        sub: [
-                            { nome: 'Cadastro dos CNPJ\'s', pct: 0.20 },
-                            { nome: 'Parametrização logística', pct: 0.47 },
-                            { nome: 'Testes e validações', pct: 0.33 }
-                        ]
-                    },
-                    {
-                        nome: 'Criação e Configuração de Usuários',
-                        sub: [
-                            { nome: 'Criação de usuários', pct: 0.33 },
-                            { nome: 'Configuração de perfis', pct: 0.33 },
-                            { nome: 'Validação com cliente', pct: 0.33 }
-                        ]
-                    },
-                    {
-                        nome: 'Integrações',
-                        sub: [
-                            { nome: 'Análise técnica', pct: 0.22 },
-                            { nome: 'Configuração da integração', pct: 0.37 },
-                            { nome: 'Testes em homologação', pct: 0.19 },
-                            { nome: 'Testes em produção', pct: 0.11 },
-                            { nome: 'Ajustes finais', pct: 0.11 }
-                        ]
-                    },
-                    {
-                        nome: 'Configuração Essencial',
-                        sub: [
-                            { nome: 'Configuração da integração', pct: 0.60 },
-                            { nome: 'Testes e validações', pct: 0.40 }
-                        ]
-                    },
-                    {
-                        nome: 'Configuração Torre de Controle',
-                        sub: [
-                            { nome: 'Configuração', pct: 0.60 },
-                            { nome: 'Testes e validações', pct: 0.40 }
-                        ]
-                    },
-                    {
-                        nome: 'Configuração Vale Pedágio Obrigatório (VPO)',
-                        sub: [
-                            { nome: 'Configuração', pct: 0.56 },
-                            { nome: 'Testes e validações', pct: 0.44 }
-                        ]
-                    },
-                    {
-                        nome: 'Configuração Pagamento de Frete',
-                        sub: [
-                            { nome: 'Parametrização financeira', pct: 0.55 },
-                            { nome: 'Testes e validações', pct: 0.45 }
-                        ]
-                    },
-                    {
-                        nome: 'Configuração Auditoria de Fretes',
-                        sub: [
-                            { nome: 'Configuração', pct: 0.60 },
-                            { nome: 'Testes e validações', pct: 0.40 }
-                        ]
-                    },
-                    { nome: 'Go Live (Entrada em Produção)', sub: [] },
-                    { nome: 'Sustentação Pós Go Live', sub: [] },
-                    { nome: 'Treinamento', sub: [] }
-                ];
-
-                let detalhamentoHTML = '';
-                itens.forEach((item, i) => {
-                    const config = subitensConfig[i];
-                    if (!config) return;
-                    const totalHoras = item.real;
-
-                    detalhamentoHTML += `<div class="sub-section-title">${i+1}. ${config.nome}</div>`;
-
-                    if (item.ativo) {
-                        if (config.sub.length > 0) {
-                            detalhamentoHTML += `<table>
-                                <tr><th align="left">Etapa</th><th>Horas</th><th>Dias</th><th>Semanas</th></tr>`;
-                            config.sub.forEach(sub => {
-                                const horas = totalHoras * sub.pct;
-                                const dias = round1(horas / 8);
-                                const semanas = round1(horas / 40);
-                                detalhamentoHTML += `<tr>
-                                    <td>${sub.nome}</td>
-                                    <td class="center">${horas.toFixed(1)}h</td>
-                                    <td class="center">${dias.toFixed(1)}</td>
-                                    <td class="center">${semanas.toFixed(1)}</td>
-                                </tr>`;
-                            });
-                            detalhamentoHTML += `</table>`;
-                        } else {
-                            detalhamentoHTML += `<table>
-                                <tr><th align="left">Etapa</th><th>Horas</th><th>Dias</th><th>Semanas</th></tr>
-                                <tr>
-                                    <td>Total</td>
-                                    <td class="center">${totalHoras.toFixed(1)}h</td>
-                                    <td class="center">${(totalHoras/8).toFixed(1)}</td>
-                                    <td class="center">${(totalHoras/40).toFixed(1)}</td>
-                                </tr>
-                            </table>`;
-                        }
-                        detalhamentoHTML += `<div class="total-etapa">Total da etapa: ${totalHoras.toFixed(1)}h ( ${Math.ceil(totalHoras/8)} dia(s) / ${Math.ceil(totalHoras/40)} semana(s) )</div>`;
+                        });
+                        detalhamentoHTML += `</table>`;
                     } else {
-                        detalhamentoHTML += `<table class="nao-aplicavel">
+                        detalhamentoHTML += `<table>
                             <tr><th align="left">Etapa</th><th>Horas</th><th>Dias</th><th>Semanas</th></tr>
                             <tr>
                                 <td>Total</td>
-                                <td class="center texto-na">*não aplicável</td>
-                                <td class="center">-</td>
-                                <td class="center">-</td>
+                                <td class="center">${totalHoras.toFixed(1)}h</td>
+                                <td class="center">${(totalHoras/jornadaDia).toFixed(1)}</td>
+                                <td class="center">${(totalHoras/jornadaSem).toFixed(1)}</td>
                             </tr>
                         </table>`;
-                        detalhamentoHTML += `<div class="total-etapa">Total da etapa: *não aplicável</div>`;
                     }
-
-                    if (i < itens.length - 1) {
-                        detalhamentoHTML += `<div class="linha-vermelha entre-etapas"></div>`;
-                    }
-                });
-
-                detalhamentoEtapas2.innerHTML = detalhamentoHTML;
-
-                // ---- Totais Finais ----
-                const totalDiasInt = Math.ceil(totalReal / 8);
-                const totalSemanasInt = Math.ceil(totalReal / 40);
-                totalProjeto2.textContent = `Total do Projeto: ${totalExibido.toFixed(0)} horas`;
-                equivDias2.textContent = `Equivalente a aproximadamente: ${totalDiasInt} dias úteis`;
-                equivSemanas2.textContent = `Equivalente a aproximadamente: ${totalSemanasInt} semana(s)`;
-
-                mostrarModelo(getModeloSelecionado());
-
-
-// ---- LOG E POP-UP ----
-const logDiv = document.getElementById('logHoras');
-if (logDiv) {
-    logDiv.innerHTML = '✅ Total de horas calculadas: <strong>' + totalExibido + ' horas</strong>';
-}
-
-// Só abre pop-up se foi clique do usuário
-if (window._isUserClick) {
-    abrirPopup('Total de horas calculadas: ' + totalExibido + ' horas');
-}
-
-
-
-            }
-
-            // ---- Interação com UI ----
-            function mostrarModelo(modelo) {
-                if (modelo === 1) {
-                    extrato1.classList.add('active');
-                    extrato2.classList.remove('active');
+                    detalhamentoHTML += `<div class="total-etapa">Total da etapa: ${totalHoras.toFixed(1)}h ( ${Math.ceil(totalHoras/jornadaDia)} dia(s) / ${Math.ceil(totalHoras/jornadaSem)} semana(s) )</div>`;
                 } else {
-                    extrato1.classList.remove('active');
-                    extrato2.classList.add('active');
+                    detalhamentoHTML += `<table class="nao-aplicavel">
+                        <tr><th align="left">Etapa</th><th>Horas</th><th>Dias</th><th>Semanas</th></tr>
+                        <tr>
+                            <td>Total</td>
+                            <td class="center texto-na">*não aplicável</td>
+                            <td class="center">-</td>
+                            <td class="center">-</td>
+                        </tr>
+                    </table>`;
+                    detalhamentoHTML += `<div class="total-etapa">Total da etapa: *não aplicável</div>`;
                 }
+
+                if (i < itens.length - 1) {
+                    detalhamentoHTML += `<div class="linha-vermelha entre-etapas"></div>`;
+                }
+            });
+
+            detalhamentoEtapas2.innerHTML = detalhamentoHTML;
+
+            // ---- Totais Finais ----
+            const totalDiasInt = Math.ceil(totalReal / jornadaDia);
+            const totalSemanasInt = Math.ceil(totalReal / jornadaSem);
+            totalProjeto2.textContent = `Total do Projeto: ${totalExibido.toFixed(0)} horas`;
+            equivDias2.textContent = `Equivalente a aproximadamente: ${totalDiasInt} dias úteis`;
+            equivSemanas2.textContent = `Equivalente a aproximadamente: ${totalSemanasInt} semana(s)`;
+
+            mostrarModelo(getModeloSelecionado());
+
+            // ---- LOG E POP-UP ----
+            const logDiv = document.getElementById('logHoras');
+            if (logDiv) {
+                logDiv.innerHTML = '✅ Total de horas calculadas: <strong>' + totalExibido + ' horas</strong>';
             }
 
-            calcularBtn.addEventListener('click', function() {
-    window._isUserClick = true;
-    calcular();
-    window._isUserClick = false;
-});
-            limparBtn.addEventListener('click', limparCampos);
+            if (window._isUserClick) {
+                abrirPopup('Total de horas calculadas: ' + totalExibido + ' horas');
+                window._isUserClick = false;
+            }
+        }
 
-            radioModelo.forEach(radio => {
-                radio.addEventListener('change', function() {
-                    if (this.checked) mostrarModelo(parseInt(this.value));
-                });
+        // ---- Eventos ----
+        calcularBtn.addEventListener('click', function() {
+            window._isUserClick = true;
+            calcular();
+        });
+
+        limparBtn.addEventListener('click', limparCampos);
+
+        radioModelo.forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.checked) mostrarModelo(parseInt(this.value));
             });
+        });
 
-            imprimirBtn.addEventListener('click', function() {
-                const modelo = getModeloSelecionado();
-                mostrarModelo(modelo);
-                window.print();
+        imprimirBtn.addEventListener('click', function() {
+            const modelo = getModeloSelecionado();
+            mostrarModelo(modelo);
+            window.print();
+        });
+
+        // ---- Inicialização ----
+        window.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('container-principal').classList.add('sidebar-active');
+            document.getElementById('sidebar-global').style.display = 'flex';
+
+            carregarBase().then(() => {
+                if (!window._calcularPending) {
+                    calcular();
+                }
             });
+        });
 
-            window.addEventListener('DOMContentLoaded', calcular);
-        })();
+        // ---- Funções globais (sidebar, contatos, etc.) ----
+        window.irPara = function(destino) { window.location.href = destino; };
+        window.abrirLink = function(url) { window.open(url, '_blank'); };
 
+        // ============================================================
+        // DADOS DOS EXECUTIVOS DA VERTICAL LOGÍSTICA
+        // ============================================================
+        const executivosLogistica = [
+            {
+                nome: 'João Victor Nunes Pinheiro',
+                cargo: 'Executivo Técnico de Negócios Pleno',
+                email: 'joao.pinheiro@ndd.tech',
+                foto: '../assets/joao.jpeg'
+            }
+        ];
 
-       // ===== ATIVAÇÃO DA SIDEBAR E NAVEGAÇÃO =====
-       window.addEventListener('DOMContentLoaded', function() {
-           document.getElementById('container-principal').classList.add('sidebar-active');
-           document.getElementById('sidebar-global').style.display = 'flex';
-       });
+        // ============================================================
+        // FUNÇÕES DO MODAL
+        // ============================================================
+        let modalEmail = '';
 
-       function voltarIndex() { window.location.href = '../index.html'; }
-       function irPara(destino) { window.location.href = destino; }
-       function abrirLink(url) { window.open(url, '_blank'); }
+        window.abrirModal = function(email, nome) {
+            modalEmail = email;
 
+            document.getElementById('modal-btn-teams').onclick = function() {
+                window.location.href = 'msteams://teams.microsoft.com/l/chat/0/0?users=' + modalEmail;
+                fecharModal();
+            };
 
-// ============================================================
-// DADOS DOS EXECUTIVOS DA VERTICAL LOGÍSTICA
-// ============================================================
-const executivosLogistica = [
-    {
-        nome: 'João Victor Nunes Pinheiro',
-        cargo: 'Executivo Técnico de Negócios Pleno',
-        email: 'joao.pinheiro@ndd.tech',
-        foto: '../assets/joao.jpeg'   // caminho relativo para a pasta assets (um nível acima)
-    }
-];
+            document.getElementById('modal-btn-email').onclick = function() {
+                window.location.href = 'mailto:' + modalEmail;
+                fecharModal();
+            };
 
-// ============================================================
-// FUNÇÕES DO MODAL
-// ============================================================
-let modalEmail = '';
+            document.getElementById('contact-modal').classList.add('show');
+        };
 
-function abrirModal(email, nome) {
-    modalEmail = email;
+        function fecharModal() {
+            document.getElementById('contact-modal').classList.remove('show');
+        }
 
-    document.getElementById('modal-btn-teams').onclick = function() {
-        window.location.href = 'msteams://teams.microsoft.com/l/chat/0/0?users=' + modalEmail;
-        fecharModal();
-    };
+        window.fecharModalExterno = function(event) {
+            if (event.target === event.currentTarget) {
+                fecharModal();
+            }
+        };
 
-    document.getElementById('modal-btn-email').onclick = function() {
-        window.location.href = 'mailto:' + modalEmail;
-        fecharModal();
-    };
+        // ============================================================
+        // RENDERIZAR OS CARDS DOS EXECUTIVOS
+        // ============================================================
+        function renderizarExecutivos() {
+            const grid = document.getElementById('executiveGrid');
+            if (!grid) return;
 
-    document.getElementById('contact-modal').classList.add('show');
-}
+            let html = '';
+            executivosLogistica.forEach(ex => {
+                html += `
+                    <div class="welcome-executive-card" onclick="abrirModal('${ex.email}', '${ex.nome}')">
+                        <img src="${ex.foto}" alt="${ex.nome}" class="team-photo">
+                        <div>
+                            <h4>${ex.nome}</h4>
+                            <p>${ex.cargo}</p>
+                            <span class="email-text">${ex.email}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            grid.innerHTML = html;
+        }
 
-function fecharModal() {
-    document.getElementById('contact-modal').classList.remove('show');
-}
+        document.addEventListener('DOMContentLoaded', renderizarExecutivos);
 
-function fecharModalExterno(event) {
-    if (event.target === event.currentTarget) {
-        fecharModal();
-    }
-}
+        // ============================================================
+        // POP-UP CUSTOMIZADO
+        // ============================================================
+        function abrirPopup(mensagem) {
+            document.getElementById('popup-mensagem').textContent = mensagem;
+            document.getElementById('popup-overlay').style.display = 'flex';
+        }
 
-// ============================================================
-// RENDERIZAR OS CARDS DOS EXECUTIVOS
-// ============================================================
-function renderizarExecutivos() {
-    const grid = document.getElementById('executiveGrid');
-    if (!grid) return;
+        window.fecharPopup = function() {
+            document.getElementById('popup-overlay').style.display = 'none';
+        };
 
-    let html = '';
-    executivosLogistica.forEach(ex => {
-        html += `
-            <div class="welcome-executive-card" onclick="abrirModal('${ex.email}', '${ex.nome}')">
-                <img src="${ex.foto}" alt="${ex.nome}" class="team-photo">
-                <div>
-                    <h4>${ex.nome}</h4>
-                    <p>${ex.cargo}</p>
-                    <span class="email-text">${ex.email}</span>
-                </div>
-            </div>
-        `;
-    });
-    grid.innerHTML = html;
-}
+        document.getElementById('popup-overlay').addEventListener('click', function(e) {
+            if (e.target === this) fecharPopup();
+        });
 
-// Chamar a função quando a página carregar
-document.addEventListener('DOMContentLoaded', renderizarExecutivos);
-
-
-// ===== POP-UP CUSTOMIZADO =====
-function abrirPopup(mensagem) {
-    document.getElementById('popup-mensagem').textContent = mensagem;
-    document.getElementById('popup-overlay').style.display = 'flex';
-}
-
-function fecharPopup() {
-    document.getElementById('popup-overlay').style.display = 'none';
-}
-
-// Fechar pop-up ao clicar fora
-document.getElementById('popup-overlay').addEventListener('click', function(e) {
-    if (e.target === this) fecharPopup();
-});
-
-
-
-   </script>
+    })();
+</script>
 
 </body>
 </html>
