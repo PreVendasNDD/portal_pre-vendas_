@@ -501,6 +501,15 @@
             .tabela-itens tr:nth-child(n+4) {
                 display: none !important;
             }
+
+	    /* Oculta a seção de contato e o modal na impressão */
+	    .contato-section {
+	        display: none !important;
+	    }
+	    #contact-modal {
+    	        display: none !important;
+	    }
+
         }
 
         @media screen and (max-width: 800px) {
@@ -522,15 +531,191 @@
                 justify-content: center;
             }
         }
+
+
+/* ===== ESTILOS PARA OS CARDS DE CONTATO ===== */
+.welcome-contact-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #ffffff;
+    margin-top: 25px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.welcome-executive-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 15px;
+    justify-content: center;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.welcome-executive-card {
+    background: #f9f9f9;
+    padding: 15px 20px;
+    border-radius: 12px;
+    border: 1px solid #e9e9e9;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.welcome-executive-card:hover {
+    background: #e9ecef;
+}
+
+.welcome-executive-card .team-photo {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.welcome-executive-card > div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 1;
+    min-width: 0;
+}
+
+.welcome-executive-card h4 {
+    font-size: 15px;
+    color: #1a2f4f;
+    margin-bottom: 2px;
+    word-break: break-word;
+}
+
+.welcome-executive-card p {
+    font-size: 13px;
+    color: #777;
+    margin: 2px 0;
+    word-break: break-word;
+}
+
+.welcome-executive-card .email-text {
+    font-size: 12px;
+    color: #777;
+    margin-top: 2px;
+    word-break: break-all;
+}
+
+/* ===== MODAL ===== */
+#contact-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+#contact-modal.show {
+    display: flex;
+}
+.modal-box {
+    background: #ffffff;
+    padding: 30px 40px;
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    max-width: 450px;
+    width: 90%;
+    text-align: center;
+}
+.modal-box h3 {
+    font-size: 20px;
+    color: #1a2f4f;
+    margin-bottom: 5px;
+}
+.modal-box p {
+    font-size: 14px;
+    color: #777;
+    margin-bottom: 20px;
+}
+.modal-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.modal-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 25px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+.modal-btn-teams {
+    background: #1a2f4f;
+    color: #fff;
+}
+.modal-btn-teams:hover {
+    background: #0b1a33;
+}
+.modal-btn-email {
+    background: #6c757d;
+    color: #fff;
+}
+.modal-btn-email:hover {
+    background: #495057;
+}
+.modal-btn-cancel {
+    background: #e9ecef;
+    color: #333;
+    margin-top: 5px;
+}
+.modal-btn-cancel:hover {
+    background: #ced4da;
+}
+
+
+
     </style>
 </head>
 <body>
+
+
+<!-- ===== MODAL DE CONTATO ===== -->
+<div id="contact-modal" onclick="fecharModalExterno(event)">
+    <div class="modal-box">
+        <h3>📬 Contato</h3>
+        <p>Escolha como deseja acionar o profissional:</p>
+        <div class="modal-actions">
+            <button class="modal-btn modal-btn-teams" id="modal-btn-teams">
+                💬 Acionar pelo Teams
+            </button>
+            <button class="modal-btn modal-btn-email" id="modal-btn-email">
+                ✉️ Enviar E-mail (Outlook)
+            </button>
+            <button class="modal-btn modal-btn-cancel" onclick="fecharModal()">
+                Cancelar
+            </button>
+        </div>
+    </div>
+</div>
+
+
+
 
     <!-- SIDEBAR LATERAL DO ELOG -->
     <div id="sidebar-global">
         <h3>ELOG</h3>
         <ul>
             <li onclick="irPara('Extrato_ELOG.html')">Extrato ELOG</li>
+	    <li onclick="irPara('PT_ELOG.html')">Proposta Técnica ELOG</li>
             <li class="separator"></li>
             <li onclick="abrirLink('https://portal.stg.nddelog.com/')">Portal ELOG</li>
             <li onclick="abrirLink('https://helpcenter.nddelog.com/?l=pt')">Help Center ELOG</li>
@@ -603,7 +788,33 @@
                 <button class="btn btn-imprimir" id="imprimirBtn">🖨️ Imprimir</button>
                 <button class="btn btn-limpar" id="limparBtn">✕ Limpar</button>
             </div>
+
+
+<!-- LOG DE HORAS -->
+<div id="logHoras" style="margin-top: 20px; font-size: 18px; font-weight: bold; color: #1a2f4f; text-align: center; padding: 10px; background: #f0f4f9; border-radius: 8px;">
+    <!-- O total será exibido aqui -->
+</div>
+
+<!-- POP-UP CUSTOMIZADO -->
+<div id="popup-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center;">
+    <div style="background: #fff; padding: 30px 40px; border-radius: 16px; max-width: 400px; width: 90%; text-align: center; box-shadow: 0 8px 24px rgba(0,0,0,0.2);">
+        <h3 style="margin: 0 0 10px; color: #1a2f4f;">✅ Cálculo concluído</h3>
+        <p style="font-size: 16px; color: #333; margin: 10px 0 20px;" id="popup-mensagem">Total de horas: 0</p>
+        <button onclick="fecharPopup()" style="background: #ff7079; color: #fff; border: none; padding: 10px 30px; border-radius: 25px; font-weight: 700; font-size: 14px; cursor: pointer;">OK</button>
+    </div>
+</div>
+
+
+
         </div>
+
+<!-- Seção de contato com os executivos -->
+<div class="contato-section" style="margin-top: 30px; border-top: 1px solid #e9e9e9; padding-top: 25px;">
+    <div class="welcome-contact-title">Ficou com alguma dúvida ou tem sugestões? Acione o Executivo da Vertical:</div>
+    <div class="welcome-executive-grid" id="executiveGrid">
+        <!-- Os cards serão preenchidos via JavaScript -->
+    </div>
+</div>
 
         <!-- ========== EXTRATO MODELO 1 ========== -->
         <div class="page active" id="extrato-modelo1">
@@ -1063,6 +1274,21 @@
                 equivSemanas2.textContent = `Equivalente a aproximadamente: ${totalSemanasInt} semana(s)`;
 
                 mostrarModelo(getModeloSelecionado());
+
+
+// ---- LOG E POP-UP ----
+const logDiv = document.getElementById('logHoras');
+if (logDiv) {
+    logDiv.innerHTML = '✅ Total de horas calculadas: <strong>' + totalExibido + ' horas</strong>';
+}
+
+// Só abre pop-up se foi clique do usuário
+if (window._isUserClick) {
+    abrirPopup('Total de horas calculadas: ' + totalExibido + ' horas');
+}
+
+
+
             }
 
             // ---- Interação com UI ----
@@ -1076,7 +1302,11 @@
                 }
             }
 
-            calcularBtn.addEventListener('click', calcular);
+            calcularBtn.addEventListener('click', function() {
+    window._isUserClick = true;
+    calcular();
+    window._isUserClick = false;
+});
             limparBtn.addEventListener('click', limparCampos);
 
             radioModelo.forEach(radio => {
@@ -1104,6 +1334,94 @@
        function voltarIndex() { window.location.href = '../index.html'; }
        function irPara(destino) { window.location.href = destino; }
        function abrirLink(url) { window.open(url, '_blank'); }
+
+
+// ============================================================
+// DADOS DOS EXECUTIVOS DA VERTICAL LOGÍSTICA
+// ============================================================
+const executivosLogistica = [
+    {
+        nome: 'João Victor Nunes Pinheiro',
+        cargo: 'Executivo Técnico de Negócios Pleno',
+        email: 'joao.pinheiro@ndd.tech',
+        foto: '../assets/joao.jpeg'   // caminho relativo para a pasta assets (um nível acima)
+    }
+];
+
+// ============================================================
+// FUNÇÕES DO MODAL
+// ============================================================
+let modalEmail = '';
+
+function abrirModal(email, nome) {
+    modalEmail = email;
+
+    document.getElementById('modal-btn-teams').onclick = function() {
+        window.location.href = 'msteams://teams.microsoft.com/l/chat/0/0?users=' + modalEmail;
+        fecharModal();
+    };
+
+    document.getElementById('modal-btn-email').onclick = function() {
+        window.location.href = 'mailto:' + modalEmail;
+        fecharModal();
+    };
+
+    document.getElementById('contact-modal').classList.add('show');
+}
+
+function fecharModal() {
+    document.getElementById('contact-modal').classList.remove('show');
+}
+
+function fecharModalExterno(event) {
+    if (event.target === event.currentTarget) {
+        fecharModal();
+    }
+}
+
+// ============================================================
+// RENDERIZAR OS CARDS DOS EXECUTIVOS
+// ============================================================
+function renderizarExecutivos() {
+    const grid = document.getElementById('executiveGrid');
+    if (!grid) return;
+
+    let html = '';
+    executivosLogistica.forEach(ex => {
+        html += `
+            <div class="welcome-executive-card" onclick="abrirModal('${ex.email}', '${ex.nome}')">
+                <img src="${ex.foto}" alt="${ex.nome}" class="team-photo">
+                <div>
+                    <h4>${ex.nome}</h4>
+                    <p>${ex.cargo}</p>
+                    <span class="email-text">${ex.email}</span>
+                </div>
+            </div>
+        `;
+    });
+    grid.innerHTML = html;
+}
+
+// Chamar a função quando a página carregar
+document.addEventListener('DOMContentLoaded', renderizarExecutivos);
+
+
+// ===== POP-UP CUSTOMIZADO =====
+function abrirPopup(mensagem) {
+    document.getElementById('popup-mensagem').textContent = mensagem;
+    document.getElementById('popup-overlay').style.display = 'flex';
+}
+
+function fecharPopup() {
+    document.getElementById('popup-overlay').style.display = 'none';
+}
+
+// Fechar pop-up ao clicar fora
+document.getElementById('popup-overlay').addEventListener('click', function(e) {
+    if (e.target === this) fecharPopup();
+});
+
+
 
    </script>
 
