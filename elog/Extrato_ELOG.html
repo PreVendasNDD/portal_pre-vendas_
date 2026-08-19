@@ -900,7 +900,7 @@
         let base = null;
         let carregando = false;
 
-        // ---- Função para carregar a base (compatível com file:// e servidor) ----
+        // ---- Função para carregar a base (sem fallback) ----
         function carregarBase() {
             if (base) {
                 console.log('✅ Base já carregada.');
@@ -921,59 +921,25 @@
             carregando = true;
             console.log('🔍 Tentando carregar BASE_ELOG.json...');
 
-            function processarDados(data) {
-                base = data;
-                carregando = false;
-                console.log('✅ Base carregada:', base);
-                if (window._calcularPending) {
-                    calcular();
-                    window._calcularPending = false;
-                }
-                return base;
-            }
-
-            function handleError(erro) {
-                console.warn('⚠️ Erro ao carregar JSON, usando valores padrão:', erro);
-                base = {
-                    baseAmbientes: 32,
-                    incrementoAmbientes: 3,
-                    baseCadastro: 16,
-                    incrementoCadastro: 3,
-                    baseUsuarios: 2,
-                    incrementoUsuarios: 1,
-                    horasPedidos: 21,
-                    horasEventos: 21,
-                    horasPagamento: 12,
-                    horasEssencial: 40,
-                    horasTorre: 20,
-                    horasVale: 16,
-                    horasFrete: 22,
-                    horasAuditoria: 15,
-                    horasGoLive: 5,
-                    horasSustentacao: 40,
-                    horasTreinamento: 8,
-                    fatorAmbientes: 0.99,
-                    fatorUsuarios: 0.99,
-                    jornadaDiaria: 8,
-                    jornadaSemanal: 40
-                };
-                carregando = false;
-                console.log('✅ Base fallback aplicada:', base);
-                if (window._calcularPending) {
-                    calcular();
-                    window._calcularPending = false;
-                }
-                return base;
-            }
-
+            // Tenta fetch (funciona em servidores)
             return fetch('BASE_ELOG.json')
                 .then(response => {
                     if (!response.ok) throw new Error(`HTTP ${response.status}`);
                     return response.json();
                 })
-                .then(processarDados)
+                .then(data => {
+                    base = data;
+                    carregando = false;
+                    console.log('✅ Base carregada:', base);
+                    if (window._calcularPending) {
+                        calcular();
+                        window._calcularPending = false;
+                    }
+                    return base;
+                })
                 .catch(fetchError => {
                     console.warn('⚠️ Fetch falhou, tentando XMLHttpRequest...', fetchError);
+                    // Fallback com XMLHttpRequest
                     return new Promise((resolve, reject) => {
                         const xhr = new XMLHttpRequest();
                         xhr.open('GET', 'BASE_ELOG.json', true);
@@ -996,10 +962,22 @@
                         };
                         xhr.send();
                     })
-                    .then(processarDados)
+                    .then(data => {
+                        base = data;
+                        carregando = false;
+                        console.log('✅ Base carregada (XHR):', base);
+                        if (window._calcularPending) {
+                            calcular();
+                            window._calcularPending = false;
+                        }
+                        return base;
+                    })
                     .catch(xhrError => {
-                        console.error('❌ Todas as tentativas falharam:', xhrError);
-                        return handleError(xhrError);
+                        carregando = false;
+                        console.error('❌ Falha ao carregar BASE_ELOG.json:', xhrError);
+                        alert('❌ Arquivo BASE_ELOG.json não encontrado.\n\nVerifique se o arquivo está na mesma pasta.\n\nO cálculo não será executado.');
+                        // Não chama calcular() - trava a execução
+                        return Promise.reject(xhrError);
                     });
                 });
         }
