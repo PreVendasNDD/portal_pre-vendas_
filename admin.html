@@ -177,22 +177,22 @@
     <h1>⚙️ Admin · Parâmetros de Cálculo</h1>
     <p class="subtitle">Edite os valores dos arquivos JSON dos produtos e envie para o GitHub.</p>
 
-    <!-- Configuração do Token e Repositório -->
+    <!-- Configuração do Token e Repositório (pré-preenchido) -->
     <div class="token-config">
         <label for="githubToken">🔑 GitHub Token (Personal Access Token)</label>
-        <input type="password" id="githubToken" placeholder="ghp_xxxx...">
-        <div class="hint">Crie um token com permissão <strong>repo</strong> em <a href="https://github.com/settings/tokens" target="_blank">GitHub Settings → Tokens</a></div>
+        <input type="password" id="githubToken" value="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">
+        <div class="hint">Token com permissão <strong>repo</strong> – já preenchido para este ambiente.</div>
         <div style="margin-top:8px;">
             <label for="repoOwner">Dono do repositório</label>
-            <input type="text" id="repoOwner" placeholder="seu-usuario" value="PreVendasNDD">
+            <input type="text" id="repoOwner" value="PreVendasNDD">
         </div>
         <div style="margin-top:8px;">
             <label for="repoName">Nome do repositório</label>
-            <input type="text" id="repoName" placeholder="Extrato_de_Horas" value="Extrato_de_Horas">
+            <input type="text" id="repoName" value="portal_pre-vendas_">
         </div>
         <div style="margin-top:8px;">
             <label for="branch">Branch</label>
-            <input type="text" id="branch" placeholder="main" value="main">
+            <input type="text" id="branch" value="main">
         </div>
         <button class="btn btn-secondary" onclick="carregarProduto()" style="margin-top:10px;">🔒 Carregar (usando token)</button>
     </div>
@@ -269,7 +269,7 @@
     async function carregarProduto() {
         const token = document.getElementById('githubToken').value.trim();
         const owner = document.getElementById('repoOwner').value.trim() || 'PreVendasNDD';
-        const repo = document.getElementById('repoName').value.trim() || 'Extrato_de_Horas';
+        const repo = document.getElementById('repoName').value.trim() || 'portal_pre-vendas_';
         const branch = document.getElementById('branch').value.trim() || 'main';
         if (!token) {
             setStatus('⚠️ Insira um Token do GitHub.', 'error');
@@ -291,7 +291,7 @@
 
             if (!response.ok) {
                 if (response.status === 404) {
-                    throw new Error('Arquivo não encontrado no repositório.');
+                    throw new Error('Arquivo não encontrado no repositório. Crie-o primeiro.');
                 }
                 const err = await response.json();
                 throw new Error(err.message || `Erro ${response.status}`);
@@ -356,7 +356,7 @@
 
         const token = document.getElementById('githubToken').value.trim();
         const owner = document.getElementById('repoOwner').value.trim() || 'PreVendasNDD';
-        const repo = document.getElementById('repoName').value.trim() || 'Extrato_de_Horas';
+        const repo = document.getElementById('repoName').value.trim() || 'portal_pre-vendas_';
         const branch = document.getElementById('branch').value.trim() || 'main';
         if (!token) {
             setStatus('⚠️ Insira um Token do GitHub.', 'error');
@@ -423,7 +423,7 @@
             const result = await response.json();
             currentSha = result.content.sha;
             currentData = updatedData;
-            setStatus(`✅ ${produtos[currentProduct].file} atualizado com sucesso! Commit: ${result.commit.sha}`, 'success');
+            setStatus(`✅ ${produtos[currentProduct].file} atualizado com sucesso! Commit: ${result.commit.sha.slice(0,7)}`, 'success');
 
         } catch (error) {
             setStatus(`❌ Erro ao salvar: ${error.message}`, 'error');
