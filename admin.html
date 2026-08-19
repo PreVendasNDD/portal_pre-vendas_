@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin · Parâmetros NDD</title>
     <style>
-        /* ---------- Estilo igual ao index ---------- */
         * {
             margin: 0;
             padding: 0;
@@ -120,8 +119,6 @@
         .btn-success:hover { background: #1e7e34; }
         .btn-secondary { background: #6c757d; color: #fff; }
         .btn-secondary:hover { background: #495057; }
-        .btn-warning { background: #ffc107; color: #333; }
-        .btn-warning:hover { background: #e0a800; }
         .status {
             margin-top: 20px;
             padding: 12px 20px;
@@ -132,31 +129,6 @@
         .status.success { background: #d4edda; color: #155724; display: block; }
         .status.error { background: #f8d7da; color: #721c24; display: block; }
         .status.loading { background: #cce5ff; color: #004085; display: block; }
-        .token-config {
-            background: #f8f9fa;
-            padding: 15px 20px;
-            border-radius: 10px;
-            margin-bottom: 25px;
-            border: 1px solid #e9e9e9;
-        }
-        .token-config label {
-            font-weight: 600;
-            font-size: 13px;
-            display: block;
-            margin-bottom: 4px;
-        }
-        .token-config input {
-            width: 100%;
-            padding: 8px 12px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 14px;
-        }
-        .token-config .hint {
-            font-size: 12px;
-            color: #777;
-            margin-top: 4px;
-        }
         .json-preview {
             background: #f5f5f5;
             padding: 15px;
@@ -177,26 +149,6 @@
     <h1>⚙️ Admin · Parâmetros de Cálculo</h1>
     <p class="subtitle">Edite os valores dos arquivos JSON dos produtos e envie para o GitHub.</p>
 
-    <!-- Configuração do Token e Repositório (pré-preenchido) -->
-    <div class="token-config">
-        <label for="githubToken">🔑 GitHub Token (Personal Access Token)</label>
-        <input type="password" id="githubToken" value="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">
-        <div class="hint">Token com permissão <strong>repo</strong> – já preenchido para este ambiente.</div>
-        <div style="margin-top:8px;">
-            <label for="repoOwner">Dono do repositório</label>
-            <input type="text" id="repoOwner" value="PreVendasNDD">
-        </div>
-        <div style="margin-top:8px;">
-            <label for="repoName">Nome do repositório</label>
-            <input type="text" id="repoName" value="portal_pre-vendas_">
-        </div>
-        <div style="margin-top:8px;">
-            <label for="branch">Branch</label>
-            <input type="text" id="branch" value="main">
-        </div>
-        <button class="btn btn-secondary" onclick="carregarProduto()" style="margin-top:10px;">🔒 Carregar (usando token)</button>
-    </div>
-
     <!-- Seletor de produto -->
     <div class="product-selector">
         <button class="active" data-prod="CARGO" onclick="selecionarProduto('CARGO')">CARGO</button>
@@ -209,13 +161,13 @@
 
     <!-- Formulário dinâmico -->
     <div id="formContainer">
-        <p style="color:#999; text-align:center; padding:20px;">Selecione um produto e clique em "Carregar" para editar os parâmetros.</p>
+        <p style="color:#999; text-align:center; padding:20px;">Selecione um produto e aguarde o carregamento.</p>
     </div>
 
     <!-- Botões de ação -->
     <div class="btn-group">
         <button class="btn btn-primary" onclick="salvarArquivo()">💾 Salvar no GitHub</button>
-        <button class="btn btn-success" onclick="fazerDeploy()">🚀 Fazer Deploy (commit)</button>
+        <button class="btn btn-success" onclick="fazerDeploy()">🚀 Fazer Deploy</button>
         <button class="btn btn-secondary" onclick="carregarProduto()">📥 Recarregar</button>
     </div>
 
@@ -227,10 +179,16 @@
 </div>
 
 <script>
-    // ---- Configuração ----
+    // ---- CONFIGURAÇÃO GITHUB (hardcoded) ----
+    const GITHUB_TOKEN = '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';
+    const REPO_OWNER = 'PreVendasNDD';
+    const REPO_NAME = 'portal_pre-vendas_';
+    const BRANCH = 'main';
+
+    // ---- Configuração dos produtos ----
     let currentProduct = 'CARGO';
-    let currentData = null;       // dados atuais (objeto)
-    let currentSha = null;       // sha do arquivo para atualização
+    let currentData = null;
+    let currentSha = null;
 
     const produtos = {
         CARGO: { file: 'BASE_CARGO.json', path: 'BASE_CARGO.json' },
@@ -243,19 +201,6 @@
     const formContainer = document.getElementById('formContainer');
     const jsonPreview = document.getElementById('jsonPreview');
 
-    // ---- Seleção de produto ----
-    function selecionarProduto(prod) {
-        currentProduct = prod;
-        document.querySelectorAll('.product-selector button').forEach(b => b.classList.remove('active'));
-        document.querySelector(`.product-selector button[data-prod="${prod}"]`).classList.add('active');
-        // Limpa o formulário e recarrega
-        formContainer.innerHTML = '<p style="color:#999; text-align:center; padding:20px;">Clique em "Carregar" para ver os parâmetros.</p>';
-        jsonPreview.textContent = 'Nenhum JSON carregado.';
-        currentData = null;
-        currentSha = null;
-        setStatus('', '');
-    }
-
     // ---- Função para mostrar status ----
     function setStatus(msg, type = '') {
         statusDiv.textContent = msg;
@@ -265,55 +210,59 @@
         else statusDiv.style.display = 'block';
     }
 
+    // ---- Seleção de produto ----
+    function selecionarProduto(prod) {
+        currentProduct = prod;
+        document.querySelectorAll('.product-selector button').forEach(b => b.classList.remove('active'));
+        document.querySelector(`.product-selector button[data-prod="${prod}"]`).classList.add('active');
+        formContainer.innerHTML = '<p style="color:#999; text-align:center; padding:20px;">Carregando...</p>';
+        jsonPreview.textContent = 'Carregando...';
+        currentData = null;
+        currentSha = null;
+        carregarProduto();
+    }
+
     // ---- Carregar o JSON do GitHub ----
     async function carregarProduto() {
-        const token = document.getElementById('githubToken').value.trim();
-        const owner = document.getElementById('repoOwner').value.trim() || 'PreVendasNDD';
-        const repo = document.getElementById('repoName').value.trim() || 'portal_pre-vendas_';
-        const branch = document.getElementById('branch').value.trim() || 'main';
-        if (!token) {
-            setStatus('⚠️ Insira um Token do GitHub.', 'error');
-            return;
-        }
-
         const filePath = produtos[currentProduct].path;
-        const url = `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}?ref=${branch}`;
+        const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${filePath}?ref=${BRANCH}`;
 
         setStatus('🔄 Carregando arquivo...', 'loading');
 
         try {
             const response = await fetch(url, {
                 headers: {
-                    'Authorization': `token ${token}`,
+                    'Authorization': `token ${GITHUB_TOKEN}`,
                     'Accept': 'application/vnd.github.v3+json'
                 }
             });
 
             if (!response.ok) {
                 if (response.status === 404) {
-                    throw new Error('Arquivo não encontrado no repositório. Crie-o primeiro.');
+                    throw new Error(`Arquivo ${produtos[currentProduct].file} não encontrado.`);
                 }
                 const err = await response.json();
                 throw new Error(err.message || `Erro ${response.status}`);
             }
 
             const data = await response.json();
-            const content = atob(data.content); // decodifica base64
+            const content = atob(data.content);
             currentSha = data.sha;
 
-            // Faz o parse do JSON
             try {
                 currentData = JSON.parse(content);
                 renderForm(currentData);
                 jsonPreview.textContent = JSON.stringify(currentData, null, 2);
                 setStatus(`✅ ${produtos[currentProduct].file} carregado com sucesso!`, 'success');
             } catch (e) {
-                throw new Error('Erro ao parsear JSON: ' + e.message);
+                throw new Error('Erro ao interpretar JSON: ' + e.message);
             }
 
         } catch (error) {
             setStatus(`❌ Erro: ${error.message}`, 'error');
             console.error(error);
+            formContainer.innerHTML = `<p style="color:#e3062b;">Erro ao carregar: ${error.message}</p>`;
+            jsonPreview.textContent = 'Erro ao carregar.';
         }
     }
 
@@ -326,7 +275,6 @@
 
         let html = '';
         for (const [key, value] of Object.entries(data)) {
-            // Se for objeto aninhado (ex: subetapas) - mostramos como textarea
             if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
                 html += `<div class="param-group">
                     <label for="param_${key}">${key} (objeto)</label>
@@ -350,16 +298,7 @@
     // ---- Salvar alterações no GitHub ----
     async function salvarArquivo() {
         if (!currentData) {
-            setStatus('⚠️ Nenhum dado carregado. Clique em "Carregar" primeiro.', 'error');
-            return;
-        }
-
-        const token = document.getElementById('githubToken').value.trim();
-        const owner = document.getElementById('repoOwner').value.trim() || 'PreVendasNDD';
-        const repo = document.getElementById('repoName').value.trim() || 'portal_pre-vendas_';
-        const branch = document.getElementById('branch').value.trim() || 'main';
-        if (!token) {
-            setStatus('⚠️ Insira um Token do GitHub.', 'error');
+            setStatus('⚠️ Nenhum dado carregado. Clique em "Recarregar" primeiro.', 'error');
             return;
         }
 
@@ -377,7 +316,6 @@
                 }
             } else {
                 let val = el.value;
-                // Tenta converter para número se for numérico
                 if (!isNaN(val) && val !== '') {
                     updatedData[key] = Number(val);
                 } else {
@@ -388,18 +326,15 @@
 
         // Monta o JSON final
         const jsonString = JSON.stringify(updatedData, null, 2);
-
-        // Atualiza prévia
         jsonPreview.textContent = jsonString;
 
-        // Envia para GitHub
         const filePath = produtos[currentProduct].path;
-        const url = `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`;
+        const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${filePath}`;
         const payload = {
             message: `Atualizado ${produtos[currentProduct].file} via admin`,
             content: btoa(jsonString),
             sha: currentSha,
-            branch: branch
+            branch: BRANCH
         };
 
         setStatus('🔄 Enviando para GitHub...', 'loading');
@@ -408,7 +343,7 @@
             const response = await fetch(url, {
                 method: 'PUT',
                 headers: {
-                    'Authorization': `token ${token}`,
+                    'Authorization': `token ${GITHUB_TOKEN}`,
                     'Accept': 'application/vnd.github.v3+json',
                     'Content-Type': 'application/json'
                 },
@@ -433,25 +368,14 @@
 
     // ---- Função "Deploy" (apenas commit adicional) ----
     async function fazerDeploy() {
-        // Esta função pode ser usada para disparar uma ação de deploy, se houver.
-        // Neste exemplo, apenas refaz o commit com a mesma mensagem.
         setStatus('🚀 Deploy: enviando commit...', 'loading');
         await salvarArquivo();
     }
 
-    // ---- Carregar inicial com CARGO ----
+    // ---- Inicialização ----
     window.onload = function() {
-        // Preencher token se existir no localStorage
-        const savedToken = localStorage.getItem('githubToken');
-        if (savedToken) document.getElementById('githubToken').value = savedToken;
-        // Carregar automaticamente
-        setTimeout(() => carregarProduto(), 500);
+        carregarProduto();
     };
-
-    // Salvar token no localStorage para não digitar toda vez
-    document.getElementById('githubToken').addEventListener('change', function() {
-        localStorage.setItem('githubToken', this.value);
-    });
 
 </script>
 </body>
