@@ -791,7 +791,7 @@
         <div class="linha-inputs">
             <div class="campo">
                 <label for="cliente">Cliente</label>
-                <input type="text" id="cliente" value="Empresa Exemplo">
+                <input type="text" id="cliente" value="">
             </div>
             <div class="campo">
                 <label for="data">Data</label>
@@ -799,15 +799,15 @@
             </div>
             <div class="campo">
                 <label for="cnpjs">CNPJ's</label>
-                <input type="number" id="cnpjs" value="2" min="0">
+                <input type="number" id="cnpjs" value="" min="0">
             </div>
             <div class="campo">
                 <label for="usuarios">Usuários</label>
-                <input type="number" id="usuarios" value="15" min="0">
+                <input type="number" id="usuarios" value="" min="0">
             </div>
             <div class="campo">
                 <label for="pontos">Pontos Emissores</label>
-                <input type="number" id="pontos" value="3" min="0" placeholder="opcional">
+                <input type="number" id="pontos" value="" min="0" placeholder="opcional">
             </div>
         </div>
 
@@ -944,18 +944,14 @@
         let base = null;
         let carregando = false;
 
-        // ---- Função para carregar a base (compatível com file:// e servidor) ----
+        // ---- Função para carregar a base (SEM FALLBACK) ----
         function carregarBase() {
-            // Se já carregou, não faz nada
             if (base) {
                 console.log('✅ Base já carregada.');
                 return Promise.resolve(base);
             }
-
-            // Se já está carregando, aguarda
             if (carregando) {
                 console.log('⏳ Carregamento já em andamento...');
-                // Retorna uma promise que resolve quando a base for carregada
                 return new Promise((resolve) => {
                     const checkInterval = setInterval(() => {
                         if (base) {
@@ -969,50 +965,25 @@
             carregando = true;
             console.log('🔍 Tentando carregar BASE_CARGO.json...');
 
-            // Função para processar os dados
-            function processarDados(data) {
-                base = data;
-                carregando = false;
-                console.log('✅ Base carregada:', base);
-                // Dispara o cálculo se houver listeners
-                if (window._calcularPending) {
-                    calcular();
-                    window._calcularPending = false;
-                }
-                return base;
-            }
-
-            // Função para lidar com erro (fallback)
-            function handleError(erro) {
-                console.warn('⚠️ Erro ao carregar JSON, usando valores padrão:', erro);
-                base = {
-                    horasPorCnpj: 1,
-                    horasPorUsuario: 0.5,
-                    horasPorCnpjModulo: 8,
-                    horasContaDigital: 6,
-                    horasTreinamento: 2,
-                    jornadaDiaria: 8,
-                    jornadaSemanal: 40
-                };
-                carregando = false;
-                console.log('✅ Base fallback aplicada:', base);
-                if (window._calcularPending) {
-                    calcular();
-                    window._calcularPending = false;
-                }
-                return base;
-            }
-
-            // Tentativa com fetch (funciona em servidores)
+            // Tenta fetch (funciona em servidores)
             return fetch('BASE_CARGO.json')
                 .then(response => {
                     if (!response.ok) throw new Error(`HTTP ${response.status}`);
                     return response.json();
                 })
-                .then(processarDados)
+                .then(data => {
+                    base = data;
+                    carregando = false;
+                    console.log('✅ Base carregada:', base);
+                    if (window._calcularPending) {
+                        calcular();
+                        window._calcularPending = false;
+                    }
+                    return base;
+                })
                 .catch(fetchError => {
                     console.warn('⚠️ Fetch falhou, tentando XMLHttpRequest...', fetchError);
-                    // Fallback com XMLHttpRequest (pode funcionar localmente)
+                    // Fallback com XMLHttpRequest
                     return new Promise((resolve, reject) => {
                         const xhr = new XMLHttpRequest();
                         xhr.open('GET', 'BASE_CARGO.json', true);
@@ -1035,10 +1006,22 @@
                         };
                         xhr.send();
                     })
-                    .then(processarDados)
+                    .then(data => {
+                        base = data;
+                        carregando = false;
+                        console.log('✅ Base carregada (XHR):', base);
+                        if (window._calcularPending) {
+                            calcular();
+                            window._calcularPending = false;
+                        }
+                        return base;
+                    })
                     .catch(xhrError => {
-                        console.error('❌ Todas as tentativas falharam:', xhrError);
-                        return handleError(xhrError);
+                        carregando = false;
+                        console.error('❌ Falha ao carregar BASE_CARGO.json:', xhrError);
+                        alert('❌ Arquivo BASE_CARGO.json não encontrado.\n\nVerifique se o arquivo está na mesma pasta.\n\nO cálculo não será executado.');
+                        // Não chama calcular() - trava a execução
+                        return Promise.reject(xhrError);
                     });
                 });
         }
