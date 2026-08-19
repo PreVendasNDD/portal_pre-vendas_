@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin · Parâmetros NDD</title>
+    <style>
+        /* ---------- Estilo igual ao index ---------- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        body {
+            background-image: url('../assets/fundoazul.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            background: #fff;
+            padding: 30px 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            margin: 0 auto;
+        }
+        h1 {
+            color: #1a2f4f;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #777;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+        .product-selector {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        .product-selector button {
+            padding: 10px 25px;
+            border: 2px solid #1a2f4f;
+            background: transparent;
+            border-radius: 25px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+            color: #1a2f4f;
+        }
+        .product-selector button.active {
+            background: #1a2f4f;
+            color: #fff;
+        }
+        .product-selector button:hover {
+            background: #1a2f4f;
+            color: #fff;
+        }
+        .param-group {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #e9e9e9;
+            padding-bottom: 15px;
+        }
+        .param-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 13px;
+            color: #333;
+            margin-bottom: 4px;
+        }
+        .param-group input, .param-group textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+            background: #fafafa;
+        }
+        .param-group input:focus, .param-group textarea:focus {
+            border-color: #ff7079;
+            outline: none;
+            background: #fff;
+        }
+        .param-group textarea {
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            min-height: 60px;
+            resize: vertical;
+        }
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 25px;
+        }
+        .btn {
+            padding: 10px 30px;
+            border: none;
+            border-radius: 25px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-primary { background: #ff7079; color: #fff; }
+        .btn-primary:hover { background: #e05a61; }
+        .btn-success { background: #28a745; color: #fff; }
+        .btn-success:hover { background: #1e7e34; }
+        .btn-secondary { background: #6c757d; color: #fff; }
+        .btn-secondary:hover { background: #495057; }
+        .btn-warning { background: #ffc107; color: #333; }
+        .btn-warning:hover { background: #e0a800; }
+        .status {
+            margin-top: 20px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            display: none;
+            font-weight: 600;
+        }
+        .status.success { background: #d4edda; color: #155724; display: block; }
+        .status.error { background: #f8d7da; color: #721c24; display: block; }
+        .status.loading { background: #cce5ff; color: #004085; display: block; }
+        .token-config {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border: 1px solid #e9e9e9;
+        }
+        .token-config label {
+            font-weight: 600;
+            font-size: 13px;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .token-config input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .token-config .hint {
+            font-size: 12px;
+            color: #777;
+            margin-top: 4px;
+        }
+        .json-preview {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            word-break: break-all;
+            max-height: 300px;
+            overflow: auto;
+            border: 1px solid #ddd;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>⚙️ Admin · Parâmetros de Cálculo</h1>
+    <p class="subtitle">Edite os valores dos arquivos JSON dos produtos e envie para o GitHub.</p>
+
+    <!-- Configuração do Token e Repositório -->
+    <div class="token-config">
+        <label for="githubToken">🔑 GitHub Token (Personal Access Token)</label>
+        <input type="password" id="githubToken" placeholder="ghp_xxxx...">
+        <div class="hint">Crie um token com permissão <strong>repo</strong> em <a href="https://github.com/settings/tokens" target="_blank">GitHub Settings → Tokens</a></div>
+        <div style="margin-top:8px;">
+            <label for="repoOwner">Dono do repositório</label>
+            <input type="text" id="repoOwner" placeholder="seu-usuario" value="PreVendasNDD">
+        </div>
+        <div style="margin-top:8px;">
+            <label for="repoName">Nome do repositório</label>
+            <input type="text" id="repoName" placeholder="Extrato_de_Horas" value="Extrato_de_Horas">
+        </div>
+        <div style="margin-top:8px;">
+            <label for="branch">Branch</label>
+            <input type="text" id="branch" placeholder="main" value="main">
+        </div>
+        <button class="btn btn-secondary" onclick="carregarProduto()" style="margin-top:10px;">🔒 Carregar (usando token)</button>
+    </div>
+
+    <!-- Seletor de produto -->
+    <div class="product-selector">
+        <button class="active" data-prod="CARGO" onclick="selecionarProduto('CARGO')">CARGO</button>
+        <button data-prod="MOVE" onclick="selecionarProduto('MOVE')">MOVE</button>
+        <button data-prod="ELOG" onclick="selecionarProduto('ELOG')">ELOG</button>
+    </div>
+
+    <!-- Status -->
+    <div id="status" class="status"></div>
+
+    <!-- Formulário dinâmico -->
+    <div id="formContainer">
+        <p style="color:#999; text-align:center; padding:20px;">Selecione um produto e clique em "Carregar" para editar os parâmetros.</p>
+    </div>
+
+    <!-- Botões de ação -->
+    <div class="btn-group">
+        <button class="btn btn-primary" onclick="salvarArquivo()">💾 Salvar no GitHub</button>
+        <button class="btn btn-success" onclick="fazerDeploy()">🚀 Fazer Deploy (commit)</button>
+        <button class="btn btn-secondary" onclick="carregarProduto()">📥 Recarregar</button>
+    </div>
+
+    <!-- Pré-visualização JSON -->
+    <div style="margin-top:20px;">
+        <h3 style="font-size:16px; color:#1a2f4f;">📄 Pré-visualização do JSON</h3>
+        <div id="jsonPreview" class="json-preview">Nenhum JSON carregado.</div>
+    </div>
+</div>
+
+<script>
+    // ---- Configuração ----
+    let currentProduct = 'CARGO';
+    let currentData = null;       // dados atuais (objeto)
+    let currentSha = null;       // sha do arquivo para atualização
+
+    const produtos = {
+        CARGO: { file: 'BASE_CARGO.json', path: 'BASE_CARGO.json' },
+        MOVE:  { file: 'BASE_MOVE.json',  path: 'BASE_MOVE.json' },
+        ELOG:  { file: 'BASE_ELOG.json',  path: 'BASE_ELOG.json' }
+    };
+
+    // ---- DOM elements ----
+    const statusDiv = document.getElementById('status');
+    const formContainer = document.getElementById('formContainer');
+    const jsonPreview = document.getElementById('jsonPreview');
+
+    // ---- Seleção de produto ----
+    function selecionarProduto(prod) {
+        currentProduct = prod;
+        document.querySelectorAll('.product-selector button').forEach(b => b.classList.remove('active'));
+        document.querySelector(`.product-selector button[data-prod="${prod}"]`).classList.add('active');
+        // Limpa o formulário e recarrega
+        formContainer.innerHTML = '<p style="color:#999; text-align:center; padding:20px;">Clique em "Carregar" para ver os parâmetros.</p>';
+        jsonPreview.textContent = 'Nenhum JSON carregado.';
+        currentData = null;
+        currentSha = null;
+        setStatus('', '');
+    }
+
+    // ---- Função para mostrar status ----
+    function setStatus(msg, type = '') {
+        statusDiv.textContent = msg;
+        statusDiv.className = 'status';
+        if (type) statusDiv.classList.add(type);
+        if (!msg) statusDiv.style.display = 'none';
+        else statusDiv.style.display = 'block';
+    }
+
+    // ---- Carregar o JSON do GitHub ----
+    async function carregarProduto() {
+        const token = document.getElementById('githubToken').value.trim();
+        const owner = document.getElementById('repoOwner').value.trim() || 'PreVendasNDD';
+        const repo = document.getElementById('repoName').value.trim() || 'Extrato_de_Horas';
+        const branch = document.getElementById('branch').value.trim() || 'main';
+        if (!token) {
+            setStatus('⚠️ Insira um Token do GitHub.', 'error');
+            return;
+        }
+
+        const filePath = produtos[currentProduct].path;
+        const url = `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}?ref=${branch}`;
+
+        setStatus('🔄 Carregando arquivo...', 'loading');
+
+        try {
+            const response = await fetch(url, {
+                headers: {
+                    'Authorization': `token ${token}`,
+                    'Accept': 'application/vnd.github.v3+json'
+                }
+            });
+
+            if (!response.ok) {
+                if (response.status === 404) {
+                    throw new Error('Arquivo não encontrado no repositório.');
+                }
+                const err = await response.json();
+                throw new Error(err.message || `Erro ${response.status}`);
+            }
+
+            const data = await response.json();
+            const content = atob(data.content); // decodifica base64
+            currentSha = data.sha;
+
+            // Faz o parse do JSON
+            try {
+                currentData = JSON.parse(content);
+                renderForm(currentData);
+                jsonPreview.textContent = JSON.stringify(currentData, null, 2);
+                setStatus(`✅ ${produtos[currentProduct].file} carregado com sucesso!`, 'success');
+            } catch (e) {
+                throw new Error('Erro ao parsear JSON: ' + e.message);
+            }
+
+        } catch (error) {
+            setStatus(`❌ Erro: ${error.message}`, 'error');
+            console.error(error);
+        }
+    }
+
+    // ---- Renderizar formulário dinâmico ----
+    function renderForm(data) {
+        if (!data || typeof data !== 'object') {
+            formContainer.innerHTML = '<p style="color:red;">Dados inválidos.</p>';
+            return;
+        }
+
+        let html = '';
+        for (const [key, value] of Object.entries(data)) {
+            // Se for objeto aninhado (ex: subetapas) - mostramos como textarea
+            if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+                html += `<div class="param-group">
+                    <label for="param_${key}">${key} (objeto)</label>
+                    <textarea id="param_${key}" rows="4">${JSON.stringify(value, null, 2)}</textarea>
+                </div>`;
+            } else if (Array.isArray(value)) {
+                html += `<div class="param-group">
+                    <label for="param_${key}">${key} (array)</label>
+                    <textarea id="param_${key}" rows="4">${JSON.stringify(value, null, 2)}</textarea>
+                </div>`;
+            } else {
+                html += `<div class="param-group">
+                    <label for="param_${key}">${key}</label>
+                    <input type="text" id="param_${key}" value="${value !== undefined && value !== null ? value : ''}">
+                </div>`;
+            }
+        }
+        formContainer.innerHTML = html;
+    }
+
+    // ---- Salvar alterações no GitHub ----
+    async function salvarArquivo() {
+        if (!currentData) {
+            setStatus('⚠️ Nenhum dado carregado. Clique em "Carregar" primeiro.', 'error');
+            return;
+        }
+
+        const token = document.getElementById('githubToken').value.trim();
+        const owner = document.getElementById('repoOwner').value.trim() || 'PreVendasNDD';
+        const repo = document.getElementById('repoName').value.trim() || 'Extrato_de_Horas';
+        const branch = document.getElementById('branch').value.trim() || 'main';
+        if (!token) {
+            setStatus('⚠️ Insira um Token do GitHub.', 'error');
+            return;
+        }
+
+        // Coletar os valores dos inputs e montar o objeto atualizado
+        const updatedData = {};
+        const inputs = formContainer.querySelectorAll('input, textarea');
+        for (const el of inputs) {
+            const key = el.id.replace('param_', '');
+            if (el.tagName === 'TEXTAREA') {
+                try {
+                    updatedData[key] = JSON.parse(el.value);
+                } catch (e) {
+                    setStatus(`❌ Erro no campo "${key}": JSON inválido.`, 'error');
+                    return;
+                }
+            } else {
+                let val = el.value;
+                // Tenta converter para número se for numérico
+                if (!isNaN(val) && val !== '') {
+                    updatedData[key] = Number(val);
+                } else {
+                    updatedData[key] = val;
+                }
+            }
+        }
+
+        // Monta o JSON final
+        const jsonString = JSON.stringify(updatedData, null, 2);
+
+        // Atualiza prévia
+        jsonPreview.textContent = jsonString;
+
+        // Envia para GitHub
+        const filePath = produtos[currentProduct].path;
+        const url = `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`;
+        const payload = {
+            message: `Atualizado ${produtos[currentProduct].file} via admin`,
+            content: btoa(jsonString),
+            sha: currentSha,
+            branch: branch
+        };
+
+        setStatus('🔄 Enviando para GitHub...', 'loading');
+
+        try {
+            const response = await fetch(url, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `token ${token}`,
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                const err = await response.json();
+                throw new Error(err.message || `Erro ${response.status}`);
+            }
+
+            const result = await response.json();
+            currentSha = result.content.sha;
+            currentData = updatedData;
+            setStatus(`✅ ${produtos[currentProduct].file} atualizado com sucesso! Commit: ${result.commit.sha}`, 'success');
+
+        } catch (error) {
+            setStatus(`❌ Erro ao salvar: ${error.message}`, 'error');
+            console.error(error);
+        }
+    }
+
+    // ---- Função "Deploy" (apenas commit adicional) ----
+    async function fazerDeploy() {
+        // Esta função pode ser usada para disparar uma ação de deploy, se houver.
+        // Neste exemplo, apenas refaz o commit com a mesma mensagem.
+        setStatus('🚀 Deploy: enviando commit...', 'loading');
+        await salvarArquivo();
+    }
+
+    // ---- Carregar inicial com CARGO ----
+    window.onload = function() {
+        // Preencher token se existir no localStorage
+        const savedToken = localStorage.getItem('githubToken');
+        if (savedToken) document.getElementById('githubToken').value = savedToken;
+        // Carregar automaticamente
+        setTimeout(() => carregarProduto(), 500);
+    };
+
+    // Salvar token no localStorage para não digitar toda vez
+    document.getElementById('githubToken').addEventListener('change', function() {
+        localStorage.setItem('githubToken', this.value);
+    });
+
+</script>
+</body>
+</html>
