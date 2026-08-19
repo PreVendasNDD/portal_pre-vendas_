@@ -5,12 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin · Parâmetros NDD</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, Helvetica, sans-serif;
-        }
+        /* ---------- Mesmo fundo e estilo do index ---------- */
+        @page { margin: 0; size: A4; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, Helvetica, sans-serif; }
         body {
             background-image: url('../assets/fundoazul.png');
             background-size: cover;
@@ -142,6 +139,10 @@
             border: 1px solid #ddd;
             margin-top: 15px;
         }
+        /* ---- Pequeno aviso de segurança ---- */
+        .hidden-token {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -161,13 +162,12 @@
 
     <!-- Formulário dinâmico -->
     <div id="formContainer">
-        <p style="color:#999; text-align:center; padding:20px;">Selecione um produto e aguarde o carregamento.</p>
+        <p style="color:#999; text-align:center; padding:20px;">Selecione um produto e clique em "Carregar" para editar os parâmetros.</p>
     </div>
 
     <!-- Botões de ação -->
     <div class="btn-group">
         <button class="btn btn-primary" onclick="salvarArquivo()">💾 Salvar no GitHub</button>
-        <button class="btn btn-success" onclick="fazerDeploy()">🚀 Fazer Deploy</button>
         <button class="btn btn-secondary" onclick="carregarProduto()">📥 Recarregar</button>
     </div>
 
@@ -179,204 +179,201 @@
 </div>
 
 <script>
-    // ---- CONFIGURAÇÃO GITHUB (hardcoded) ----
-    const GITHUB_TOKEN = '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';
-    const REPO_OWNER = 'PreVendasNDD';
-    const REPO_NAME = 'portal_pre-vendas_';
-    const BRANCH = 'main';
-
-    // ---- Configuração dos produtos ----
-    let currentProduct = 'CARGO';
-    let currentData = null;
-    let currentSha = null;
-
-    const produtos = {
-        CARGO: { file: 'BASE_CARGO.json', path: 'BASE_CARGO.json' },
-        MOVE:  { file: 'BASE_MOVE.json',  path: 'BASE_MOVE.json' },
-        ELOG:  { file: 'BASE_ELOG.json',  path: 'BASE_ELOG.json' }
-    };
-
-    // ---- DOM elements ----
-    const statusDiv = document.getElementById('status');
-    const formContainer = document.getElementById('formContainer');
-    const jsonPreview = document.getElementById('jsonPreview');
-
-    // ---- Função para mostrar status ----
-    function setStatus(msg, type = '') {
-        statusDiv.textContent = msg;
-        statusDiv.className = 'status';
-        if (type) statusDiv.classList.add(type);
-        if (!msg) statusDiv.style.display = 'none';
-        else statusDiv.style.display = 'block';
-    }
-
-    // ---- Seleção de produto ----
-    function selecionarProduto(prod) {
-        currentProduct = prod;
-        document.querySelectorAll('.product-selector button').forEach(b => b.classList.remove('active'));
-        document.querySelector(`.product-selector button[data-prod="${prod}"]`).classList.add('active');
-        formContainer.innerHTML = '<p style="color:#999; text-align:center; padding:20px;">Carregando...</p>';
-        jsonPreview.textContent = 'Carregando...';
-        currentData = null;
-        currentSha = null;
-        carregarProduto();
-    }
-
-    // ---- Carregar o JSON do GitHub ----
-    async function carregarProduto() {
-        const filePath = produtos[currentProduct].path;
-        const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${filePath}?ref=${BRANCH}`;
-
-        setStatus('🔄 Carregando arquivo...', 'loading');
-
-        try {
-            const response = await fetch(url, {
-                headers: {
-                    'Authorization': `token ${GITHUB_TOKEN}`,
-                    'Accept': 'application/vnd.github.v3+json'
-                }
-            });
-
-            if (!response.ok) {
-                if (response.status === 404) {
-                    throw new Error(`Arquivo ${produtos[currentProduct].file} não encontrado.`);
-                }
-                const err = await response.json();
-                throw new Error(err.message || `Erro ${response.status}`);
-            }
-
-            const data = await response.json();
-            const content = atob(data.content);
-            currentSha = data.sha;
-
-            try {
-                currentData = JSON.parse(content);
-                renderForm(currentData);
-                jsonPreview.textContent = JSON.stringify(currentData, null, 2);
-                setStatus(`✅ ${produtos[currentProduct].file} carregado com sucesso!`, 'success');
-            } catch (e) {
-                throw new Error('Erro ao interpretar JSON: ' + e.message);
-            }
-
-        } catch (error) {
-            setStatus(`❌ Erro: ${error.message}`, 'error');
-            console.error(error);
-            formContainer.innerHTML = `<p style="color:#e3062b;">Erro ao carregar: ${error.message}</p>`;
-            jsonPreview.textContent = 'Erro ao carregar.';
-        }
-    }
-
-    // ---- Renderizar formulário dinâmico ----
-    function renderForm(data) {
-        if (!data || typeof data !== 'object') {
-            formContainer.innerHTML = '<p style="color:red;">Dados inválidos.</p>';
-            return;
-        }
-
-        let html = '';
-        for (const [key, value] of Object.entries(data)) {
-            if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
-                html += `<div class="param-group">
-                    <label for="param_${key}">${key} (objeto)</label>
-                    <textarea id="param_${key}" rows="4">${JSON.stringify(value, null, 2)}</textarea>
-                </div>`;
-            } else if (Array.isArray(value)) {
-                html += `<div class="param-group">
-                    <label for="param_${key}">${key} (array)</label>
-                    <textarea id="param_${key}" rows="4">${JSON.stringify(value, null, 2)}</textarea>
-                </div>`;
-            } else {
-                html += `<div class="param-group">
-                    <label for="param_${key}">${key}</label>
-                    <input type="text" id="param_${key}" value="${value !== undefined && value !== null ? value : ''}">
-                </div>`;
-            }
-        }
-        formContainer.innerHTML = html;
-    }
-
-    // ---- Salvar alterações no GitHub ----
-    async function salvarArquivo() {
-        if (!currentData) {
-            setStatus('⚠️ Nenhum dado carregado. Clique em "Recarregar" primeiro.', 'error');
-            return;
-        }
-
-        // Coletar os valores dos inputs e montar o objeto atualizado
-        const updatedData = {};
-        const inputs = formContainer.querySelectorAll('input, textarea');
-        for (const el of inputs) {
-            const key = el.id.replace('param_', '');
-            if (el.tagName === 'TEXTAREA') {
-                try {
-                    updatedData[key] = JSON.parse(el.value);
-                } catch (e) {
-                    setStatus(`❌ Erro no campo "${key}": JSON inválido.`, 'error');
-                    return;
-                }
-            } else {
-                let val = el.value;
-                if (!isNaN(val) && val !== '') {
-                    updatedData[key] = Number(val);
-                } else {
-                    updatedData[key] = val;
-                }
-            }
-        }
-
-        // Monta o JSON final
-        const jsonString = JSON.stringify(updatedData, null, 2);
-        jsonPreview.textContent = jsonString;
-
-        const filePath = produtos[currentProduct].path;
-        const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${filePath}`;
-        const payload = {
-            message: `Atualizado ${produtos[currentProduct].file} via admin`,
-            content: btoa(jsonString),
-            sha: currentSha,
-            branch: BRANCH
+    (function() {
+        // ---- CONFIGURAÇÃO FIXA (não exibida) ----
+        const CONFIG = {
+            token: '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',
+            owner: 'PreVendasNDD',
+            repo: 'portal_pre-vendas_',
+            branch: 'main'
         };
 
-        setStatus('🔄 Enviando para GitHub...', 'loading');
+        // ---- Mapeamento dos produtos ----
+        const produtos = {
+            CARGO: { file: 'BASE_CARGO.json', path: 'BASE_CARGO.json' },
+            MOVE:  { file: 'BASE_MOVE.json',  path: 'BASE_MOVE.json' },
+            ELOG:  { file: 'BASE_ELOG.json',  path: 'BASE_ELOG.json' }
+        };
 
-        try {
-            const response = await fetch(url, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `token ${GITHUB_TOKEN}`,
-                    'Accept': 'application/vnd.github.v3+json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(payload)
-            });
+        // ---- Variáveis de estado ----
+        let currentProduct = 'CARGO';
+        let currentData = null;
+        let currentSha = null;
 
-            if (!response.ok) {
-                const err = await response.json();
-                throw new Error(err.message || `Erro ${response.status}`);
+        // ---- DOM ----
+        const statusDiv = document.getElementById('status');
+        const formContainer = document.getElementById('formContainer');
+        const jsonPreview = document.getElementById('jsonPreview');
+
+        // ---- Função de status ----
+        function setStatus(msg, type = '') {
+            statusDiv.textContent = msg;
+            statusDiv.className = 'status';
+            if (type) statusDiv.classList.add(type);
+            if (!msg) statusDiv.style.display = 'none';
+            else statusDiv.style.display = 'block';
+        }
+
+        // ---- Seleção de produto ----
+        window.selecionarProduto = function(prod) {
+            currentProduct = prod;
+            document.querySelectorAll('.product-selector button').forEach(b => b.classList.remove('active'));
+            document.querySelector(`.product-selector button[data-prod="${prod}"]`).classList.add('active');
+            formContainer.innerHTML = '<p style="color:#999; text-align:center; padding:20px;">Clique em "Recarregar" para ver os parâmetros.</p>';
+            jsonPreview.textContent = 'Nenhum JSON carregado.';
+            currentData = null;
+            currentSha = null;
+            setStatus('', '');
+        };
+
+        // ---- Carregar JSON do GitHub ----
+        window.carregarProduto = async function() {
+            const filePath = produtos[currentProduct].path;
+            const url = `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${filePath}?ref=${CONFIG.branch}`;
+
+            setStatus('🔄 Carregando arquivo...', 'loading');
+
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        'Authorization': `token ${CONFIG.token}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        throw new Error('Arquivo não encontrado. Crie-o primeiro no repositório.');
+                    }
+                    const err = await response.json();
+                    throw new Error(err.message || `Erro ${response.status}`);
+                }
+
+                const data = await response.json();
+                const content = atob(data.content);
+                currentSha = data.sha;
+
+                try {
+                    currentData = JSON.parse(content);
+                    renderForm(currentData);
+                    jsonPreview.textContent = JSON.stringify(currentData, null, 2);
+                    setStatus(`✅ ${produtos[currentProduct].file} carregado com sucesso!`, 'success');
+                } catch (e) {
+                    throw new Error('Erro ao parsear JSON: ' + e.message);
+                }
+
+            } catch (error) {
+                setStatus(`❌ Erro: ${error.message}`, 'error');
+                console.error(error);
+            }
+        };
+
+        // ---- Renderizar formulário ----
+        function renderForm(data) {
+            if (!data || typeof data !== 'object') {
+                formContainer.innerHTML = '<p style="color:red;">Dados inválidos.</p>';
+                return;
             }
 
-            const result = await response.json();
-            currentSha = result.content.sha;
-            currentData = updatedData;
-            setStatus(`✅ ${produtos[currentProduct].file} atualizado com sucesso! Commit: ${result.commit.sha.slice(0,7)}`, 'success');
-
-        } catch (error) {
-            setStatus(`❌ Erro ao salvar: ${error.message}`, 'error');
-            console.error(error);
+            let html = '';
+            for (const [key, value] of Object.entries(data)) {
+                if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+                    html += `<div class="param-group">
+                        <label for="param_${key}">${key} (objeto)</label>
+                        <textarea id="param_${key}" rows="4">${JSON.stringify(value, null, 2)}</textarea>
+                    </div>`;
+                } else if (Array.isArray(value)) {
+                    html += `<div class="param-group">
+                        <label for="param_${key}">${key} (array)</label>
+                        <textarea id="param_${key}" rows="4">${JSON.stringify(value, null, 2)}</textarea>
+                    </div>`;
+                } else {
+                    html += `<div class="param-group">
+                        <label for="param_${key}">${key}</label>
+                        <input type="text" id="param_${key}" value="${value !== undefined && value !== null ? value : ''}">
+                    </div>`;
+                }
+            }
+            formContainer.innerHTML = html;
         }
-    }
 
-    // ---- Função "Deploy" (apenas commit adicional) ----
-    async function fazerDeploy() {
-        setStatus('🚀 Deploy: enviando commit...', 'loading');
-        await salvarArquivo();
-    }
+        // ---- Salvar no GitHub ----
+        window.salvarArquivo = async function() {
+            if (!currentData) {
+                setStatus('⚠️ Nenhum dado carregado. Clique em "Recarregar" primeiro.', 'error');
+                return;
+            }
 
-    // ---- Inicialização ----
-    window.onload = function() {
-        carregarProduto();
-    };
+            // Coletar valores do formulário
+            const updatedData = {};
+            const inputs = formContainer.querySelectorAll('input, textarea');
+            for (const el of inputs) {
+                const key = el.id.replace('param_', '');
+                if (el.tagName === 'TEXTAREA') {
+                    try {
+                        updatedData[key] = JSON.parse(el.value);
+                    } catch (e) {
+                        setStatus(`❌ Erro no campo "${key}": JSON inválido.`, 'error');
+                        return;
+                    }
+                } else {
+                    let val = el.value;
+                    if (!isNaN(val) && val !== '') {
+                        updatedData[key] = Number(val);
+                    } else {
+                        updatedData[key] = val;
+                    }
+                }
+            }
 
+            const jsonString = JSON.stringify(updatedData, null, 2);
+            jsonPreview.textContent = jsonString;
+
+            const filePath = produtos[currentProduct].path;
+            const url = `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${filePath}`;
+            const payload = {
+                message: `Atualizado ${produtos[currentProduct].file} via admin`,
+                content: btoa(jsonString),
+                sha: currentSha,
+                branch: CONFIG.branch
+            };
+
+            setStatus('🔄 Enviando para GitHub...', 'loading');
+
+            try {
+                const response = await fetch(url, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${CONFIG.token}`,
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const err = await response.json();
+                    throw new Error(err.message || `Erro ${response.status}`);
+                }
+
+                const result = await response.json();
+                currentSha = result.content.sha;
+                currentData = updatedData;
+                setStatus(`✅ ${produtos[currentProduct].file} atualizado com sucesso! Commit: ${result.commit.sha.slice(0,7)}`, 'success');
+
+            } catch (error) {
+                setStatus(`❌ Erro ao salvar: ${error.message}`, 'error');
+                console.error(error);
+            }
+        };
+
+        // ---- Inicialização ----
+        window.onload = function() {
+            setTimeout(() => carregarProduto(), 500);
+        };
+
+    })();
 </script>
+
 </body>
 </html>
