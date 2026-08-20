@@ -896,18 +896,13 @@
     (function() {
         'use strict';
 
-        // ---- Variáveis de controle ----
+        // ---- Variáveis ----
         let base = null;
         let carregando = false;
 
-        // ---- Função para carregar a base (sem fallback) ----
-        function carregarBase() {
-            if (base) {
-                console.log('✅ Base já carregada.');
-                return Promise.resolve(base);
-            }
+        // ---- Função para carregar a base (SEMPRE atual, sem cache, sem fallback) ----
+        async function carregarBase() {
             if (carregando) {
-                console.log('⏳ Carregamento já em andamento...');
                 return new Promise((resolve) => {
                     const checkInterval = setInterval(() => {
                         if (base) {
@@ -919,67 +914,30 @@
             }
 
             carregando = true;
-            console.log('🔍 Tentando carregar BASE_ELOG.json...');
+            const url = `elog/BASE_ELOG.json?t=${Date.now()}`;
 
-            // Tenta fetch (funciona em servidores)
-            return fetch('BASE_ELOG.json')
-                .then(response => {
-                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                    return response.json();
-                })
-                .then(data => {
-                    base = data;
-                    carregando = false;
-                    console.log('✅ Base carregada:', base);
-                    if (window._calcularPending) {
-                        calcular();
-                        window._calcularPending = false;
+            try {
+                const response = await fetch(url, {
+                    cache: 'no-store',
+                    headers: {
+                        'Cache-Control': 'no-cache, no-store, must-revalidate',
+                        'Pragma': 'no-cache',
+                        'Expires': '0'
                     }
-                    return base;
-                })
-                .catch(fetchError => {
-                    console.warn('⚠️ Fetch falhou, tentando XMLHttpRequest...', fetchError);
-                    // Fallback com XMLHttpRequest
-                    return new Promise((resolve, reject) => {
-                        const xhr = new XMLHttpRequest();
-                        xhr.open('GET', 'BASE_ELOG.json', true);
-                        xhr.onreadystatechange = function() {
-                            if (xhr.readyState === 4) {
-                                if (xhr.status === 200) {
-                                    try {
-                                        const data = JSON.parse(xhr.responseText);
-                                        resolve(data);
-                                    } catch (e) {
-                                        reject(e);
-                                    }
-                                } else {
-                                    reject(new Error(`XHR status ${xhr.status}`));
-                                }
-                            }
-                        };
-                        xhr.onerror = function() {
-                            reject(new Error('XHR network error'));
-                        };
-                        xhr.send();
-                    })
-                    .then(data => {
-                        base = data;
-                        carregando = false;
-                        console.log('✅ Base carregada (XHR):', base);
-                        if (window._calcularPending) {
-                            calcular();
-                            window._calcularPending = false;
-                        }
-                        return base;
-                    })
-                    .catch(xhrError => {
-                        carregando = false;
-                        console.error('❌ Falha ao carregar BASE_ELOG.json:', xhrError);
-                        alert('❌ Arquivo BASE_ELOG.json não encontrado.\n\nVerifique se o arquivo está na mesma pasta.\n\nO cálculo não será executado.');
-                        // Não chama calcular() - trava a execução
-                        return Promise.reject(xhrError);
-                    });
                 });
+
+                if (!response.ok) {
+                    throw new Error(`Arquivo elog/BASE_ELOG.json não encontrado (status ${response.status})`);
+                }
+
+                base = await response.json();
+                carregando = false;
+                return base;
+            } catch (error) {
+                carregando = false;
+                alert('❌ Não foi possível carregar elog/BASE_ELOG.json.\n\nVerifique se o arquivo existe na pasta "elog".\n\nO cálculo não será executado.');
+                throw error;
+            }
         }
 
         // ---- Elementos do DOM ----
@@ -1048,7 +1006,6 @@
             inputData.value = dataISO;
             spanData1.textContent = dataFormatada;
             spanData2.textContent = dataFormatada;
-            return dataFormatada;
         }
         setDataAtual();
 
@@ -1099,18 +1056,11 @@
         }
 
         // ============================================================
-        // CÁLCULO PRINCIPAL (usando base)
+        // EXECUÇÃO DO CÁLCULO
         // ============================================================
-        function calcular() {
+        function executarCalculo() {
             if (!base) {
-                console.warn('⏳ Base não carregada, carregando...');
-                window._calcularPending = true;
-                carregarBase().then(() => {
-                    if (window._calcularPending) {
-                        window._calcularPending = false;
-                        calcular();
-                    }
-                });
+                alert('Base não carregada. Tente novamente.');
                 return;
             }
 
@@ -1414,6 +1364,24 @@
             }
         }
 
+        // ============================================================
+        // CÁLCULO (chama o carregamento da base e depois executa)
+        // ============================================================
+        function calcular() {
+            if (base) {
+                executarCalculo();
+                return;
+            }
+
+            carregarBase()
+                .then(() => {
+                    executarCalculo();
+                })
+                .catch(() => {
+                    // Erro já foi exibido no alert
+                });
+        }
+
         // ---- Eventos ----
         calcularBtn.addEventListener('click', function() {
             window._isUserClick = true;
@@ -1439,19 +1407,21 @@
             document.getElementById('container-principal').classList.add('sidebar-active');
             document.getElementById('sidebar-global').style.display = 'flex';
 
-            carregarBase().then(() => {
-                if (!window._calcularPending) {
-                    calcular();
-                }
-            });
+            carregarBase()
+                .then(() => {
+                    executarCalculo();
+                })
+                .catch(() => {
+                    // Erro já foi exibido
+                });
         });
 
-        // ---- Funções globais (sidebar, contatos, etc.) ----
+        // ---- Funções globais ----
         window.irPara = function(destino) { window.location.href = destino; };
         window.abrirLink = function(url) { window.open(url, '_blank'); };
 
         // ============================================================
-        // DADOS DOS EXECUTIVOS DA VERTICAL LOGÍSTICA
+        // DADOS DOS EXECUTIVOS
         // ============================================================
         const executivosLogistica = [
             {
@@ -1462,24 +1432,18 @@
             }
         ];
 
-        // ============================================================
-        // FUNÇÕES DO MODAL
-        // ============================================================
         let modalEmail = '';
 
         window.abrirModal = function(email, nome) {
             modalEmail = email;
-
             document.getElementById('modal-btn-teams').onclick = function() {
                 window.location.href = 'msteams://teams.microsoft.com/l/chat/0/0?users=' + modalEmail;
                 fecharModal();
             };
-
             document.getElementById('modal-btn-email').onclick = function() {
                 window.location.href = 'mailto:' + modalEmail;
                 fecharModal();
             };
-
             document.getElementById('contact-modal').classList.add('show');
         };
 
@@ -1493,13 +1457,9 @@
             }
         };
 
-        // ============================================================
-        // RENDERIZAR OS CARDS DOS EXECUTIVOS
-        // ============================================================
         function renderizarExecutivos() {
             const grid = document.getElementById('executiveGrid');
             if (!grid) return;
-
             let html = '';
             executivosLogistica.forEach(ex => {
                 html += `
@@ -1518,9 +1478,6 @@
 
         document.addEventListener('DOMContentLoaded', renderizarExecutivos);
 
-        // ============================================================
-        // POP-UP CUSTOMIZADO
-        // ============================================================
         function abrirPopup(mensagem) {
             document.getElementById('popup-mensagem').textContent = mensagem;
             document.getElementById('popup-overlay').style.display = 'flex';
