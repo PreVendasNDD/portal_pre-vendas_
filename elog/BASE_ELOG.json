@@ -1,5 +1,5 @@
 {
-  "baseAmbientes": 64,
+  "baseAmbientes": 32,
   "incrementoAmbientes": 3,
   "baseCadastro": 16,
   "incrementoCadastro": 3,
