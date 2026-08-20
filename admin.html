@@ -220,8 +220,9 @@
         ELOG:  { file: 'BASE_ELOG.json',  path: 'elog/BASE_ELOG.json' }
     };
 
-    // ---- MAPEAMENTO DE NOMES AMIGÁVEIS ----
+    // ---- MAPEAMENTO DE NOMES AMIGÁVEIS (ATUALIZADO PARA ELOG) ----
     const labels = {
+        // CARGO
         horasPorCnpj: { label: 'Horas por CNPJ', desc: 'Tempo para cadastrar cada CNPJ na parametrização operacional.' },
         horasPorUsuario: { label: 'Horas por Usuário', desc: 'Tempo para criar e configurar cada usuário.' },
         horasPorCnpjModulo: { label: 'Horas por CNPJ (Módulos)', desc: 'Tempo para configurar cada módulo (CIOT, Frete, Vale) por CNPJ.' },
@@ -229,6 +230,8 @@
         horasTreinamento: { label: 'Horas - Treinamento', desc: 'Tempo fixo para acompanhamento e treinamento.' },
         jornadaDiaria: { label: 'Jornada Diária (horas)', desc: 'Quantas horas tem um dia útil de trabalho.' },
         jornadaSemanal: { label: 'Jornada Semanal (horas)', desc: 'Quantas horas tem uma semana de trabalho.' },
+
+        // MOVE
         baseAmbientes: { label: 'Base - Ambientes', desc: 'Tempo base para configuração de ambientes (HMG + PRD).' },
         baseCadastro: { label: 'Base - Cadastro', desc: 'Tempo base para cadastro e parametrização.' },
         baseUsuarios: { label: 'Base - Usuários', desc: 'Tempo base para criação de usuários (primeiros usuários).' },
@@ -236,22 +239,37 @@
         baseApp: { label: 'Base - App Conector', desc: 'Tempo para configuração e instalação do App Conector.' },
         fatorAmbientes: { label: 'Fator - Ambientes', desc: 'Percentual aplicado sobre o tempo de ambientes (ex: 0.99 = 99%).' },
         fatorUsuarios: { label: 'Fator - Usuários', desc: 'Percentual aplicado sobre o tempo de usuários.' },
-        incrementoAmbientes: { label: 'Incremento por CNPJ (Ambientes)', desc: 'Horas adicionais por CNPJ na configuração de ambientes.' },
-        incrementoCadastro: { label: 'Incremento por CNPJ (Cadastro)', desc: 'Horas adicionais por CNPJ no cadastro e parametrização.' },
-        horasPedidos: { label: 'Horas - Integração Pedidos', desc: 'Tempo para configurar a integração de Pedidos.' },
-        horasEventos: { label: 'Horas - Integração Eventos', desc: 'Tempo para configurar a integração de Eventos Logísticos.' },
-        horasPagamento: { label: 'Horas - Integração Pagamento', desc: 'Tempo para configurar a integração de Pagamento.' },
-        horasEssencial: { label: 'Horas - Módulo Essencial', desc: 'Tempo para configurar o módulo Essencial.' },
-        horasTorre: { label: 'Horas - Torre de Controle', desc: 'Tempo para configurar o módulo Torre de Controle.' },
-        horasVale: { label: 'Horas - Vale Pedágio Obrigatório', desc: 'Tempo para configurar o módulo VPO.' },
-        horasFrete: { label: 'Horas - Pagamento de Frete', desc: 'Tempo para configurar o módulo Pagamento de Frete.' },
-        horasAuditoria: { label: 'Horas - Auditoria de Fretes', desc: 'Tempo para configurar o módulo Auditoria de Fretes.' },
-        horasGoLive: { label: 'Horas - Go Live', desc: 'Tempo para acompanhamento de entrada em produção.' },
-        horasSustentacao: { label: 'Horas - Sustentação', desc: 'Tempo de suporte operacional pós-implantação.' },
-        subetapas: { label: '📋 Subetapas (detalhamento)', desc: 'Estrutura de subetapas para o modelo detalhado. Edite o JSON com cuidado.' }
+        baseGoLive: { label: 'Base - Go Live', desc: 'Tempo base para acompanhamento Go Live.' },
+        baseSustentacao: { label: 'Base - Sustentação', desc: 'Tempo base para suporte pós Go Live.' },
+        baseTreinamento: { label: 'Base - Treinamento', desc: 'Tempo base para treinamento.' },
+        subetapas: { label: '📋 Subetapas (detalhamento)', desc: 'Estrutura de subetapas para o modelo detalhado. Edite o JSON com cuidado.' },
+
+        // ---- ELOG (CONFORME SUA TABELA) ----
+        // 📦 Módulos
+        horasEssencial: { label: 'Essencial', desc: 'Valor Fixo se adere ao módulo.' },
+        horasTorre: { label: 'Torre de Controle', desc: 'Valor Fixo se adere ao módulo.' },
+        horasVale: { label: 'Vale Pedágio / VPO', desc: 'Valor Fixo se adere ao módulo.' },
+        horasFrete: { label: 'Pagamento de Frete', desc: 'Valor Fixo se adere ao módulo.' },
+        horasAuditoria: { label: 'Auditoria de Fretes', desc: 'Valor Fixo se adere ao módulo.' },
+
+        // 🏗️ Etapas
+        baseAmbientes: { label: 'Configuração de Ambientes (base)', desc: '32h + 3h por CNPJ adicional.' },
+        incrementoAmbientes: { label: 'Incremento por CNPJ (Ambientes)', desc: 'Valor base para cálculo.' },
+        baseCadastro: { label: 'Cadastro e Parametrização (base)', desc: '16h + 3h por CNPJ adicional.' },
+        incrementoCadastro: { label: 'Incremento por CNPJ (Cadastro)', desc: 'Valor base para cálculo.' },
+        baseUsuarios: { label: 'Criação de Usuários (base)', desc: '2h + 1h por usuário adicional.' },
+        incrementoUsuarios: { label: 'Incremento por Usuário', desc: 'Valor base para cálculo.' },
+        horasGoLive: { label: 'Go Live', desc: 'Valor Fixo.' },
+        horasSustentacao: { label: 'Sustentação Pós Go Live', desc: 'Valor Fixo.' },
+        horasTreinamento: { label: 'Treinamentos', desc: 'Valor Fixo.' },
+
+        // 🔗 Processos (integrações)
+        horasPedidos: { label: 'Pedidos', desc: 'Valor Fixo.' },
+        horasEventos: { label: 'Eventos Logísticos', desc: 'Valor Fixo.' },
+        horasPagamento: { label: 'Pagamento', desc: 'Valor Fixo.' }
     };
 
-    // ---- AGRUPAMENTOS (CORRIGIDOS PARA O MOVE) ----
+    // ---- AGRUPAMENTOS (ATUALIZADO PARA ELOG) ----
     const sections = {
         CARGO: [
             { title: '⏱️ Tempos Base', keys: ['horasPorCnpj', 'horasPorUsuario', 'horasPorCnpjModulo'] },
@@ -260,7 +278,7 @@
         ],
         MOVE: [
             { title: '🏗️ Ambientes e Cadastro', keys: ['baseAmbientes', 'baseCadastro'] },
-            { title: '👤 Usuários', keys: ['horasPorUsuario'] },  // ← corrigido
+            { title: '👤 Usuários', keys: ['horasPorUsuario'] },
             { title: '📱 App Conector', keys: ['baseApp'] },
             { title: '🚀 Go Live e Sustentação', keys: ['baseGoLive', 'baseSustentacao', 'baseTreinamento'] },
             { title: '📊 Fatores de Ajuste', keys: ['fatorAmbientes'] },
@@ -268,13 +286,11 @@
             { title: '📋 Subetapas (detalhamento)', keys: ['subetapas'] }
         ],
         ELOG: [
-            { title: '🏗️ Ambientes e Cadastro', keys: ['baseAmbientes', 'incrementoAmbientes', 'baseCadastro', 'incrementoCadastro'] },
-            { title: '👤 Usuários', keys: ['baseUsuarios', 'incrementoUsuarios'] },
-            { title: '🔗 Integrações', keys: ['horasPedidos', 'horasEventos', 'horasPagamento'] },
             { title: '📦 Módulos', keys: ['horasEssencial', 'horasTorre', 'horasVale', 'horasFrete', 'horasAuditoria'] },
-            { title: '🚀 Go Live e Sustentação', keys: ['horasGoLive', 'horasSustentacao', 'horasTreinamento'] },
-            { title: '📅 Jornada', keys: ['jornadaDiaria', 'jornadaSemanal'] },
-            { title: '📊 Fatores de Ajuste', keys: ['fatorAmbientes', 'fatorUsuarios'] }
+            { title: '🏗️ Etapas', keys: ['baseAmbientes', 'incrementoAmbientes', 'baseCadastro', 'incrementoCadastro', 'baseUsuarios', 'incrementoUsuarios', 'horasGoLive', 'horasSustentacao', 'horasTreinamento'] },
+            { title: '🔗 Processos (Integrações)', keys: ['horasPedidos', 'horasEventos', 'horasPagamento'] },
+            { title: '📊 Itens de valor unitário', keys: ['incrementoAmbientes', 'incrementoUsuarios'] },
+            { title: '⚙️ Configurações adicionais', keys: ['fatorAmbientes', 'fatorUsuarios', 'jornadaDiaria', 'jornadaSemanal'] }
         ]
     };
 
