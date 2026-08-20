@@ -965,6 +965,7 @@
         // ---- Função para carregar a base (SEMPRE atual, sem cache, sem fallback) ----
         async function carregarBase() {
             if (carregando) {
+                // Se já está carregando, aguarda
                 return new Promise((resolve) => {
                     const checkInterval = setInterval(() => {
                         if (base) {
@@ -977,8 +978,7 @@
 
             carregando = true;
             const url = `BASE_MOVE.json?t=${Date.now()}`;
-            console.log('🔍 Buscando BASE_MOVE.json (atual)...');
-
+            
             try {
                 const response = await fetch(url, {
                     cache: 'no-store',
@@ -996,16 +996,15 @@
                 const data = await response.json();
                 base = data;
                 carregando = false;
-                console.log('✅ Base carregada (atualizada):', base);
                 return base;
             } catch (error) {
                 carregando = false;
-                console.error('❌ Erro ao carregar BASE_MOVE.json:', error);
                 alert('❌ Não foi possível carregar o arquivo BASE_MOVE.json.\n\nVerifique se o arquivo existe e está acessível.\n\nO cálculo não será executado.');
                 throw error;
             }
         }
 
+        // ---- Elementos do DOM ----
         const inputCliente = document.getElementById('cliente');
         const inputData = document.getElementById('data');
         const inputCNPJs = document.getElementById('cnpjs');
@@ -1042,6 +1041,7 @@
         const extrato1 = document.getElementById('extrato-modelo1');
         const extrato2 = document.getElementById('extrato-modelo2');
 
+        // ---- Data atual ----
         function setDataAtual() {
             const hoje = new Date();
             const dia = String(hoje.getDate()).padStart(2, '0');
@@ -1052,10 +1052,10 @@
             inputData.value = dataISO;
             spanData1.textContent = dataFormatada;
             spanData2.textContent = dataFormatada;
-            return dataFormatada;
         }
-        const dataExibicao = setDataAtual();
+        setDataAtual();
 
+        // ---- Utilitários ----
         function getNumber(id) {
             const val = document.getElementById(id).value.trim();
             if (val === '') return NaN;
@@ -1066,6 +1066,7 @@
             return Math.round(v * 10) / 10;
         }
 
+        // ---- Limpar ----
         function limparCampos() {
             inputCliente.value = '';
             inputCNPJs.value = '';
@@ -1075,6 +1076,7 @@
             calcular();
         }
 
+        // ---- Obter modelo selecionado ----
         function getModeloSelecionado() {
             for (const radio of radioModelo) {
                 if (radio.checked) return parseInt(radio.value);
@@ -1082,6 +1084,7 @@
             return 1;
         }
 
+        // ---- Mostrar/esconder modelos ----
         function mostrarModelo(modelo) {
             if (modelo === 1) {
                 extrato1.classList.add('active');
@@ -1093,7 +1096,7 @@
         }
 
         // ============================================================
-        // EXECUÇÃO DO CÁLCULO (agora separada, chamada após carregar a base)
+        // EXECUÇÃO DO CÁLCULO
         // ============================================================
         function executarCalculo() {
             if (!base) {
@@ -1276,15 +1279,19 @@
         // CÁLCULO (chama o carregamento da base e depois executa)
         // ============================================================
         function calcular() {
-            window._calcularPending = true;
+            // Se a base já estiver carregada, executa direto
+            if (base) {
+                executarCalculo();
+                return;
+            }
+
+            // Senão, carrega e depois executa
             carregarBase()
                 .then(() => {
-                    window._calcularPending = false;
                     executarCalculo();
                 })
                 .catch(() => {
-                    window._calcularPending = false;
-                    // Erro já foi exibido no alert
+                    // Erro já foi exibido no alert dentro de carregarBase()
                 });
         }
 
@@ -1313,11 +1320,14 @@
             document.getElementById('container-principal').classList.add('sidebar-active');
             document.getElementById('sidebar-global').style.display = 'flex';
 
-            carregarBase().then(() => {
-                if (!window._calcularPending) {
+            // Carrega a base inicial
+            carregarBase()
+                .then(() => {
                     executarCalculo();
-                }
-            });
+                })
+                .catch(() => {
+                    // Erro já foi exibido
+                });
         });
 
         // ---- Funções globais (sidebar, contatos, etc.) ----
