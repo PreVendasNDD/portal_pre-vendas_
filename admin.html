@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin · Parâmetros NDD</title>
     <style>
-        /* ---------- MESMO FUNDO AZUL DO INDEX ---------- */
         * {
             margin: 0;
             padding: 0;
@@ -13,15 +12,14 @@
             font-family: Arial, Helvetica, sans-serif;
         }
         body {
-            background-image: url('../assets/fundoazul.png');
+            background-image: url('assets/fundoazul.png');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
             min-height: 100vh;
             padding: 20px;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
+            justify-content: flex-start;
             align-items: center;
         }
         .container {
@@ -143,17 +141,48 @@
             border: 1px solid #ddd;
             margin-top: 15px;
         }
-        .info-box {
-            background: #f0f4f9;
+        .token-section {
+            background: #f8f9fa;
             padding: 15px 20px;
             border-radius: 10px;
             margin-bottom: 25px;
-            border-left: 4px solid #ff7079;
+            border: 1px solid #e9e9e9;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 15px;
         }
-        .info-box p {
+        .token-section label {
+            font-weight: 600;
+            font-size: 13px;
+            color: #333;
+        }
+        .token-section input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
             font-size: 14px;
-            color: #1a2f4f;
-            margin: 0;
+            min-width: 200px;
+        }
+        .token-section .hint {
+            font-size: 12px;
+            color: #777;
+            width: 100%;
+        }
+        .token-section .btn-sm {
+            padding: 6px 20px;
+            border: none;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            background: #6c757d;
+            color: #fff;
+            transition: 0.2s;
+        }
+        .token-section .btn-sm:hover {
+            background: #495057;
         }
     </style>
 </head>
@@ -162,9 +191,12 @@
     <h1>⚙️ Admin · Parâmetros de Cálculo</h1>
     <p class="subtitle">Edite os valores dos arquivos JSON dos produtos e envie para o GitHub.</p>
 
-    <!-- Info -->
-    <div class="info-box">
-        <p>🔐 As alterações serão salvas diretamente no repositório <strong>PreVendasNDD/portal_pre-vendas_</strong> (branch main).</p>
+    <!-- Seção do Token -->
+    <div class="token-section">
+        <label for="githubToken">🔑 Token do GitHub:</label>
+        <input type="password" id="githubToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+        <button class="btn-sm" onclick="salvarToken()">💾 Salvar token</button>
+        <div class="hint">O token será salvo no seu navegador (localStorage). Você só precisa digitar uma vez. <br> Crie um token com permissão <strong>repo</strong> em <a href="https://github.com/settings/tokens" target="_blank">GitHub Settings → Tokens</a>.</div>
     </div>
 
     <!-- Seletor de produto -->
@@ -197,8 +229,7 @@
 </div>
 
 <script>
-    // ---- CONFIGURAÇÕES (NÃO MEXER) ----
-    const GITHUB_TOKEN = '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';
+    // ---- CONFIGURAÇÕES ----
     const REPO_OWNER = 'PreVendasNDD';
     const REPO_NAME = 'portal_pre-vendas_';
     const BRANCH = 'main';
@@ -218,6 +249,29 @@
     const statusDiv = document.getElementById('status');
     const formContainer = document.getElementById('formContainer');
     const jsonPreview = document.getElementById('jsonPreview');
+    const tokenInput = document.getElementById('githubToken');
+
+    // ---- Gerenciar Token ----
+    function carregarToken() {
+        const saved = localStorage.getItem('githubToken');
+        if (saved) {
+            tokenInput.value = saved;
+        }
+    }
+
+    function salvarToken() {
+        const token = tokenInput.value.trim();
+        if (token) {
+            localStorage.setItem('githubToken', token);
+            setStatus('✅ Token salvo no navegador.', 'success');
+        } else {
+            setStatus('⚠️ Digite um token válido.', 'error');
+        }
+    }
+
+    function getToken() {
+        return tokenInput.value.trim();
+    }
 
     // ---- Funções ----
     function selecionarProduto(prod) {
@@ -241,6 +295,12 @@
 
     // ---- Carregar JSON do GitHub ----
     async function carregarProduto() {
+        const token = getToken();
+        if (!token) {
+            setStatus('⚠️ Digite e salve um token do GitHub primeiro.', 'error');
+            return;
+        }
+
         const filePath = produtos[currentProduct].path;
         const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${filePath}?ref=${BRANCH}`;
 
@@ -249,17 +309,17 @@
         try {
             const response = await fetch(url, {
                 headers: {
-                    'Authorization': `token ${GITHUB_TOKEN}`,
+                    'Authorization': `token ${token}`,
                     'Accept': 'application/vnd.github.v3+json'
                 }
             });
 
             if (!response.ok) {
                 if (response.status === 404) {
-                    throw new Error(`Arquivo ${filePath} não encontrado. Crie-o primeiro no repositório.`);
+                    throw new Error(`Arquivo ${filePath} não encontrado. Crie-o primeiro.`);
                 }
                 if (response.status === 401 || response.status === 403) {
-                    throw new Error('Token inválido ou sem permissão. Gere um novo token com permissão "repo".');
+                    throw new Error('Token inválido ou sem permissão. Gere um novo com permissão "repo".');
                 }
                 const err = await response.json();
                 throw new Error(err.message || `Erro ${response.status}`);
@@ -320,6 +380,12 @@
             return;
         }
 
+        const token = getToken();
+        if (!token) {
+            setStatus('⚠️ Token não encontrado. Salve o token primeiro.', 'error');
+            return;
+        }
+
         // Coletar valores dos inputs
         const updatedData = {};
         const inputs = formContainer.querySelectorAll('input, textarea');
@@ -360,7 +426,7 @@
             const response = await fetch(url, {
                 method: 'PUT',
                 headers: {
-                    'Authorization': `token ${GITHUB_TOKEN}`,
+                    'Authorization': `token ${token}`,
                     'Accept': 'application/vnd.github.v3+json',
                     'Content-Type': 'application/json'
                 },
@@ -383,7 +449,7 @@
         }
     }
 
-    // ---- Deploy (alias para salvar) ----
+    // ---- Deploy ----
     async function fazerDeploy() {
         setStatus('🚀 Deploy: enviando commit...', 'loading');
         await salvarArquivo();
@@ -391,9 +457,22 @@
 
     // ---- Inicialização ----
     window.onload = function() {
-        // Carrega automaticamente o CARGO ao abrir a página
-        setTimeout(() => carregarProduto(), 500);
+        carregarToken();
+        // Se tiver token salvo, carrega automaticamente
+        if (getToken()) {
+            setTimeout(() => carregarProduto(), 500);
+        } else {
+            setStatus('🔑 Digite e salve um token para começar.', '');
+        }
     };
+
+    // Salvar token ao mudar o campo (opcional)
+    tokenInput.addEventListener('change', function() {
+        if (this.value.trim()) {
+            localStorage.setItem('githubToken', this.value.trim());
+            setStatus('✅ Token salvo automaticamente.', 'success');
+        }
+    });
 </script>
 </body>
 </html>
