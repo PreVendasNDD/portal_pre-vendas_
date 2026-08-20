@@ -132,6 +132,36 @@
         }
         .section-title:first-of-type { margin-top: 0; }
 
+        /* ---------- ESTILOS PARA TABELAS (CARGO e ELOG) ---------- */
+        .param-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .param-table th {
+            text-align: left;
+            border-bottom: 2px solid #ff7079;
+            padding: 8px;
+            font-weight: 700;
+            color: #1a2f4f;
+        }
+        .param-table td {
+            padding: 8px;
+            border-bottom: 1px solid #e9e9e9;
+            vertical-align: middle;
+        }
+        .param-table .input-valor {
+            width: 80px;
+            text-align: center;
+            padding: 4px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .param-table .unidade {
+            text-align: center;
+            color: #555;
+        }
+
         /* ---------- BOTÕES ---------- */
         .btn-group {
             display: flex;
@@ -220,18 +250,21 @@
         ELOG:  { file: 'BASE_ELOG.json',  path: 'elog/BASE_ELOG.json' }
     };
 
-    // ---- MAPEAMENTO DE NOMES AMIGÁVEIS (ATUALIZADO) ----
+    // ---- MAPEAMENTO DE NOMES AMIGÁVEIS (ATUALIZADO PARA CARGO) ----
     const labels = {
-        // CARGO
-        horasPorCnpj: { label: 'Horas por CNPJ', desc: 'Tempo para cadastrar cada CNPJ na parametrização operacional.' },
-        horasPorUsuario: { label: 'Horas por Usuário', desc: 'Tempo para criar e configurar cada usuário.' },
-        horasPorCnpjModulo: { label: 'Horas por CNPJ (Módulos)', desc: 'Tempo para configurar cada módulo (CIOT, Frete, Vale) por CNPJ.' },
-        horasContaDigital: { label: 'Horas - Conta Digital', desc: 'Tempo para criar a conta digital (se Frete ou Vale estiverem ativos).' },
-        horasTreinamento: { label: 'Horas - Treinamento', desc: 'Tempo fixo para acompanhamento e treinamento.' },
+        // ---- CARGO (CONFORME A IMAGEM) ----
+        horasCIOT: { label: 'Emissão CIOT', desc: 'Valor Fixo se adere ao módulo e Cadastro adicional de CNPJ for Ponto Emissor, se não, é correspondente a quantidade informada no questionário pelo usuário.' },
+        horasFrete: { label: 'Pagamento de Frete', desc: 'Valor Fixo se adere ao módulo e Cadastro adicional de CNPJ for Ponto Emissor, se não, é correspondente a quantidade informada no questionário pelo usuário.' },
+        horasVale: { label: 'Vale Pedágio Obrigatório', desc: 'Valor Fixo se adere ao módulo e Cadastro adicional de CNPJ for Ponto Emissor, se não, é correspondente a quantidade informada no questionário pelo usuário.' },
+        horasContaDigital: { label: 'Conta Digital (validação NDD)', desc: 'Valor Fixo se adere a movimentação financeira.' },
+        horasContaDigitalExterna: { label: 'Conta Digital (externo - abertura conta)', desc: 'Valor Fixo se adere a movimentação financeira.' },
+        horasCadastro: { label: 'Cadastro e Parametrização', desc: '1h por CNPJ, fixo se demais cadastros for Ponto Emissor, se não, é correspondente a qtdde.' },
+        horasUsuario: { label: 'Criação e Configuração de Usuários', desc: 'Valor correspondente a qtdde de usuários.' },
+        horasTreinamento: { label: 'Acompanhamento e Treinamentos', desc: 'Valor Fixo.' },
         jornadaDiaria: { label: 'Jornada Diária (horas)', desc: 'Quantas horas tem um dia útil de trabalho.' },
         jornadaSemanal: { label: 'Jornada Semanal (horas)', desc: 'Quantas horas tem uma semana de trabalho.' },
 
-        // MOVE
+        // ---- MOVE (mantido) ----
         baseAmbientes: { label: 'Base - Ambientes', desc: 'Tempo base para configuração de ambientes (HMG + PRD).' },
         baseCadastro: { label: 'Base - Cadastro', desc: 'Tempo base para cadastro e parametrização.' },
         baseUsuarios: { label: 'Base - Usuários', desc: 'Tempo base para criação de usuários (primeiros usuários).' },
@@ -244,39 +277,35 @@
         baseTreinamento: { label: 'Base - Treinamento', desc: 'Tempo base para treinamento.' },
         subetapas: { label: '📋 Subetapas (detalhamento)', desc: 'Estrutura de subetapas para o modelo detalhado. Edite o JSON com cuidado.' },
 
-        // ---- ELOG (CONFORME A IMAGEM) ----
-        // Módulos
+        // ---- ELOG (mantido) ----
         horasEssencial: { label: 'Essencial', desc: 'Valor Fixo se adere ao módulo.' },
         horasTorre: { label: 'Torre de Controle', desc: 'Valor Fixo se adere ao módulo.' },
         horasVale: { label: 'Vale Pedágio / VPO', desc: 'Valor Fixo se adere ao módulo.' },
         horasFrete: { label: 'Pagamento de Frete', desc: 'Valor Fixo se adere ao módulo.' },
         horasAuditoria: { label: 'Auditoria de Fretes', desc: 'Valor Fixo se adere ao módulo.' },
-
-        // Etapas
         baseAmbientes: { label: 'Configuração de Ambientes', desc: '32h + 3h por CNPJ adicional' },
         baseCadastro: { label: 'Cadastro e Parametrização', desc: '16h + 3h por CNPJ adicional' },
         baseUsuarios: { label: 'Criação e Configuração de Usuários', desc: '2h + 1h por usuário adicional' },
         horasGoLive: { label: 'Go Live', desc: 'Valor Fixo' },
         horasSustentacao: { label: 'Sustentação Pós Go Live', desc: 'Valor Fixo' },
         horasTreinamento: { label: 'Treinamentos', desc: 'Valor Fixo' },
-
-        // Processos
         horasPedidos: { label: 'Pedidos', desc: 'Valor Fixo' },
         horasEventos: { label: 'Eventos Logísticos', desc: 'Valor Fixo' },
         horasPagamento: { label: 'Pagamento', desc: 'Valor Fixo' },
-
-        // Itens de valor unitário
         incrementoAmbientes: { label: 'CNPJ adicional', desc: 'Valor base para cálculo' },
         incrementoUsuarios: { label: 'Usuário', desc: 'Valor base para cálculo' }
     };
 
-    // ---- AGRUPAMENTOS ----
+    // ---- AGRUPAMENTOS (ATUALIZADO PARA CARGO E ELOG) ----
     const sections = {
-        CARGO: [
-            { title: '⏱️ Tempos Base', keys: ['horasPorCnpj', 'horasPorUsuario', 'horasPorCnpjModulo'] },
-            { title: '📦 Módulos e Serviços', keys: ['horasContaDigital', 'horasTreinamento'] },
-            { title: '📅 Jornada', keys: ['jornadaDiaria', 'jornadaSemanal'] }
-        ],
+        CARGO: {
+            grupos: [
+                { title: '📦 Módulos', keys: ['horasCIOT', 'horasFrete', 'horasVale', 'horasContaDigital', 'horasContaDigitalExterna'] },
+                { title: '🏗️ Etapas', keys: ['horasCadastro', 'horasUsuario', 'horasTreinamento'] },
+                { title: '📊 Itens de valor unitário', keys: ['horasCadastro', 'horasUsuario'] },
+                { title: '📅 Jornada', keys: ['jornadaDiaria', 'jornadaSemanal'] }
+            ]
+        },
         MOVE: [
             { title: '🏗️ Ambientes e Cadastro', keys: ['baseAmbientes', 'baseCadastro'] },
             { title: '👤 Usuários', keys: ['horasPorUsuario'] },
@@ -286,12 +315,16 @@
             { title: '📅 Jornada', keys: ['jornadaDiaria', 'jornadaSemanal'] },
             { title: '📋 Subetapas (detalhamento)', keys: ['subetapas'] }
         ],
-        ELOG: [
-            { title: '📦 Módulos', keys: ['horasEssencial', 'horasTorre', 'horasVale', 'horasFrete', 'horasAuditoria'] },
-            { title: '🏗️ Etapas', keys: ['baseAmbientes', 'baseCadastro', 'baseUsuarios', 'horasGoLive', 'horasSustentacao', 'horasTreinamento'] },
-            { title: '🔗 Processos', keys: ['horasPedidos', 'horasEventos', 'horasPagamento'] },
-            { title: '📊 Itens de valor unitário', keys: ['incrementoAmbientes', 'incrementoUsuarios'] }
-        ]
+        ELOG: {
+            grupos: [
+                { title: '📦 Módulos', keys: ['horasEssencial', 'horasTorre', 'horasVale', 'horasFrete', 'horasAuditoria'] },
+                { title: '🏗️ Etapas', keys: ['baseAmbientes', 'baseCadastro', 'baseUsuarios', 'horasGoLive', 'horasSustentacao', 'horasTreinamento'] },
+                { title: '🔗 Processos', keys: ['horasPedidos', 'horasEventos', 'horasPagamento'] },
+                { title: '📊 Itens de valor unitário', keys: ['incrementoAmbientes', 'incrementoUsuarios'] },
+                { title: '📅 Jornada', keys: ['jornadaDiaria', 'jornadaSemanal'] },
+                { title: '⚙️ Configurações adicionais', keys: ['fatorAmbientes', 'fatorUsuarios'] }
+            ]
+        }
     };
 
     let currentProduct = 'CARGO';
@@ -397,27 +430,27 @@
         }
     }
 
-    // ---- Renderizar formulário (com tabela para ELOG) ----
+    // ---- Renderizar formulário (com tabela para CARGO e ELOG, lista para MOVE) ----
     function renderForm(data) {
         if (!data || typeof data !== 'object') {
             formContainer.innerHTML = '<p style="color:red;">Dados inválidos.</p>';
             return;
         }
 
-        const productSections = sections[currentProduct] || [];
         let html = '';
 
-        if (currentProduct === 'ELOG') {
-            // ---- ELOG: exibe em tabela ----
-            for (const section of productSections) {
+        if (currentProduct === 'CARGO') {
+            // ---- CARGO: exibe em tabela ----
+            const cargoSections = sections.CARGO.grupos;
+            for (const section of cargoSections) {
                 html += `<div class="section-title">${section.title}</div>`;
-                html += `<table style="width:100%; border-collapse:collapse; margin-bottom:20px;">
+                html += `<table class="param-table">
                     <thead>
                         <tr>
-                            <th style="text-align:left; border-bottom:2px solid #ff7079; padding:8px;">Item</th>
-                            <th style="text-align:center; border-bottom:2px solid #ff7079; padding:8px;">Valor</th>
-                            <th style="text-align:center; border-bottom:2px solid #ff7079; padding:8px;">Unidade</th>
-                            <th style="text-align:left; border-bottom:2px solid #ff7079; padding:8px;">Observações</th>
+                            <th>Item</th>
+                            <th style="text-align:center;">Valor</th>
+                            <th style="text-align:center;">Unidade</th>
+                            <th>Observações</th>
                         </tr>
                     </thead>
                     <tbody>`;
@@ -426,19 +459,50 @@
                     const value = data[key];
                     const labelInfo = labels[key] || { label: key, desc: '' };
                     html += `<tr>
-                        <td style="padding:8px; border-bottom:1px solid #e9e9e9;"><strong>${labelInfo.label}</strong></td>
-                        <td style="padding:8px; border-bottom:1px solid #e9e9e9; text-align:center;">
-                            <input type="text" id="param_${key}" value="${value !== undefined && value !== null ? value : ''}" style="width:80px; text-align:center; padding:4px; border:1px solid #ccc; border-radius:4px;">
+                        <td><strong>${labelInfo.label}</strong></td>
+                        <td style="text-align:center;">
+                            <input type="text" id="param_${key}" value="${value !== undefined && value !== null ? value : ''}" class="input-valor">
                         </td>
-                        <td style="padding:8px; border-bottom:1px solid #e9e9e9; text-align:center;">horas</td>
-                        <td style="padding:8px; border-bottom:1px solid #e9e9e9;">${labelInfo.desc}</td>
+                        <td class="unidade">horas</td>
+                        <td>${labelInfo.desc}</td>
+                    </tr>`;
+                }
+                html += `</tbody></table>`;
+            }
+        } else if (currentProduct === 'ELOG') {
+            // ---- ELOG: exibe em tabela ----
+            const elogSections = sections.ELOG.grupos;
+            for (const section of elogSections) {
+                html += `<div class="section-title">${section.title}</div>`;
+                html += `<table class="param-table">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th style="text-align:center;">Valor</th>
+                            <th style="text-align:center;">Unidade</th>
+                            <th>Observações</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+                for (const key of section.keys) {
+                    if (data[key] === undefined) continue;
+                    const value = data[key];
+                    const labelInfo = labels[key] || { label: key, desc: '' };
+                    html += `<tr>
+                        <td><strong>${labelInfo.label}</strong></td>
+                        <td style="text-align:center;">
+                            <input type="text" id="param_${key}" value="${value !== undefined && value !== null ? value : ''}" class="input-valor">
+                        </td>
+                        <td class="unidade">horas</td>
+                        <td>${labelInfo.desc}</td>
                     </tr>`;
                 }
                 html += `</tbody></table>`;
             }
         } else {
-            // ---- CARGO e MOVE: exibe em lista (como antes) ----
-            for (const section of productSections) {
+            // ---- MOVE: exibe em lista (como antes) ----
+            const moveSections = sections.MOVE;
+            for (const section of moveSections) {
                 html += `<div class="section-title">${section.title}</div>`;
                 for (const key of section.keys) {
                     if (data[key] === undefined) continue;
@@ -460,8 +524,8 @@
                 }
             }
 
-            // ---- Chaves extras (para CARGO e MOVE) ----
-            const allKeys = new Set(productSections.flatMap(s => s.keys));
+            // ---- Chaves extras (para MOVE) ----
+            const allKeys = new Set(sections.MOVE.flatMap(s => s.keys));
             const extraKeys = Object.keys(data).filter(k => !allKeys.has(k));
             if (extraKeys.length > 0) {
                 html += `<div class="section-title">🔧 Outros Parâmetros</div>`;
