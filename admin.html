@@ -220,7 +220,7 @@
         ELOG:  { file: 'BASE_ELOG.json',  path: 'elog/BASE_ELOG.json' }
     };
 
-    // ---- MAPEAMENTO DE NOMES AMIGÁVEIS (ATUALIZADO PARA ELOG) ----
+    // ---- MAPEAMENTO DE NOMES AMIGÁVEIS (ATUALIZADO) ----
     const labels = {
         // CARGO
         horasPorCnpj: { label: 'Horas por CNPJ', desc: 'Tempo para cadastrar cada CNPJ na parametrização operacional.' },
@@ -244,32 +244,33 @@
         baseTreinamento: { label: 'Base - Treinamento', desc: 'Tempo base para treinamento.' },
         subetapas: { label: '📋 Subetapas (detalhamento)', desc: 'Estrutura de subetapas para o modelo detalhado. Edite o JSON com cuidado.' },
 
-        // ---- ELOG (CONFORME SUA TABELA) ----
-        // 📦 Módulos
+        // ---- ELOG (CONFORME A IMAGEM) ----
+        // Módulos
         horasEssencial: { label: 'Essencial', desc: 'Valor Fixo se adere ao módulo.' },
         horasTorre: { label: 'Torre de Controle', desc: 'Valor Fixo se adere ao módulo.' },
         horasVale: { label: 'Vale Pedágio / VPO', desc: 'Valor Fixo se adere ao módulo.' },
         horasFrete: { label: 'Pagamento de Frete', desc: 'Valor Fixo se adere ao módulo.' },
         horasAuditoria: { label: 'Auditoria de Fretes', desc: 'Valor Fixo se adere ao módulo.' },
 
-        // 🏗️ Etapas
-        baseAmbientes: { label: 'Configuração de Ambientes (base)', desc: '32h + 3h por CNPJ adicional.' },
-        incrementoAmbientes: { label: 'Incremento por CNPJ (Ambientes)', desc: 'Valor base para cálculo.' },
-        baseCadastro: { label: 'Cadastro e Parametrização (base)', desc: '16h + 3h por CNPJ adicional.' },
-        incrementoCadastro: { label: 'Incremento por CNPJ (Cadastro)', desc: 'Valor base para cálculo.' },
-        baseUsuarios: { label: 'Criação de Usuários (base)', desc: '2h + 1h por usuário adicional.' },
-        incrementoUsuarios: { label: 'Incremento por Usuário', desc: 'Valor base para cálculo.' },
-        horasGoLive: { label: 'Go Live', desc: 'Valor Fixo.' },
-        horasSustentacao: { label: 'Sustentação Pós Go Live', desc: 'Valor Fixo.' },
-        horasTreinamento: { label: 'Treinamentos', desc: 'Valor Fixo.' },
+        // Etapas
+        baseAmbientes: { label: 'Configuração de Ambientes', desc: '32h + 3h por CNPJ adicional' },
+        baseCadastro: { label: 'Cadastro e Parametrização', desc: '16h + 3h por CNPJ adicional' },
+        baseUsuarios: { label: 'Criação e Configuração de Usuários', desc: '2h + 1h por usuário adicional' },
+        horasGoLive: { label: 'Go Live', desc: 'Valor Fixo' },
+        horasSustentacao: { label: 'Sustentação Pós Go Live', desc: 'Valor Fixo' },
+        horasTreinamento: { label: 'Treinamentos', desc: 'Valor Fixo' },
 
-        // 🔗 Processos (integrações)
-        horasPedidos: { label: 'Pedidos', desc: 'Valor Fixo.' },
-        horasEventos: { label: 'Eventos Logísticos', desc: 'Valor Fixo.' },
-        horasPagamento: { label: 'Pagamento', desc: 'Valor Fixo.' }
+        // Processos
+        horasPedidos: { label: 'Pedidos', desc: 'Valor Fixo' },
+        horasEventos: { label: 'Eventos Logísticos', desc: 'Valor Fixo' },
+        horasPagamento: { label: 'Pagamento', desc: 'Valor Fixo' },
+
+        // Itens de valor unitário
+        incrementoAmbientes: { label: 'CNPJ adicional', desc: 'Valor base para cálculo' },
+        incrementoUsuarios: { label: 'Usuário', desc: 'Valor base para cálculo' }
     };
 
-    // ---- AGRUPAMENTOS (ATUALIZADO PARA ELOG) ----
+    // ---- AGRUPAMENTOS ----
     const sections = {
         CARGO: [
             { title: '⏱️ Tempos Base', keys: ['horasPorCnpj', 'horasPorUsuario', 'horasPorCnpjModulo'] },
@@ -287,10 +288,9 @@
         ],
         ELOG: [
             { title: '📦 Módulos', keys: ['horasEssencial', 'horasTorre', 'horasVale', 'horasFrete', 'horasAuditoria'] },
-            { title: '🏗️ Etapas', keys: ['baseAmbientes', 'incrementoAmbientes', 'baseCadastro', 'incrementoCadastro', 'baseUsuarios', 'incrementoUsuarios', 'horasGoLive', 'horasSustentacao', 'horasTreinamento'] },
-            { title: '🔗 Processos (Integrações)', keys: ['horasPedidos', 'horasEventos', 'horasPagamento'] },
-            { title: '📊 Itens de valor unitário', keys: ['incrementoAmbientes', 'incrementoUsuarios'] },
-            { title: '⚙️ Configurações adicionais', keys: ['fatorAmbientes', 'fatorUsuarios', 'jornadaDiaria', 'jornadaSemanal'] }
+            { title: '🏗️ Etapas', keys: ['baseAmbientes', 'baseCadastro', 'baseUsuarios', 'horasGoLive', 'horasSustentacao', 'horasTreinamento'] },
+            { title: '🔗 Processos', keys: ['horasPedidos', 'horasEventos', 'horasPagamento'] },
+            { title: '📊 Itens de valor unitário', keys: ['incrementoAmbientes', 'incrementoUsuarios'] }
         ]
     };
 
@@ -397,7 +397,7 @@
         }
     }
 
-    // ---- Renderizar formulário ----
+    // ---- Renderizar formulário (com tabela para ELOG) ----
     function renderForm(data) {
         if (!data || typeof data !== 'object') {
             formContainer.innerHTML = '<p style="color:red;">Dados inválidos.</p>';
@@ -407,45 +407,77 @@
         const productSections = sections[currentProduct] || [];
         let html = '';
 
-        for (const section of productSections) {
-            html += `<div class="section-title">${section.title}</div>`;
-            for (const key of section.keys) {
-                if (data[key] === undefined) continue;
-                const value = data[key];
-                const labelInfo = labels[key] || { label: key, desc: '' };
-                const isObject = typeof value === 'object' && value !== null && !Array.isArray(value);
-                const isArray = Array.isArray(value);
-
-                html += `<div class="param-group">`;
-                html += `<label for="param_${key}">${labelInfo.label}</label>`;
-                if (labelInfo.desc) html += `<div class="description">${labelInfo.desc}</div>`;
-
-                if (isObject || isArray) {
-                    html += `<textarea id="param_${key}" rows="4">${JSON.stringify(value, null, 2)}</textarea>`;
-                } else {
-                    html += `<input type="text" id="param_${key}" value="${value !== undefined && value !== null ? value : ''}">`;
+        if (currentProduct === 'ELOG') {
+            // ---- ELOG: exibe em tabela ----
+            for (const section of productSections) {
+                html += `<div class="section-title">${section.title}</div>`;
+                html += `<table style="width:100%; border-collapse:collapse; margin-bottom:20px;">
+                    <thead>
+                        <tr>
+                            <th style="text-align:left; border-bottom:2px solid #ff7079; padding:8px;">Item</th>
+                            <th style="text-align:center; border-bottom:2px solid #ff7079; padding:8px;">Valor</th>
+                            <th style="text-align:center; border-bottom:2px solid #ff7079; padding:8px;">Unidade</th>
+                            <th style="text-align:left; border-bottom:2px solid #ff7079; padding:8px;">Observações</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+                for (const key of section.keys) {
+                    if (data[key] === undefined) continue;
+                    const value = data[key];
+                    const labelInfo = labels[key] || { label: key, desc: '' };
+                    html += `<tr>
+                        <td style="padding:8px; border-bottom:1px solid #e9e9e9;"><strong>${labelInfo.label}</strong></td>
+                        <td style="padding:8px; border-bottom:1px solid #e9e9e9; text-align:center;">
+                            <input type="text" id="param_${key}" value="${value !== undefined && value !== null ? value : ''}" style="width:80px; text-align:center; padding:4px; border:1px solid #ccc; border-radius:4px;">
+                        </td>
+                        <td style="padding:8px; border-bottom:1px solid #e9e9e9; text-align:center;">horas</td>
+                        <td style="padding:8px; border-bottom:1px solid #e9e9e9;">${labelInfo.desc}</td>
+                    </tr>`;
                 }
-                html += `</div>`;
+                html += `</tbody></table>`;
             }
-        }
+        } else {
+            // ---- CARGO e MOVE: exibe em lista (como antes) ----
+            for (const section of productSections) {
+                html += `<div class="section-title">${section.title}</div>`;
+                for (const key of section.keys) {
+                    if (data[key] === undefined) continue;
+                    const value = data[key];
+                    const labelInfo = labels[key] || { label: key, desc: '' };
+                    const isObject = typeof value === 'object' && value !== null && !Array.isArray(value);
+                    const isArray = Array.isArray(value);
 
-        // ---- Chaves extras (para capturar qualquer campo que não esteja nas seções) ----
-        const allKeys = new Set(productSections.flatMap(s => s.keys));
-        const extraKeys = Object.keys(data).filter(k => !allKeys.has(k));
-        if (extraKeys.length > 0) {
-            html += `<div class="section-title">🔧 Outros Parâmetros</div>`;
-            for (const key of extraKeys) {
-                const value = data[key];
-                const labelInfo = labels[key] || { label: key, desc: '' };
-                html += `<div class="param-group">`;
-                html += `<label for="param_${key}">${labelInfo.label}</label>`;
-                if (labelInfo.desc) html += `<div class="description">${labelInfo.desc}</div>`;
-                if (typeof value === 'object' && value !== null) {
-                    html += `<textarea id="param_${key}" rows="4">${JSON.stringify(value, null, 2)}</textarea>`;
-                } else {
-                    html += `<input type="text" id="param_${key}" value="${value !== undefined && value !== null ? value : ''}">`;
+                    html += `<div class="param-group">`;
+                    html += `<label for="param_${key}">${labelInfo.label}</label>`;
+                    if (labelInfo.desc) html += `<div class="description">${labelInfo.desc}</div>`;
+
+                    if (isObject || isArray) {
+                        html += `<textarea id="param_${key}" rows="4">${JSON.stringify(value, null, 2)}</textarea>`;
+                    } else {
+                        html += `<input type="text" id="param_${key}" value="${value !== undefined && value !== null ? value : ''}">`;
+                    }
+                    html += `</div>`;
                 }
-                html += `</div>`;
+            }
+
+            // ---- Chaves extras (para CARGO e MOVE) ----
+            const allKeys = new Set(productSections.flatMap(s => s.keys));
+            const extraKeys = Object.keys(data).filter(k => !allKeys.has(k));
+            if (extraKeys.length > 0) {
+                html += `<div class="section-title">🔧 Outros Parâmetros</div>`;
+                for (const key of extraKeys) {
+                    const value = data[key];
+                    const labelInfo = labels[key] || { label: key, desc: '' };
+                    html += `<div class="param-group">`;
+                    html += `<label for="param_${key}">${labelInfo.label}</label>`;
+                    if (labelInfo.desc) html += `<div class="description">${labelInfo.desc}</div>`;
+                    if (typeof value === 'object' && value !== null) {
+                        html += `<textarea id="param_${key}" rows="4">${JSON.stringify(value, null, 2)}</textarea>`;
+                    } else {
+                        html += `<input type="text" id="param_${key}" value="${value !== undefined && value !== null ? value : ''}">`;
+                    }
+                    html += `</div>`;
+                }
             }
         }
 
@@ -458,10 +490,7 @@
         const token = getToken();
         if (!token) { mostrarModalToken(); return; }
 
-        // Começa com uma cópia do JSON original
         const updatedData = { ...currentData };
-
-        // Sobrescreve apenas os campos que estão nos inputs
         const inputs = formContainer.querySelectorAll('input, textarea');
         for (const el of inputs) {
             const key = el.id.replace('param_', '');
@@ -479,7 +508,6 @@
         }
 
         const jsonString = JSON.stringify(updatedData, null, 2);
-
         const filePath = produtos[currentProduct].path;
         const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${filePath}`;
         const payload = {
