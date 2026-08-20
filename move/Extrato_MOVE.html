@@ -1103,14 +1103,14 @@
         // ============================================================
         function executarCalculo() {
             try {
-                alert('🔥 Iniciando cálculo...'); // <-- só pra testar
+                //alert('🔥 Iniciando cálculo...'); // <-- só pra testar
 
                 if (!base) {
                     alert('Base não carregada.');
                     return;
                 }
 
-                alert('✅ Base carregada: ' + JSON.stringify(base).substring(0, 100));
+                //alert('✅ Base carregada: ' + JSON.stringify(base).substring(0, 100));
 
                 const cliente = inputCliente.value.trim() || 'Não informado';
                 const cnpjs = getNumber('cnpjs');
@@ -1133,13 +1133,13 @@
                     return;
                 }
 
-                const totalAmbientes = base.baseAmbientes + cnpjs;
-                const totalCadastro = base.baseCadastro + cnpjs;
-                const totalUsuarios = usuarios * base.horasPorUsuario;
-                const totalApp = appAtivo ? base.baseApp : 0;
-                const totalGoLive = base.baseGoLive;
-                const totalSustentacao = base.baseSustentacao;
-                const totalTreinamento = base.baseTreinamento;
+				const totalAmbientes = base.baseAmbientes + cnpjs;
+				const totalCadastro = base.baseCadastro + cnpjs;
+				const totalUsuarios = base.baseUsuarios + ((usuarios - 1) * (base.incrementoUsuarios || 1));
+				const totalApp = appAtivo ? base.baseApp : 0;
+				const totalGoLive = base.baseGoLive;
+				const totalSustentacao = base.baseSustentacao;
+				const totalTreinamento = base.baseTreinamento;
 
                 const totalReal = (totalAmbientes * base.fatorAmbientes) + totalCadastro + totalUsuarios + totalApp + totalGoLive + totalSustentacao + totalTreinamento;
                 const totalExibido = Math.round(totalReal);
@@ -1310,7 +1310,7 @@
                     window._isUserClick = false;
                 }
 
-                alert('✅ Cálculo concluído com sucesso!'); // <-- sucesso
+                //alert('✅ Cálculo concluído com sucesso!'); // <-- sucesso
 
             } catch (erro) {
                 alert('❌ ERRO NO CÁLCULO: ' + erro.message + '\n\nStack: ' + erro.stack);
