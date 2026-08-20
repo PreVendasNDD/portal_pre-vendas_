@@ -954,435 +954,462 @@
 
     </div> <!-- FIM DO ENVOLTÓRIO container-principal -->
 
-    <script>
-        (function() {
-            'use strict';
+<script>
+    (function() {
+        'use strict';
 
-            // ---- Variáveis de controle ----
-            let base = null;
-            let carregando = false;
+        // ---- Variáveis ----
+        let base = null;
+        let carregando = false;
 
-            // ---- Função para carregar o JSON (compatível com file://) ----
-            function carregarBase() {
-                if (carregando) {
-                    console.log('⏳ Carregamento já em andamento...');
-                    return;
-                }
-                carregando = true;
-                
-                console.log('🔍 Tentando carregar BASE_MOVE.json...');
-                
-                // Tenta fetch primeiro (funciona em servidores)
-                fetch('BASE_MOVE.json')
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error(`HTTP ${response.status}`);
+        // ---- Função para carregar a base (SEMPRE atual, sem cache, sem fallback) ----
+        async function carregarBase() {
+            if (carregando) {
+                return new Promise((resolve) => {
+                    const checkInterval = setInterval(() => {
+                        if (base) {
+                            clearInterval(checkInterval);
+                            resolve(base);
                         }
-                        return response.json();
-                    })
-                    .then(data => {
-                        base = data;
-                        carregando = false;
-                        console.log('✅ BASE CARREGADA (fetch):', base);
-                        calcular();
-                    })
-                    .catch(fetchError => {
-                        console.warn('⚠️ Fetch falhou, tentando XMLHttpRequest...', fetchError);
-                        
-                        // Fallback para XMLHttpRequest
-                        const xhr = new XMLHttpRequest();
-                        xhr.open('GET', 'BASE_MOVE.json', true);
-                        xhr.onreadystatechange = function() {
-                            if (xhr.readyState === 4) {
-                                carregando = false;
-                                if (xhr.status === 200) {
-                                    try {
-                                        base = JSON.parse(xhr.responseText);
-                                        console.log('✅ BASE CARREGADA (XHR):', base);
-                                        calcular();
-                                    } catch (e) {
-                                        console.error('❌ Erro ao parsear JSON:', e);
-                                        alert('❌ Erro ao ler BASE_MOVE.json: JSON inválido');
-                                    }
-                                } else {
-                                    console.error('❌ Status:', xhr.status);
-                                    alert('❌ Arquivo BASE_MOVE.json não encontrado.\n\nVerifique:\n1. O arquivo está na mesma pasta\n2. O nome é BASE_MOVE.json (maiúsculo)\n3. O arquivo não está corrompido');
-                                }
-                            }
-                        };
-                        xhr.onerror = function() {
-                            carregando = false;
-                            alert('❌ Erro de rede ao carregar BASE_MOVE.json.\n\nSe você está usando Chrome, tente abrir com:\n\n"chrome.exe --allow-file-access-from-files"');
-                        };
-                        xhr.send();
-                    });
+                    }, 100);
+                });
             }
 
-            const inputCliente = document.getElementById('cliente');
-            const inputData = document.getElementById('data');
-            const inputCNPJs = document.getElementById('cnpjs');
-            const inputUsuarios = document.getElementById('usuarios');
-            const modIntegracao = document.getElementById('modIntegracao');
-            const modApp = document.getElementById('modApp');
-            const radioModelo = document.querySelectorAll('input[name="modelo"]');
+            carregando = true;
+            const url = `BASE_MOVE.json?t=${Date.now()}`;
+            console.log('🔍 Buscando BASE_MOVE.json (atual)...');
 
-            const spanCliente1 = document.getElementById('spanCliente1');
-            const spanData1 = document.getElementById('spanData1');
-            const infoCnpjs1 = document.getElementById('infoCnpjs1');
-            const infoUsuarios1 = document.getElementById('infoUsuarios1');
-            const infoIntegracao1 = document.getElementById('infoIntegracao1');
-            const infoApp1 = document.getElementById('infoApp1');
-            const corpoEtapas1 = document.getElementById('corpoEtapas1');
+            try {
+                const response = await fetch(url, {
+                    cache: 'no-store',
+                    headers: {
+                        'Cache-Control': 'no-cache, no-store, must-revalidate',
+                        'Pragma': 'no-cache',
+                        'Expires': '0'
+                    }
+                });
 
-            const spanCliente2 = document.getElementById('spanCliente2');
-            const spanData2 = document.getElementById('spanData2');
-            const infoCnpjs2 = document.getElementById('infoCnpjs2');
-            const infoUsuarios2 = document.getElementById('infoUsuarios2');
-            const infoIntegracao2 = document.getElementById('infoIntegracao2');
-            const infoApp2 = document.getElementById('infoApp2');
-            const corpoEtapasResumo2 = document.getElementById('corpoEtapasResumo2');
-            const detalhamentoEtapas2 = document.getElementById('detalhamentoEtapas2');
-            const totalProjeto2 = document.getElementById('totalProjeto2');
-            const equivDias2 = document.getElementById('equivDias2');
-            const equivSemanas2 = document.getElementById('equivSemanas2');
-            const obsCliente2 = document.getElementById('obsCliente2');
-
-            const calcularBtn = document.getElementById('calcularBtn');
-            const imprimirBtn = document.getElementById('imprimirBtn');
-            const limparBtn = document.getElementById('limparBtn');
-
-            const extrato1 = document.getElementById('extrato-modelo1');
-            const extrato2 = document.getElementById('extrato-modelo2');
-
-            function setDataAtual() {
-                const hoje = new Date();
-                const dia = String(hoje.getDate()).padStart(2, '0');
-                const mes = String(hoje.getMonth() + 1).padStart(2, '0');
-                const ano = hoje.getFullYear();
-                const dataFormatada = `${dia}/${mes}/${ano}`;
-                const dataISO = `${ano}-${mes}-${dia}`;
-                inputData.value = dataISO;
-                spanData1.textContent = dataFormatada;
-                spanData2.textContent = dataFormatada;
-                return dataFormatada;
-            }
-            const dataExibicao = setDataAtual();
-
-            function getNumber(id) {
-                const val = document.getElementById(id).value.trim();
-                if (val === '') return NaN;
-                return parseFloat(val);
-            }
-
-            function round1(v) {
-                return Math.round(v * 10) / 10;
-            }
-
-            function limparCampos() {
-                inputCliente.value = '';
-                inputCNPJs.value = '';
-                inputUsuarios.value = '';
-                modIntegracao.checked = false;
-                modApp.checked = false;
-                calcular();
-            }
-
-            function getModeloSelecionado() {
-                for (const radio of radioModelo) {
-                    if (radio.checked) return parseInt(radio.value);
-                }
-                return 1;
-            }
-
-            function calcular() {
-                if (!base) {
-                    console.warn('⏳ Base não carregada. Tentando carregar...');
-                    carregarBase();
-                    return;
+                if (!response.ok) {
+                    throw new Error(`Arquivo BASE_MOVE.json não encontrado (status ${response.status})`);
                 }
 
-                const cliente = inputCliente.value.trim() || 'Não informado';
-                const cnpjs = getNumber('cnpjs');
-                const usuarios = getNumber('usuarios');
+                const data = await response.json();
+                base = data;
+                carregando = false;
+                console.log('✅ Base carregada (atualizada):', base);
+                return base;
+            } catch (error) {
+                carregando = false;
+                console.error('❌ Erro ao carregar BASE_MOVE.json:', error);
+                alert('❌ Não foi possível carregar o arquivo BASE_MOVE.json.\n\nVerifique se o arquivo existe e está acessível.\n\nO cálculo não será executado.');
+                throw error;
+            }
+        }
 
-                if (isNaN(cnpjs) || cnpjs < 0 || isNaN(usuarios) || usuarios < 0) {
-                    alert('Preencha CNPJ\'s e Usuários com valores válidos (0 ou mais).');
-                    return;
-                }
+        const inputCliente = document.getElementById('cliente');
+        const inputData = document.getElementById('data');
+        const inputCNPJs = document.getElementById('cnpjs');
+        const inputUsuarios = document.getElementById('usuarios');
+        const modIntegracao = document.getElementById('modIntegracao');
+        const modApp = document.getElementById('modApp');
+        const radioModelo = document.querySelectorAll('input[name="modelo"]');
 
-                const integracaoAtivo = modIntegracao.checked;
-                const appAtivo = modApp.checked;
-                
-                const integracaoTexto = integracaoAtivo ? 'Sim' : 'Não';
-                const appTexto = appAtivo ? 'Sim' : 'Não';
+        const spanCliente1 = document.getElementById('spanCliente1');
+        const spanData1 = document.getElementById('spanData1');
+        const infoCnpjs1 = document.getElementById('infoCnpjs1');
+        const infoUsuarios1 = document.getElementById('infoUsuarios1');
+        const infoIntegracao1 = document.getElementById('infoIntegracao1');
+        const infoApp1 = document.getElementById('infoApp1');
+        const corpoEtapas1 = document.getElementById('corpoEtapas1');
 
-                const totalAmbientes = base.baseAmbientes + cnpjs;
-                const totalCadastro = base.baseCadastro + cnpjs;
-                const totalUsuarios = usuarios * base.horasPorUsuario;
-                const totalApp = appAtivo ? base.baseApp : 0;
-                const totalGoLive = base.baseGoLive;
-                const totalSustentacao = base.baseSustentacao;
-                const totalTreinamento = base.baseTreinamento;
+        const spanCliente2 = document.getElementById('spanCliente2');
+        const spanData2 = document.getElementById('spanData2');
+        const infoCnpjs2 = document.getElementById('infoCnpjs2');
+        const infoUsuarios2 = document.getElementById('infoUsuarios2');
+        const infoIntegracao2 = document.getElementById('infoIntegracao2');
+        const infoApp2 = document.getElementById('infoApp2');
+        const corpoEtapasResumo2 = document.getElementById('corpoEtapasResumo2');
+        const detalhamentoEtapas2 = document.getElementById('detalhamentoEtapas2');
+        const totalProjeto2 = document.getElementById('totalProjeto2');
+        const equivDias2 = document.getElementById('equivDias2');
+        const equivSemanas2 = document.getElementById('equivSemanas2');
+        const obsCliente2 = document.getElementById('obsCliente2');
 
-                const totalReal = (totalAmbientes * base.fatorAmbientes) + totalCadastro + totalUsuarios + totalApp + totalGoLive + totalSustentacao + totalTreinamento;
-                const totalExibido = Math.round(totalReal);
+        const calcularBtn = document.getElementById('calcularBtn');
+        const imprimirBtn = document.getElementById('imprimirBtn');
+        const limparBtn = document.getElementById('limparBtn');
 
-                spanCliente1.textContent = cliente;
-                spanCliente2.textContent = cliente;
-                obsCliente2.textContent = cliente;
-                
-                infoCnpjs1.textContent = cnpjs;
-                infoCnpjs2.textContent = cnpjs;
-                infoUsuarios1.textContent = usuarios;
-                infoUsuarios2.textContent = usuarios;
-                infoIntegracao1.textContent = integracaoTexto;
-                infoIntegracao2.textContent = integracaoTexto;
-                infoApp1.textContent = appTexto;
-                infoApp2.textContent = appTexto;
+        const extrato1 = document.getElementById('extrato-modelo1');
+        const extrato2 = document.getElementById('extrato-modelo2');
 
-                const itens = [
-                    { nome: 'Configuração de Ambientes', real: (totalAmbientes * base.fatorAmbientes), ativo: true },
-                    { nome: 'Cadastro e Parametrização', real: totalCadastro, ativo: true },
-                    { nome: 'Criação e Configuração de Usuários', real: totalUsuarios, ativo: true },
-                    { nome: 'Configuração e instalação do App Conector', real: totalApp, ativo: appAtivo },
-                    { nome: 'Acompanhamento Go Live', real: totalGoLive, ativo: true },
-                    { nome: 'Apoio operacional pós Go Live', real: totalSustentacao, ativo: true },
-                    { nome: 'Treinamento', real: totalTreinamento, ativo: true }
-                ];
+        function setDataAtual() {
+            const hoje = new Date();
+            const dia = String(hoje.getDate()).padStart(2, '0');
+            const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+            const ano = hoje.getFullYear();
+            const dataFormatada = `${dia}/${mes}/${ano}`;
+            const dataISO = `${ano}-${mes}-${dia}`;
+            inputData.value = dataISO;
+            spanData1.textContent = dataFormatada;
+            spanData2.textContent = dataFormatada;
+            return dataFormatada;
+        }
+        const dataExibicao = setDataAtual();
 
-                function gerarLinhasResumo() {
-                    let html = '';
-                    itens.forEach((item) => {
-                        if (item.ativo) {
-                            const horas = Math.round(item.real);
-                            const dias = round1(item.real / base.jornadaDiaria);
-                            const semanas = round1(item.real / base.jornadaSemanal);
-                            html += `<tr>
-                                <td>${item.nome}</td>
-                                <td class="center">${horas.toFixed(0)}h</td>
+        function getNumber(id) {
+            const val = document.getElementById(id).value.trim();
+            if (val === '') return NaN;
+            return parseFloat(val);
+        }
+
+        function round1(v) {
+            return Math.round(v * 10) / 10;
+        }
+
+        function limparCampos() {
+            inputCliente.value = '';
+            inputCNPJs.value = '';
+            inputUsuarios.value = '';
+            modIntegracao.checked = false;
+            modApp.checked = false;
+            calcular();
+        }
+
+        function getModeloSelecionado() {
+            for (const radio of radioModelo) {
+                if (radio.checked) return parseInt(radio.value);
+            }
+            return 1;
+        }
+
+        function mostrarModelo(modelo) {
+            if (modelo === 1) {
+                extrato1.classList.add('active');
+                extrato2.classList.remove('active');
+            } else {
+                extrato1.classList.remove('active');
+                extrato2.classList.add('active');
+            }
+        }
+
+        // ============================================================
+        // EXECUÇÃO DO CÁLCULO (agora separada, chamada após carregar a base)
+        // ============================================================
+        function executarCalculo() {
+            if (!base) {
+                alert('Base não carregada. Tente novamente.');
+                return;
+            }
+
+            const cliente = inputCliente.value.trim() || 'Não informado';
+            const cnpjs = getNumber('cnpjs');
+            const usuarios = getNumber('usuarios');
+
+            if (isNaN(cnpjs) || cnpjs < 0 || isNaN(usuarios) || usuarios < 0) {
+                alert('Preencha CNPJ\'s e Usuários com valores válidos (0 ou mais).');
+                return;
+            }
+
+            const integracaoAtivo = modIntegracao.checked;
+            const appAtivo = modApp.checked;
+            
+            const integracaoTexto = integracaoAtivo ? 'Sim' : 'Não';
+            const appTexto = appAtivo ? 'Sim' : 'Não';
+
+            const totalAmbientes = base.baseAmbientes + cnpjs;
+            const totalCadastro = base.baseCadastro + cnpjs;
+            const totalUsuarios = usuarios * base.horasPorUsuario;
+            const totalApp = appAtivo ? base.baseApp : 0;
+            const totalGoLive = base.baseGoLive;
+            const totalSustentacao = base.baseSustentacao;
+            const totalTreinamento = base.baseTreinamento;
+
+            const totalReal = (totalAmbientes * base.fatorAmbientes) + totalCadastro + totalUsuarios + totalApp + totalGoLive + totalSustentacao + totalTreinamento;
+            const totalExibido = Math.round(totalReal);
+
+            spanCliente1.textContent = cliente;
+            spanCliente2.textContent = cliente;
+            obsCliente2.textContent = cliente;
+            
+            infoCnpjs1.textContent = cnpjs;
+            infoCnpjs2.textContent = cnpjs;
+            infoUsuarios1.textContent = usuarios;
+            infoUsuarios2.textContent = usuarios;
+            infoIntegracao1.textContent = integracaoTexto;
+            infoIntegracao2.textContent = integracaoTexto;
+            infoApp1.textContent = appTexto;
+            infoApp2.textContent = appTexto;
+
+            const itens = [
+                { nome: 'Configuração de Ambientes', real: (totalAmbientes * base.fatorAmbientes), ativo: true },
+                { nome: 'Cadastro e Parametrização', real: totalCadastro, ativo: true },
+                { nome: 'Criação e Configuração de Usuários', real: totalUsuarios, ativo: true },
+                { nome: 'Configuração e instalação do App Conector', real: totalApp, ativo: appAtivo },
+                { nome: 'Acompanhamento Go Live', real: totalGoLive, ativo: true },
+                { nome: 'Apoio operacional pós Go Live', real: totalSustentacao, ativo: true },
+                { nome: 'Treinamento', real: totalTreinamento, ativo: true }
+            ];
+
+            function gerarLinhasResumo() {
+                let html = '';
+                itens.forEach((item) => {
+                    if (item.ativo) {
+                        const horas = Math.round(item.real);
+                        const dias = round1(item.real / base.jornadaDiaria);
+                        const semanas = round1(item.real / base.jornadaSemanal);
+                        html += `<tr>
+                            <td>${item.nome}</td>
+                            <td class="center">${horas.toFixed(0)}h</td>
+                            <td class="center">${dias.toFixed(1)}</td>
+                            <td class="center">${semanas.toFixed(1)}</td>
+                        </tr>`;
+                    } else {
+                        html += `<tr class="nao-aplicavel">
+                            <td>${item.nome}</td>
+                            <td class="center texto-na">*não aplicável</td>
+                            <td class="center">-</td>
+                            <td class="center">-</td>
+                        </tr>`;
+                    }
+                });
+                const totalDias = Math.ceil(totalReal / base.jornadaDiaria);
+                const totalSemanas = Math.ceil(totalReal / base.jornadaSemanal);
+                html += `<tr class="total">
+                    <td>Total</td>
+                    <td class="center">${totalExibido.toFixed(0)} horas</td>
+                    <td class="center">${totalDias} dia(s)</td>
+                    <td class="center">${totalSemanas} semana(s)</td>
+                </tr>`;
+                return html;
+            }
+
+            const resumoHTML = gerarLinhasResumo();
+            corpoEtapas1.innerHTML = resumoHTML;
+            corpoEtapasResumo2.innerHTML = resumoHTML;
+
+            const subitensConfig = [
+                { nome: 'Configuração de Ambientes', sub: base.subetapas.configuracaoAmbientes },
+                { nome: 'Cadastro e Parametrização', sub: base.subetapas.cadastroParametrizacao },
+                { nome: 'Criação e Configuração de Usuários', sub: base.subetapas.criacaoUsuarios },
+                { nome: 'Configuração e instalação do App Conector', sub: [] },
+                { nome: 'Acompanhamento Go Live', sub: [] },
+                { nome: 'Apoio operacional pós Go Live', sub: [] },
+                { nome: 'Treinamento', sub: [] }
+            ];
+
+            let detalhamentoHTML = '';
+            itens.forEach((item, i) => {
+                const config = subitensConfig[i];
+                if (!config) return;
+                const totalHoras = item.real;
+
+                detalhamentoHTML += `<div class="sub-section-title">${i+1}. ${config.nome}</div>`;
+
+                if (item.ativo) {
+                    if (config.sub.length > 0) {
+                        detalhamentoHTML += `<table>
+                            <tr><th align="left">Etapa</th><th>Horas</th><th>Dias</th><th>Semanas</th></tr>`;
+                        config.sub.forEach(sub => {
+                            const horas = totalHoras * sub.pct;
+                            const dias = round1(horas / base.jornadaDiaria);
+                            const semanas = round1(horas / base.jornadaSemanal);
+                            detalhamentoHTML += `<tr>
+                                <td>${sub.nome}</td>
+                                <td class="center">${horas.toFixed(1)}h</td>
                                 <td class="center">${dias.toFixed(1)}</td>
                                 <td class="center">${semanas.toFixed(1)}</td>
                             </tr>`;
-                        } else {
-                            html += `<tr class="nao-aplicavel">
-                                <td>${item.nome}</td>
-                                <td class="center texto-na">*não aplicável</td>
-                                <td class="center">-</td>
-                                <td class="center">-</td>
-                            </tr>`;
-                        }
-                    });
-                    const totalDias = Math.ceil(totalReal / base.jornadaDiaria);
-                    const totalSemanas = Math.ceil(totalReal / base.jornadaSemanal);
-                    html += `<tr class="total">
-                        <td>Total</td>
-                        <td class="center">${totalExibido.toFixed(0)} horas</td>
-                        <td class="center">${totalDias} dia(s)</td>
-                        <td class="center">${totalSemanas} semana(s)</td>
-                    </tr>`;
-                    return html;
-                }
-
-                const resumoHTML = gerarLinhasResumo();
-                corpoEtapas1.innerHTML = resumoHTML;
-                corpoEtapasResumo2.innerHTML = resumoHTML;
-
-                const subitensConfig = [
-                    { nome: 'Configuração de Ambientes', sub: base.subetapas.configuracaoAmbientes },
-                    { nome: 'Cadastro e Parametrização', sub: base.subetapas.cadastroParametrizacao },
-                    { nome: 'Criação e Configuração de Usuários', sub: base.subetapas.criacaoUsuarios },
-                    { nome: 'Configuração e instalação do App Conector', sub: [] },
-                    { nome: 'Acompanhamento Go Live', sub: [] },
-                    { nome: 'Apoio operacional pós Go Live', sub: [] },
-                    { nome: 'Treinamento', sub: [] }
-                ];
-
-                let detalhamentoHTML = '';
-                itens.forEach((item, i) => {
-                    const config = subitensConfig[i];
-                    if (!config) return;
-                    const totalHoras = item.real;
-
-                    detalhamentoHTML += `<div class="sub-section-title">${i+1}. ${config.nome}</div>`;
-
-                    if (item.ativo) {
-                        if (config.sub.length > 0) {
-                            detalhamentoHTML += `<table>
-                                <tr><th align="left">Etapa</th><th>Horas</th><th>Dias</th><th>Semanas</th></tr>`;
-                            config.sub.forEach(sub => {
-                                const horas = totalHoras * sub.pct;
-                                const dias = round1(horas / base.jornadaDiaria);
-                                const semanas = round1(horas / base.jornadaSemanal);
-                                detalhamentoHTML += `<tr>
-                                    <td>${sub.nome}</td>
-                                    <td class="center">${horas.toFixed(1)}h</td>
-                                    <td class="center">${dias.toFixed(1)}</td>
-                                    <td class="center">${semanas.toFixed(1)}</td>
-                                </tr>`;
-                            });
-                            detalhamentoHTML += `</table>`;
-                        } else {
-                            detalhamentoHTML += `<table>
-                                <tr><th align="left">Etapa</th><th>Horas</th><th>Dias</th><th>Semanas</th></tr>
-                                <tr>
-                                    <td>Total</td>
-                                    <td class="center">${totalHoras.toFixed(1)}h</td>
-                                    <td class="center">${(totalHoras/base.jornadaDiaria).toFixed(1)}</td>
-                                    <td class="center">${(totalHoras/base.jornadaSemanal).toFixed(1)}</td>
-                                </tr>
-                            </table>`;
-                        }
-                        detalhamentoHTML += `<div class="total-etapa">Total da etapa: ${totalHoras.toFixed(1)}h ( ${Math.ceil(totalHoras/base.jornadaDiaria)} dia(s) / ${Math.ceil(totalHoras/base.jornadaSemanal)} semana(s) )</div>`;
+                        });
+                        detalhamentoHTML += `</table>`;
                     } else {
-                        detalhamentoHTML += `<table class="nao-aplicavel">
+                        detalhamentoHTML += `<table>
                             <tr><th align="left">Etapa</th><th>Horas</th><th>Dias</th><th>Semanas</th></tr>
                             <tr>
                                 <td>Total</td>
-                                <td class="center texto-na">*não aplicável</td>
-                                <td class="center">-</td>
-                                <td class="center">-</td>
+                                <td class="center">${totalHoras.toFixed(1)}h</td>
+                                <td class="center">${(totalHoras/base.jornadaDiaria).toFixed(1)}</td>
+                                <td class="center">${(totalHoras/base.jornadaSemanal).toFixed(1)}</td>
                             </tr>
                         </table>`;
-                        detalhamentoHTML += `<div class="total-etapa">Total da etapa: *não aplicável</div>`;
                     }
-
-                    if (i < itens.length - 1) {
-                        detalhamentoHTML += `<div class="linha-vermelha entre-etapas"></div>`;
-                    }
-                });
-
-                detalhamentoEtapas2.innerHTML = detalhamentoHTML;
-
-                const totalDiasInt = Math.ceil(totalReal / base.jornadaDiaria);
-                const totalSemanasInt = Math.ceil(totalReal / base.jornadaSemanal);
-                totalProjeto2.textContent = `Total do Projeto: ${totalExibido.toFixed(0)} horas`;
-                equivDias2.textContent = `Equivalente a aproximadamente: ${totalDiasInt} dias úteis`;
-                equivSemanas2.textContent = `Equivalente a aproximadamente: ${totalSemanasInt} semana(s)`;
-
-                mostrarModelo(getModeloSelecionado());
-
-                const logDiv = document.getElementById('logHoras');
-                if (logDiv) {
-                    logDiv.innerHTML = '✅ Total de horas calculadas: <strong>' + totalExibido + ' horas</strong>';
-                }
-
-                if (window._isUserClick) {
-                    abrirPopup('Total de horas calculadas: ' + totalExibido + ' horas');
-                }
-            }
-
-            function mostrarModelo(modelo) {
-                if (modelo === 1) {
-                    extrato1.classList.add('active');
-                    extrato2.classList.remove('active');
+                    detalhamentoHTML += `<div class="total-etapa">Total da etapa: ${totalHoras.toFixed(1)}h ( ${Math.ceil(totalHoras/base.jornadaDiaria)} dia(s) / ${Math.ceil(totalHoras/base.jornadaSemanal)} semana(s) )</div>`;
                 } else {
-                    extrato1.classList.remove('active');
-                    extrato2.classList.add('active');
+                    detalhamentoHTML += `<table class="nao-aplicavel">
+                        <tr><th align="left">Etapa</th><th>Horas</th><th>Dias</th><th>Semanas</th></tr>
+                        <tr>
+                            <td>Total</td>
+                            <td class="center texto-na">*não aplicável</td>
+                            <td class="center">-</td>
+                            <td class="center">-</td>
+                        </tr>
+                    </table>`;
+                    detalhamentoHTML += `<div class="total-etapa">Total da etapa: *não aplicável</div>`;
                 }
+
+                if (i < itens.length - 1) {
+                    detalhamentoHTML += `<div class="linha-vermelha entre-etapas"></div>`;
+                }
+            });
+
+            detalhamentoEtapas2.innerHTML = detalhamentoHTML;
+
+            const totalDiasInt = Math.ceil(totalReal / base.jornadaDiaria);
+            const totalSemanasInt = Math.ceil(totalReal / base.jornadaSemanal);
+            totalProjeto2.textContent = `Total do Projeto: ${totalExibido.toFixed(0)} horas`;
+            equivDias2.textContent = `Equivalente a aproximadamente: ${totalDiasInt} dias úteis`;
+            equivSemanas2.textContent = `Equivalente a aproximadamente: ${totalSemanasInt} semana(s)`;
+
+            mostrarModelo(getModeloSelecionado());
+
+            const logDiv = document.getElementById('logHoras');
+            if (logDiv) {
+                logDiv.innerHTML = '✅ Total de horas calculadas: <strong>' + totalExibido + ' horas</strong>';
             }
 
-            calcularBtn.addEventListener('click', function() {
-                window._isUserClick = true;
-                calcular();
+            if (window._isUserClick) {
+                abrirPopup('Total de horas calculadas: ' + totalExibido + ' horas');
                 window._isUserClick = false;
-            });
-            limparBtn.addEventListener('click', limparCampos);
+            }
+        }
 
-            radioModelo.forEach(radio => {
-                radio.addEventListener('change', function() {
-                    if (this.checked) mostrarModelo(parseInt(this.value));
+        // ============================================================
+        // CÁLCULO (chama o carregamento da base e depois executa)
+        // ============================================================
+        function calcular() {
+            window._calcularPending = true;
+            carregarBase()
+                .then(() => {
+                    window._calcularPending = false;
+                    executarCalculo();
+                })
+                .catch(() => {
+                    window._calcularPending = false;
+                    // Erro já foi exibido no alert
                 });
+        }
+
+        // ---- Eventos ----
+        calcularBtn.addEventListener('click', function() {
+            window._isUserClick = true;
+            calcular();
+        });
+
+        limparBtn.addEventListener('click', limparCampos);
+
+        radioModelo.forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.checked) mostrarModelo(parseInt(this.value));
             });
+        });
 
-            imprimirBtn.addEventListener('click', function() {
-                const modelo = getModeloSelecionado();
-                mostrarModelo(modelo);
-                window.print();
-            });
+        imprimirBtn.addEventListener('click', function() {
+            const modelo = getModeloSelecionado();
+            mostrarModelo(modelo);
+            window.print();
+        });
 
-            window.addEventListener('DOMContentLoaded', function() {
-                document.getElementById('container-principal').classList.add('sidebar-active');
-                document.getElementById('sidebar-global').style.display = 'flex';
-                carregarBase();
-            });
+        // ---- Inicialização ----
+        window.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('container-principal').classList.add('sidebar-active');
+            document.getElementById('sidebar-global').style.display = 'flex';
 
-            function voltarIndex() { window.location.href = '../index.html'; }
-            function irPara(destino) { window.location.href = destino; }
-            function abrirLink(url) { window.open(url, '_blank'); }
-
-            const executivosLogistica = [
-                {
-                    nome: 'João Victor Nunes Pinheiro',
-                    cargo: 'Executivo Técnico de Negócios Pleno',
-                    email: 'joao.pinheiro@ndd.tech',
-                    foto: '../assets/joao.jpeg'
+            carregarBase().then(() => {
+                if (!window._calcularPending) {
+                    executarCalculo();
                 }
-            ];
+            });
+        });
 
-            let modalEmail = '';
+        // ---- Funções globais (sidebar, contatos, etc.) ----
+        window.irPara = function(destino) { window.location.href = destino; };
+        window.abrirLink = function(url) { window.open(url, '_blank'); };
 
-            function abrirModal(email, nome) {
-                modalEmail = email;
-                document.getElementById('modal-btn-teams').onclick = function() {
-                    window.location.href = 'msteams://teams.microsoft.com/l/chat/0/0?users=' + modalEmail;
-                    fecharModal();
-                };
-                document.getElementById('modal-btn-email').onclick = function() {
-                    window.location.href = 'mailto:' + modalEmail;
-                    fecharModal();
-                };
-                document.getElementById('contact-modal').classList.add('show');
+        // ============================================================
+        // DADOS DOS EXECUTIVOS DA VERTICAL LOGÍSTICA
+        // ============================================================
+        const executivosLogistica = [
+            {
+                nome: 'João Victor Nunes Pinheiro',
+                cargo: 'Executivo Técnico de Negócios Pleno',
+                email: 'joao.pinheiro@ndd.tech',
+                foto: '../assets/joao.jpeg'
             }
+        ];
 
-            function fecharModal() {
-                document.getElementById('contact-modal').classList.remove('show');
+        // ============================================================
+        // FUNÇÕES DO MODAL
+        // ============================================================
+        let modalEmail = '';
+
+        window.abrirModal = function(email, nome) {
+            modalEmail = email;
+
+            document.getElementById('modal-btn-teams').onclick = function() {
+                window.location.href = 'msteams://teams.microsoft.com/l/chat/0/0?users=' + modalEmail;
+                fecharModal();
+            };
+
+            document.getElementById('modal-btn-email').onclick = function() {
+                window.location.href = 'mailto:' + modalEmail;
+                fecharModal();
+            };
+
+            document.getElementById('contact-modal').classList.add('show');
+        };
+
+        function fecharModal() {
+            document.getElementById('contact-modal').classList.remove('show');
+        }
+
+        window.fecharModalExterno = function(event) {
+            if (event.target === event.currentTarget) {
+                fecharModal();
             }
+        };
 
-            function fecharModalExterno(event) {
-                if (event.target === event.currentTarget) {
-                    fecharModal();
-                }
-            }
+        // ============================================================
+        // RENDERIZAR OS CARDS DOS EXECUTIVOS
+        // ============================================================
+        function renderizarExecutivos() {
+            const grid = document.getElementById('executiveGrid');
+            if (!grid) return;
 
-            function renderizarExecutivos() {
-                const grid = document.getElementById('executiveGrid');
-                if (!grid) return;
-                let html = '';
-                executivosLogistica.forEach(ex => {
-                    html += `
-                        <div class="welcome-executive-card" onclick="abrirModal('${ex.email}', '${ex.nome}')">
-                            <img src="${ex.foto}" alt="${ex.nome}" class="team-photo">
-                            <div>
-                                <h4>${ex.nome}</h4>
-                                <p>${ex.cargo}</p>
-                                <span class="email-text">${ex.email}</span>
-                            </div>
+            let html = '';
+            executivosLogistica.forEach(ex => {
+                html += `
+                    <div class="welcome-executive-card" onclick="abrirModal('${ex.email}', '${ex.nome}')">
+                        <img src="${ex.foto}" alt="${ex.nome}" class="team-photo">
+                        <div>
+                            <h4>${ex.nome}</h4>
+                            <p>${ex.cargo}</p>
+                            <span class="email-text">${ex.email}</span>
                         </div>
-                    `;
-                });
-                grid.innerHTML = html;
-            }
-
-            document.addEventListener('DOMContentLoaded', renderizarExecutivos);
-
-            function abrirPopup(mensagem) {
-                document.getElementById('popup-mensagem').textContent = mensagem;
-                document.getElementById('popup-overlay').style.display = 'flex';
-            }
-
-            function fecharPopup() {
-                document.getElementById('popup-overlay').style.display = 'none';
-            }
-
-            window.abrirPopup = abrirPopup;
-            window.fecharPopup = fecharPopup;
-
-            document.getElementById('popup-overlay').addEventListener('click', function(e) {
-                if (e.target === this) fecharPopup();
+                    </div>
+                `;
             });
+            grid.innerHTML = html;
+        }
 
-        })();
-    </script>
+        document.addEventListener('DOMContentLoaded', renderizarExecutivos);
+
+        // ============================================================
+        // POP-UP CUSTOMIZADO
+        // ============================================================
+        function abrirPopup(mensagem) {
+            document.getElementById('popup-mensagem').textContent = mensagem;
+            document.getElementById('popup-overlay').style.display = 'flex';
+        }
+
+        window.fecharPopup = function() {
+            document.getElementById('popup-overlay').style.display = 'none';
+        };
+
+        document.getElementById('popup-overlay').addEventListener('click', function(e) {
+            if (e.target === this) fecharPopup();
+        });
+
+    })();
+</script>
 
 
 </body>
