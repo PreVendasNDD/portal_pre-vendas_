@@ -1,9 +1,12 @@
 {
-  "horasPorCnpj": 1,
-  "horasPorUsuario": 0.5,
-  "horasPorCnpjModulo": 8,
+  "horasCIOT": 8,
+  "horasFrete": 8,
+  "horasVale": 8,
   "horasContaDigital": 6,
-  "horasTreinamento": 2,
+  "horasContaDigitalExterna": 56,
+  "horasCadastro": 1,
+  "horasUsuario": 0.5,
+  "horasTreinamento": 4,
   "jornadaDiaria": 8,
   "jornadaSemanal": 40
 }
