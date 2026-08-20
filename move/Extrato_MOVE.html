@@ -1098,180 +1098,223 @@
         // ============================================================
         // EXECUÇÃO DO CÁLCULO
         // ============================================================
+        // ============================================================
+        // EXECUÇÃO DO CÁLCULO (com try/catch e alertas de depuração)
+        // ============================================================
         function executarCalculo() {
-            if (!base) {
-                alert('Base não carregada. Tente novamente.');
-                return;
-            }
+            try {
+                alert('🔥 Iniciando cálculo...'); // <-- só pra testar
 
-            const cliente = inputCliente.value.trim() || 'Não informado';
-            const cnpjs = getNumber('cnpjs');
-            const usuarios = getNumber('usuarios');
+                if (!base) {
+                    alert('Base não carregada.');
+                    return;
+                }
 
-            if (isNaN(cnpjs) || cnpjs < 0 || isNaN(usuarios) || usuarios < 0) {
-                alert('Preencha CNPJ\'s e Usuários com valores válidos (0 ou mais).');
-                return;
-            }
+                alert('✅ Base carregada: ' + JSON.stringify(base).substring(0, 100));
 
-            const integracaoAtivo = modIntegracao.checked;
-            const appAtivo = modApp.checked;
-            
-            const integracaoTexto = integracaoAtivo ? 'Sim' : 'Não';
-            const appTexto = appAtivo ? 'Sim' : 'Não';
+                const cliente = inputCliente.value.trim() || 'Não informado';
+                const cnpjs = getNumber('cnpjs');
+                const usuarios = getNumber('usuarios');
 
-            const totalAmbientes = base.baseAmbientes + cnpjs;
-            const totalCadastro = base.baseCadastro + cnpjs;
-            const totalUsuarios = usuarios * base.horasPorUsuario;
-            const totalApp = appAtivo ? base.baseApp : 0;
-            const totalGoLive = base.baseGoLive;
-            const totalSustentacao = base.baseSustentacao;
-            const totalTreinamento = base.baseTreinamento;
+                if (isNaN(cnpjs) || cnpjs < 0 || isNaN(usuarios) || usuarios < 0) {
+                    alert('Preencha CNPJ\'s e Usuários com valores válidos (0 ou mais).');
+                    return;
+                }
 
-            const totalReal = (totalAmbientes * base.fatorAmbientes) + totalCadastro + totalUsuarios + totalApp + totalGoLive + totalSustentacao + totalTreinamento;
-            const totalExibido = Math.round(totalReal);
+                const integracaoAtivo = modIntegracao.checked;
+                const appAtivo = modApp.checked;
+                
+                const integracaoTexto = integracaoAtivo ? 'Sim' : 'Não';
+                const appTexto = appAtivo ? 'Sim' : 'Não';
 
-            spanCliente1.textContent = cliente;
-            spanCliente2.textContent = cliente;
-            obsCliente2.textContent = cliente;
-            
-            infoCnpjs1.textContent = cnpjs;
-            infoCnpjs2.textContent = cnpjs;
-            infoUsuarios1.textContent = usuarios;
-            infoUsuarios2.textContent = usuarios;
-            infoIntegracao1.textContent = integracaoTexto;
-            infoIntegracao2.textContent = integracaoTexto;
-            infoApp1.textContent = appTexto;
-            infoApp2.textContent = appTexto;
+                // Verifica se a base tem as propriedades necessárias
+                if (typeof base.baseAmbientes === 'undefined' || typeof base.baseCadastro === 'undefined') {
+                    alert('❌ Base inválida: faltam propriedades baseAmbientes ou baseCadastro.');
+                    return;
+                }
 
-            const itens = [
-                { nome: 'Configuração de Ambientes', real: (totalAmbientes * base.fatorAmbientes), ativo: true },
-                { nome: 'Cadastro e Parametrização', real: totalCadastro, ativo: true },
-                { nome: 'Criação e Configuração de Usuários', real: totalUsuarios, ativo: true },
-                { nome: 'Configuração e instalação do App Conector', real: totalApp, ativo: appAtivo },
-                { nome: 'Acompanhamento Go Live', real: totalGoLive, ativo: true },
-                { nome: 'Apoio operacional pós Go Live', real: totalSustentacao, ativo: true },
-                { nome: 'Treinamento', real: totalTreinamento, ativo: true }
-            ];
+                const totalAmbientes = base.baseAmbientes + cnpjs;
+                const totalCadastro = base.baseCadastro + cnpjs;
+                const totalUsuarios = usuarios * base.horasPorUsuario;
+                const totalApp = appAtivo ? base.baseApp : 0;
+                const totalGoLive = base.baseGoLive;
+                const totalSustentacao = base.baseSustentacao;
+                const totalTreinamento = base.baseTreinamento;
 
-            function gerarLinhasResumo() {
-                let html = '';
-                itens.forEach((item) => {
-                    if (item.ativo) {
-                        const horas = Math.round(item.real);
-                        const dias = round1(item.real / base.jornadaDiaria);
-                        const semanas = round1(item.real / base.jornadaSemanal);
-                        html += `<tr>
-                            <td>${item.nome}</td>
-                            <td class="center">${horas.toFixed(0)}h</td>
-                            <td class="center">${dias.toFixed(1)}</td>
-                            <td class="center">${semanas.toFixed(1)}</td>
-                        </tr>`;
-                    } else {
-                        html += `<tr class="nao-aplicavel">
-                            <td>${item.nome}</td>
-                            <td class="center texto-na">*não aplicável</td>
-                            <td class="center">-</td>
-                            <td class="center">-</td>
-                        </tr>`;
-                    }
-                });
-                const totalDias = Math.ceil(totalReal / base.jornadaDiaria);
-                const totalSemanas = Math.ceil(totalReal / base.jornadaSemanal);
-                html += `<tr class="total">
-                    <td>Total</td>
-                    <td class="center">${totalExibido.toFixed(0)} horas</td>
-                    <td class="center">${totalDias} dia(s)</td>
-                    <td class="center">${totalSemanas} semana(s)</td>
-                </tr>`;
-                return html;
-            }
+                const totalReal = (totalAmbientes * base.fatorAmbientes) + totalCadastro + totalUsuarios + totalApp + totalGoLive + totalSustentacao + totalTreinamento;
+                const totalExibido = Math.round(totalReal);
 
-            const resumoHTML = gerarLinhasResumo();
-            corpoEtapas1.innerHTML = resumoHTML;
-            corpoEtapasResumo2.innerHTML = resumoHTML;
+                spanCliente1.textContent = cliente;
+                spanCliente2.textContent = cliente;
+                obsCliente2.textContent = cliente;
+                
+                infoCnpjs1.textContent = cnpjs;
+                infoCnpjs2.textContent = cnpjs;
+                infoUsuarios1.textContent = usuarios;
+                infoUsuarios2.textContent = usuarios;
+                infoIntegracao1.textContent = integracaoTexto;
+                infoIntegracao2.textContent = integracaoTexto;
+                infoApp1.textContent = appTexto;
+                infoApp2.textContent = appTexto;
 
-            const subitensConfig = [
-                { nome: 'Configuração de Ambientes', sub: base.subetapas.configuracaoAmbientes },
-                { nome: 'Cadastro e Parametrização', sub: base.subetapas.cadastroParametrizacao },
-                { nome: 'Criação e Configuração de Usuários', sub: base.subetapas.criacaoUsuarios },
-                { nome: 'Configuração e instalação do App Conector', sub: [] },
-                { nome: 'Acompanhamento Go Live', sub: [] },
-                { nome: 'Apoio operacional pós Go Live', sub: [] },
-                { nome: 'Treinamento', sub: [] }
-            ];
+                const itens = [
+                    { nome: 'Configuração de Ambientes', real: (totalAmbientes * base.fatorAmbientes), ativo: true },
+                    { nome: 'Cadastro e Parametrização', real: totalCadastro, ativo: true },
+                    { nome: 'Criação e Configuração de Usuários', real: totalUsuarios, ativo: true },
+                    { nome: 'Configuração e instalação do App Conector', real: totalApp, ativo: appAtivo },
+                    { nome: 'Acompanhamento Go Live', real: totalGoLive, ativo: true },
+                    { nome: 'Apoio operacional pós Go Live', real: totalSustentacao, ativo: true },
+                    { nome: 'Treinamento', real: totalTreinamento, ativo: true }
+                ];
 
-            let detalhamentoHTML = '';
-            itens.forEach((item, i) => {
-                const config = subitensConfig[i];
-                if (!config) return;
-                const totalHoras = item.real;
-
-                detalhamentoHTML += `<div class="sub-section-title">${i+1}. ${config.nome}</div>`;
-
-                if (item.ativo) {
-                    if (config.sub.length > 0) {
-                        detalhamentoHTML += `<table>
-                            <tr><th align="left">Etapa</th><th>Horas</th><th>Dias</th><th>Semanas</th></tr>`;
-                        config.sub.forEach(sub => {
-                            const horas = totalHoras * sub.pct;
-                            const dias = round1(horas / base.jornadaDiaria);
-                            const semanas = round1(horas / base.jornadaSemanal);
-                            detalhamentoHTML += `<tr>
-                                <td>${sub.nome}</td>
-                                <td class="center">${horas.toFixed(1)}h</td>
+                function gerarLinhasResumo() {
+                    let html = '';
+                    itens.forEach((item) => {
+                        if (item.ativo) {
+                            const horas = Math.round(item.real);
+                            const dias = round1(item.real / base.jornadaDiaria);
+                            const semanas = round1(item.real / base.jornadaSemanal);
+                            html += `<tr>
+                                <td>${item.nome}</td>
+                                <td class="center">${horas.toFixed(0)}h</td>
                                 <td class="center">${dias.toFixed(1)}</td>
                                 <td class="center">${semanas.toFixed(1)}</td>
                             </tr>`;
-                        });
-                        detalhamentoHTML += `</table>`;
+                        } else {
+                            html += `<tr class="nao-aplicavel">
+                                <td>${item.nome}</td>
+                                <td class="center texto-na">*não aplicável</td>
+                                <td class="center">-</td>
+                                <td class="center">-</td>
+                            </tr>`;
+                        }
+                    });
+                    const totalDias = Math.ceil(totalReal / base.jornadaDiaria);
+                    const totalSemanas = Math.ceil(totalReal / base.jornadaSemanal);
+                    html += `<tr class="total">
+                        <td>Total</td>
+                        <td class="center">${totalExibido.toFixed(0)} horas</td>
+                        <td class="center">${totalDias} dia(s)</td>
+                        <td class="center">${totalSemanas} semana(s)</td>
+                    </tr>`;
+                    return html;
+                }
+
+                const resumoHTML = gerarLinhasResumo();
+                corpoEtapas1.innerHTML = resumoHTML;
+                corpoEtapasResumo2.innerHTML = resumoHTML;
+
+                // Verifica subetapas
+                if (!base.subetapas) {
+                    alert('⚠️ base.subetapas não encontrada. Usando subetapas padrão.');
+                    base.subetapas = {
+                        configuracaoAmbientes: [
+                            { nome: "Configuração do ambiente HMG", pct: 0.36 },
+                            { nome: "Configuração do ambiente PRD", pct: 0.36 },
+                            { nome: "Ajustes e parametrização", pct: 0.27 }
+                        ],
+                        cadastroParametrizacao: [
+                            { nome: "Cadastro dos CNPJ's", pct: 0.60 },
+                            { nome: "Parametrização", pct: 0.20 },
+                            { nome: "Testes e validações", pct: 0.20 }
+                        ],
+                        criacaoUsuarios: [
+                            { nome: "Criação de usuários", pct: 0.40 },
+                            { nome: "Configuração de perfis", pct: 0.40 },
+                            { nome: "Validação com cliente", pct: 0.20 }
+                        ]
+                    };
+                }
+
+                const subitensConfig = [
+                    { nome: 'Configuração de Ambientes', sub: base.subetapas.configuracaoAmbientes },
+                    { nome: 'Cadastro e Parametrização', sub: base.subetapas.cadastroParametrizacao },
+                    { nome: 'Criação e Configuração de Usuários', sub: base.subetapas.criacaoUsuarios },
+                    { nome: 'Configuração e instalação do App Conector', sub: [] },
+                    { nome: 'Acompanhamento Go Live', sub: [] },
+                    { nome: 'Apoio operacional pós Go Live', sub: [] },
+                    { nome: 'Treinamento', sub: [] }
+                ];
+
+                let detalhamentoHTML = '';
+                itens.forEach((item, i) => {
+                    const config = subitensConfig[i];
+                    if (!config) return;
+                    const totalHoras = item.real;
+
+                    detalhamentoHTML += `<div class="sub-section-title">${i+1}. ${config.nome}</div>`;
+
+                    if (item.ativo) {
+                        if (config.sub.length > 0) {
+                            detalhamentoHTML += `<table>
+                                <tr><th align="left">Etapa</th><th>Horas</th><th>Dias</th><th>Semanas</th></tr>`;
+                            config.sub.forEach(sub => {
+                                const horas = totalHoras * sub.pct;
+                                const dias = round1(horas / base.jornadaDiaria);
+                                const semanas = round1(horas / base.jornadaSemanal);
+                                detalhamentoHTML += `<tr>
+                                    <td>${sub.nome}</td>
+                                    <td class="center">${horas.toFixed(1)}h</td>
+                                    <td class="center">${dias.toFixed(1)}</td>
+                                    <td class="center">${semanas.toFixed(1)}</td>
+                                </tr>`;
+                            });
+                            detalhamentoHTML += `</table>`;
+                        } else {
+                            detalhamentoHTML += `<table>
+                                <tr><th align="left">Etapa</th><th>Horas</th><th>Dias</th><th>Semanas</th></tr>
+                                <tr>
+                                    <td>Total</td>
+                                    <td class="center">${totalHoras.toFixed(1)}h</td>
+                                    <td class="center">${(totalHoras/base.jornadaDiaria).toFixed(1)}</td>
+                                    <td class="center">${(totalHoras/base.jornadaSemanal).toFixed(1)}</td>
+                                </tr>
+                            </table>`;
+                        }
+                        detalhamentoHTML += `<div class="total-etapa">Total da etapa: ${totalHoras.toFixed(1)}h ( ${Math.ceil(totalHoras/base.jornadaDiaria)} dia(s) / ${Math.ceil(totalHoras/base.jornadaSemanal)} semana(s) )</div>`;
                     } else {
-                        detalhamentoHTML += `<table>
+                        detalhamentoHTML += `<table class="nao-aplicavel">
                             <tr><th align="left">Etapa</th><th>Horas</th><th>Dias</th><th>Semanas</th></tr>
                             <tr>
                                 <td>Total</td>
-                                <td class="center">${totalHoras.toFixed(1)}h</td>
-                                <td class="center">${(totalHoras/base.jornadaDiaria).toFixed(1)}</td>
-                                <td class="center">${(totalHoras/base.jornadaSemanal).toFixed(1)}</td>
+                                <td class="center texto-na">*não aplicável</td>
+                                <td class="center">-</td>
+                                <td class="center">-</td>
                             </tr>
                         </table>`;
+                        detalhamentoHTML += `<div class="total-etapa">Total da etapa: *não aplicável</div>`;
                     }
-                    detalhamentoHTML += `<div class="total-etapa">Total da etapa: ${totalHoras.toFixed(1)}h ( ${Math.ceil(totalHoras/base.jornadaDiaria)} dia(s) / ${Math.ceil(totalHoras/base.jornadaSemanal)} semana(s) )</div>`;
-                } else {
-                    detalhamentoHTML += `<table class="nao-aplicavel">
-                        <tr><th align="left">Etapa</th><th>Horas</th><th>Dias</th><th>Semanas</th></tr>
-                        <tr>
-                            <td>Total</td>
-                            <td class="center texto-na">*não aplicável</td>
-                            <td class="center">-</td>
-                            <td class="center">-</td>
-                        </tr>
-                    </table>`;
-                    detalhamentoHTML += `<div class="total-etapa">Total da etapa: *não aplicável</div>`;
+
+                    if (i < itens.length - 1) {
+                        detalhamentoHTML += `<div class="linha-vermelha entre-etapas"></div>`;
+                    }
+                });
+
+                detalhamentoEtapas2.innerHTML = detalhamentoHTML;
+
+                const totalDiasInt = Math.ceil(totalReal / base.jornadaDiaria);
+                const totalSemanasInt = Math.ceil(totalReal / base.jornadaSemanal);
+                totalProjeto2.textContent = `Total do Projeto: ${totalExibido.toFixed(0)} horas`;
+                equivDias2.textContent = `Equivalente a aproximadamente: ${totalDiasInt} dias úteis`;
+                equivSemanas2.textContent = `Equivalente a aproximadamente: ${totalSemanasInt} semana(s)`;
+
+                mostrarModelo(getModeloSelecionado());
+
+                const logDiv = document.getElementById('logHoras');
+                if (logDiv) {
+                    logDiv.innerHTML = '✅ Total de horas calculadas: <strong>' + totalExibido + ' horas</strong>';
                 }
 
-                if (i < itens.length - 1) {
-                    detalhamentoHTML += `<div class="linha-vermelha entre-etapas"></div>`;
+                if (window._isUserClick) {
+                    abrirPopup('Total de horas calculadas: ' + totalExibido + ' horas');
+                    window._isUserClick = false;
                 }
-            });
 
-            detalhamentoEtapas2.innerHTML = detalhamentoHTML;
+                alert('✅ Cálculo concluído com sucesso!'); // <-- sucesso
 
-            const totalDiasInt = Math.ceil(totalReal / base.jornadaDiaria);
-            const totalSemanasInt = Math.ceil(totalReal / base.jornadaSemanal);
-            totalProjeto2.textContent = `Total do Projeto: ${totalExibido.toFixed(0)} horas`;
-            equivDias2.textContent = `Equivalente a aproximadamente: ${totalDiasInt} dias úteis`;
-            equivSemanas2.textContent = `Equivalente a aproximadamente: ${totalSemanasInt} semana(s)`;
-
-            mostrarModelo(getModeloSelecionado());
-
-            const logDiv = document.getElementById('logHoras');
-            if (logDiv) {
-                logDiv.innerHTML = '✅ Total de horas calculadas: <strong>' + totalExibido + ' horas</strong>';
-            }
-
-            if (window._isUserClick) {
-                abrirPopup('Total de horas calculadas: ' + totalExibido + ' horas');
-                window._isUserClick = false;
+            } catch (erro) {
+                alert('❌ ERRO NO CÁLCULO: ' + erro.message + '\n\nStack: ' + erro.stack);
+                console.error(erro);
             }
         }
 
