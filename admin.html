@@ -34,19 +34,6 @@
         h1 { color: #1a2f4f; font-size: 24px; margin-bottom: 5px; }
         .subtitle { color: #777; font-size: 14px; margin-bottom: 25px; }
 
-        /* ---------- TOKEN (oculto por padrão) ---------- */
-        .token-section {
-            background: #f8f9fa;
-            padding: 15px 20px;
-            border-radius: 10px;
-            margin-bottom: 25px;
-            border: 1px solid #e9e9e9;
-            display: none;
-        }
-        .token-section label { font-weight: 600; font-size: 13px; display: block; margin-bottom: 4px; }
-        .token-section input { width: 100%; padding: 8px 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
-        .token-section .hint { font-size: 12px; color: #777; margin-top: 4px; }
-
         /* ---------- MODAL PARA TOKEN ---------- */
         #tokenModal {
             display: none;
@@ -222,6 +209,7 @@
 </div>
 
 <script>
+    // ---- CONFIGURAÇÕES ----
     const REPO_OWNER = 'PreVendasNDD';
     const REPO_NAME = 'portal_pre-vendas_';
     const BRANCH = 'main';
@@ -232,6 +220,7 @@
         ELOG:  { file: 'BASE_ELOG.json',  path: 'elog/BASE_ELOG.json' }
     };
 
+    // ---- MAPEAMENTO DE NOMES AMIGÁVEIS ----
     const labels = {
         horasPorCnpj: { label: 'Horas por CNPJ', desc: 'Tempo para cadastrar cada CNPJ na parametrização operacional.' },
         horasPorUsuario: { label: 'Horas por Usuário', desc: 'Tempo para criar e configurar cada usuário.' },
@@ -262,6 +251,7 @@
         subetapas: { label: '📋 Subetapas (detalhamento)', desc: 'Estrutura de subetapas para o modelo detalhado. Edite o JSON com cuidado.' }
     };
 
+    // ---- AGRUPAMENTOS (CORRIGIDOS PARA O MOVE) ----
     const sections = {
         CARGO: [
             { title: '⏱️ Tempos Base', keys: ['horasPorCnpj', 'horasPorUsuario', 'horasPorCnpjModulo'] },
@@ -270,9 +260,11 @@
         ],
         MOVE: [
             { title: '🏗️ Ambientes e Cadastro', keys: ['baseAmbientes', 'baseCadastro'] },
-            { title: '👤 Usuários', keys: ['baseUsuarios', 'incrementoUsuarios'] },
+            { title: '👤 Usuários', keys: ['horasPorUsuario'] },  // ← corrigido
             { title: '📱 App Conector', keys: ['baseApp'] },
-            { title: '📊 Fatores de Ajuste', keys: ['fatorAmbientes', 'fatorUsuarios'] },
+            { title: '🚀 Go Live e Sustentação', keys: ['baseGoLive', 'baseSustentacao', 'baseTreinamento'] },
+            { title: '📊 Fatores de Ajuste', keys: ['fatorAmbientes'] },
+            { title: '📅 Jornada', keys: ['jornadaDiaria', 'jornadaSemanal'] },
             { title: '📋 Subetapas (detalhamento)', keys: ['subetapas'] }
         ],
         ELOG: [
@@ -293,6 +285,7 @@
     const statusDiv = document.getElementById('status');
     const formContainer = document.getElementById('formContainer');
 
+    // ---- TOKEN (oculto no localStorage) ----
     let storedToken = localStorage.getItem('githubToken') || '';
 
     function mostrarModalToken() {
@@ -342,6 +335,7 @@
         else statusDiv.style.display = 'block';
     }
 
+    // ---- Carregar JSON ----
     async function carregarProduto() {
         const token = getToken();
         if (!token) {
@@ -387,6 +381,7 @@
         }
     }
 
+    // ---- Renderizar formulário ----
     function renderForm(data) {
         if (!data || typeof data !== 'object') {
             formContainer.innerHTML = '<p style="color:red;">Dados inválidos.</p>';
@@ -418,7 +413,7 @@
             }
         }
 
-        // Chaves extras (que não estão nas seções)
+        // ---- Chaves extras (para capturar qualquer campo que não esteja nas seções) ----
         const allKeys = new Set(productSections.flatMap(s => s.keys));
         const extraKeys = Object.keys(data).filter(k => !allKeys.has(k));
         if (extraKeys.length > 0) {
@@ -441,6 +436,7 @@
         formContainer.innerHTML = html;
     }
 
+    // ---- Salvar ----
     async function salvarArquivo() {
         if (!currentData) { setStatus('⚠️ Nenhum dado carregado.', 'error'); return; }
         const token = getToken();
@@ -515,6 +511,7 @@
         await salvarArquivo();
     }
 
+    // ---- Inicialização ----
     window.onload = function() {
         if (storedToken) {
             setTimeout(() => carregarProduto(), 500);
