@@ -958,14 +958,12 @@
     (function() {
         'use strict';
 
-        // ---- Variáveis ----
         let base = null;
         let carregando = false;
 
         // ---- Função para carregar a base (SEMPRE atual, sem cache, sem fallback) ----
         async function carregarBase() {
             if (carregando) {
-                // Se já está carregando, aguarda
                 return new Promise((resolve) => {
                     const checkInterval = setInterval(() => {
                         if (base) {
@@ -978,7 +976,7 @@
 
             carregando = true;
             const url = `move/BASE_MOVE.json?t=${Date.now()}`;
-            
+
             try {
                 const response = await fetch(url, {
                     cache: 'no-store',
@@ -990,16 +988,15 @@
                 });
 
                 if (!response.ok) {
-                    throw new Error(`Arquivo BASE_MOVE.json não encontrado (status ${response.status})`);
+                    throw new Error(`Arquivo não encontrado (status ${response.status})`);
                 }
 
-                const data = await response.json();
-                base = data;
+                base = await response.json();
                 carregando = false;
                 return base;
             } catch (error) {
                 carregando = false;
-                alert('❌ Não foi possível carregar o arquivo BASE_MOVE.json.\n\nVerifique se o arquivo existe e está acessível.\n\nO cálculo não será executado.');
+                alert('❌ ERRO: Não foi possível carregar move/BASE_MOVE.json.\n\nVerifique:\n1. O arquivo existe na pasta "move"?\n2. O GitHub Pages está servindo essa pasta?\n3. O arquivo foi commitado?\n\nO cálculo NÃO será executado.');
                 throw error;
             }
         }
@@ -1041,7 +1038,6 @@
         const extrato1 = document.getElementById('extrato-modelo1');
         const extrato2 = document.getElementById('extrato-modelo2');
 
-        // ---- Data atual ----
         function setDataAtual() {
             const hoje = new Date();
             const dia = String(hoje.getDate()).padStart(2, '0');
@@ -1055,7 +1051,6 @@
         }
         setDataAtual();
 
-        // ---- Utilitários ----
         function getNumber(id) {
             const val = document.getElementById(id).value.trim();
             if (val === '') return NaN;
@@ -1066,7 +1061,6 @@
             return Math.round(v * 10) / 10;
         }
 
-        // ---- Limpar ----
         function limparCampos() {
             inputCliente.value = '';
             inputCNPJs.value = '';
@@ -1076,7 +1070,6 @@
             calcular();
         }
 
-        // ---- Obter modelo selecionado ----
         function getModeloSelecionado() {
             for (const radio of radioModelo) {
                 if (radio.checked) return parseInt(radio.value);
@@ -1084,7 +1077,6 @@
             return 1;
         }
 
-        // ---- Mostrar/esconder modelos ----
         function mostrarModelo(modelo) {
             if (modelo === 1) {
                 extrato1.classList.add('active');
@@ -1279,19 +1271,17 @@
         // CÁLCULO (chama o carregamento da base e depois executa)
         // ============================================================
         function calcular() {
-            // Se a base já estiver carregada, executa direto
             if (base) {
                 executarCalculo();
                 return;
             }
 
-            // Senão, carrega e depois executa
             carregarBase()
                 .then(() => {
                     executarCalculo();
                 })
                 .catch(() => {
-                    // Erro já foi exibido no alert dentro de carregarBase()
+                    // Erro já foi exibido no alert
                 });
         }
 
@@ -1320,7 +1310,6 @@
             document.getElementById('container-principal').classList.add('sidebar-active');
             document.getElementById('sidebar-global').style.display = 'flex';
 
-            // Carrega a base inicial
             carregarBase()
                 .then(() => {
                     executarCalculo();
@@ -1330,12 +1319,12 @@
                 });
         });
 
-        // ---- Funções globais (sidebar, contatos, etc.) ----
+        // ---- Funções globais ----
         window.irPara = function(destino) { window.location.href = destino; };
         window.abrirLink = function(url) { window.open(url, '_blank'); };
 
         // ============================================================
-        // DADOS DOS EXECUTIVOS DA VERTICAL LOGÍSTICA
+        // DADOS DOS EXECUTIVOS
         // ============================================================
         const executivosLogistica = [
             {
@@ -1346,24 +1335,18 @@
             }
         ];
 
-        // ============================================================
-        // FUNÇÕES DO MODAL
-        // ============================================================
         let modalEmail = '';
 
         window.abrirModal = function(email, nome) {
             modalEmail = email;
-
             document.getElementById('modal-btn-teams').onclick = function() {
                 window.location.href = 'msteams://teams.microsoft.com/l/chat/0/0?users=' + modalEmail;
                 fecharModal();
             };
-
             document.getElementById('modal-btn-email').onclick = function() {
                 window.location.href = 'mailto:' + modalEmail;
                 fecharModal();
             };
-
             document.getElementById('contact-modal').classList.add('show');
         };
 
@@ -1377,13 +1360,9 @@
             }
         };
 
-        // ============================================================
-        // RENDERIZAR OS CARDS DOS EXECUTIVOS
-        // ============================================================
         function renderizarExecutivos() {
             const grid = document.getElementById('executiveGrid');
             if (!grid) return;
-
             let html = '';
             executivosLogistica.forEach(ex => {
                 html += `
@@ -1402,9 +1381,6 @@
 
         document.addEventListener('DOMContentLoaded', renderizarExecutivos);
 
-        // ============================================================
-        // POP-UP CUSTOMIZADO
-        // ============================================================
         function abrirPopup(mensagem) {
             document.getElementById('popup-mensagem').textContent = mensagem;
             document.getElementById('popup-overlay').style.display = 'flex';
