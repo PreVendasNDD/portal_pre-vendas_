@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin · Parâmetros NDD</title>
     <style>
-        /* ---------- MESMO ESTILO DO INDEX ---------- */
         * {
             margin: 0;
             padding: 0;
@@ -32,8 +31,20 @@
             box-shadow: 0 8px 24px rgba(0,0,0,0.1);
             margin: 0 auto;
         }
-        h1 { color: #1a2f4f; font-size: 24px; margin-bottom: 10px; }
-        .subtitle { color: #777; font-size: 14px; margin-bottom: 30px; }
+        h1 { color: #1a2f4f; font-size: 24px; margin-bottom: 5px; }
+        .subtitle { color: #777; font-size: 14px; margin-bottom: 25px; }
+
+        .token-section {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border: 1px solid #e9e9e9;
+        }
+        .token-section label { font-weight: 600; font-size: 13px; display: block; margin-bottom: 4px; }
+        .token-section input { width: 100%; padding: 8px 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
+        .token-section .hint { font-size: 12px; color: #777; margin-top: 4px; }
+
         .product-selector {
             display: flex;
             gap: 15px;
@@ -51,25 +62,26 @@
             transition: 0.2s;
             color: #1a2f4f;
         }
-        .product-selector button.active {
-            background: #1a2f4f;
-            color: #fff;
-        }
-        .product-selector button:hover {
-            background: #1a2f4f;
-            color: #fff;
-        }
+        .product-selector button.active { background: #1a2f4f; color: #fff; }
+        .product-selector button:hover { background: #1a2f4f; color: #fff; }
+
         .param-group {
             margin-bottom: 20px;
-            border-bottom: 1px solid #e9e9e9;
             padding-bottom: 15px;
+            border-bottom: 1px solid #e9e9e9;
         }
+        .param-group:last-child { border-bottom: none; }
         .param-group label {
             display: block;
             font-weight: 600;
-            font-size: 13px;
-            color: #333;
-            margin-bottom: 4px;
+            font-size: 14px;
+            color: #1a2f4f;
+            margin-bottom: 2px;
+        }
+        .param-group .description {
+            font-size: 12px;
+            color: #777;
+            margin-bottom: 6px;
         }
         .param-group input, .param-group textarea {
             width: 100%;
@@ -90,6 +102,17 @@
             min-height: 60px;
             resize: vertical;
         }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1a2f4f;
+            margin: 25px 0 15px 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #ff7079;
+        }
+        .section-title:first-of-type { margin-top: 0; }
+
         .btn-group {
             display: flex;
             gap: 15px;
@@ -111,6 +134,7 @@
         .btn-success:hover { background: #1e7e34; }
         .btn-secondary { background: #6c757d; color: #fff; }
         .btn-secondary:hover { background: #495057; }
+
         .status {
             margin-top: 20px;
             padding: 12px 20px;
@@ -121,6 +145,7 @@
         .status.success { background: #d4edda; color: #155724; display: block; }
         .status.error { background: #f8d7da; color: #721c24; display: block; }
         .status.loading { background: #cce5ff; color: #004085; display: block; }
+
         .json-preview {
             background: #f5f5f5;
             padding: 15px;
@@ -141,51 +166,32 @@
             margin-bottom: 25px;
             border-left: 4px solid #ff7079;
         }
-        .info-box p {
-            font-size: 14px;
-            color: #1a2f4f;
-            margin: 0;
-        }
-        .token-section {
-            background: #f8f9fa;
-            padding: 15px 20px;
-            border-radius: 10px;
-            margin-bottom: 25px;
-            border: 1px solid #e9e9e9;
-        }
-        .token-section label {
-            font-weight: 600;
-            font-size: 13px;
-            display: block;
-            margin-bottom: 4px;
-        }
-        .token-section input {
-            width: 100%;
-            padding: 8px 12px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 14px;
-        }
-        .token-section .hint {
-            font-size: 12px;
-            color: #777;
-            margin-top: 4px;
+        .info-box p { font-size: 14px; color: #1a2f4f; margin: 0; }
+        .badge {
+            display: inline-block;
+            background: #ff7079;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 10px;
+            border-radius: 12px;
+            margin-left: 8px;
         }
     </style>
 </head>
 <body>
 <div class="container">
     <h1>⚙️ Admin · Parâmetros de Cálculo</h1>
-    <p class="subtitle">Edite os valores dos arquivos JSON dos produtos e envie para o GitHub.</p>
+    <p class="subtitle">Edite os valores dos arquivos JSON e envie para o GitHub.</p>
 
-    <!-- Campo para token -->
+    <!-- Token -->
     <div class="token-section">
-        <label for="tokenInput">🔑 Token do GitHub (salvo no seu navegador)</label>
+        <label for="tokenInput">🔑 Token do GitHub</label>
         <input type="password" id="tokenInput" placeholder="ghp_...">
-        <div class="hint">Token com permissão <strong>repo</strong>. Será salvo no localStorage.</div>
+        <div class="hint">Token com permissão <strong>repo</strong>. Será salvo no seu navegador.</div>
     </div>
 
-    <!-- Seletor de produto -->
+    <!-- Produtos -->
     <div class="product-selector">
         <button class="active" data-prod="CARGO" onclick="selecionarProduto('CARGO')">CARGO</button>
         <button data-prod="MOVE" onclick="selecionarProduto('MOVE')">MOVE</button>
@@ -194,6 +200,7 @@
 
     <div id="status" class="status"></div>
 
+    <!-- Formulário -->
     <div id="formContainer">
         <p style="color:#999; text-align:center; padding:20px;">Selecione um produto, insira o token e clique em "Carregar".</p>
     </div>
@@ -216,11 +223,70 @@
     const REPO_NAME = 'portal_pre-vendas_';
     const BRANCH = 'main';
 
-    // ---- CAMINHOS DOS ARQUIVOS (CORRIGIDOS) ----
     const produtos = {
         CARGO: { file: 'BASE_CARGO.json', path: 'cargo/BASE_CARGO.json' },
         MOVE:  { file: 'BASE_MOVE.json',  path: 'move/BASE_MOVE.json' },
         ELOG:  { file: 'BASE_ELOG.json',  path: 'elog/BASE_ELOG.json' }
+    };
+
+    // ---- MAPEAMENTO DE NOMES AMIGÁVEIS (CARGO) ----
+    const labels = {
+        // CARGO
+        horasPorCnpj: { label: 'Horas por CNPJ', desc: 'Tempo para cadastrar cada CNPJ na parametrização operacional.' },
+        horasPorUsuario: { label: 'Horas por Usuário', desc: 'Tempo para criar e configurar cada usuário.' },
+        horasPorCnpjModulo: { label: 'Horas por CNPJ (Módulos)', desc: 'Tempo para configurar cada módulo (CIOT, Frete, Vale) por CNPJ.' },
+        horasContaDigital: { label: 'Horas - Conta Digital', desc: 'Tempo para criar a conta digital (se Frete ou Vale estiverem ativos).' },
+        horasTreinamento: { label: 'Horas - Treinamento', desc: 'Tempo fixo para acompanhamento e treinamento.' },
+        jornadaDiaria: { label: 'Jornada Diária (horas)', desc: 'Quantas horas tem um dia útil de trabalho.' },
+        jornadaSemanal: { label: 'Jornada Semanal (horas)', desc: 'Quantas horas tem uma semana de trabalho.' },
+
+        // MOVE
+        baseAmbientes: { label: 'Base - Ambientes', desc: 'Tempo base para configuração de ambientes (HMG + PRD).' },
+        baseCadastro: { label: 'Base - Cadastro', desc: 'Tempo base para cadastro e parametrização.' },
+        baseUsuarios: { label: 'Base - Usuários', desc: 'Tempo base para criação de usuários (primeiros usuários).' },
+        incrementoUsuarios: { label: 'Incremento por Usuário', desc: 'Horas adicionais por usuário extra.' },
+        baseApp: { label: 'Base - App Conector', desc: 'Tempo para configuração e instalação do App Conector.' },
+        fatorAmbientes: { label: 'Fator - Ambientes', desc: 'Percentual aplicado sobre o tempo de ambientes (ex: 0.99 = 99%).' },
+        fatorUsuarios: { label: 'Fator - Usuários', desc: 'Percentual aplicado sobre o tempo de usuários.' },
+
+        // ELOG
+        incrementoAmbientes: { label: 'Incremento por CNPJ (Ambientes)', desc: 'Horas adicionais por CNPJ na configuração de ambientes.' },
+        incrementoCadastro: { label: 'Incremento por CNPJ (Cadastro)', desc: 'Horas adicionais por CNPJ no cadastro e parametrização.' },
+        horasPedidos: { label: 'Horas - Integração Pedidos', desc: 'Tempo para configurar a integração de Pedidos.' },
+        horasEventos: { label: 'Horas - Integração Eventos', desc: 'Tempo para configurar a integração de Eventos Logísticos.' },
+        horasPagamento: { label: 'Horas - Integração Pagamento', desc: 'Tempo para configurar a integração de Pagamento.' },
+        horasEssencial: { label: 'Horas - Módulo Essencial', desc: 'Tempo para configurar o módulo Essencial.' },
+        horasTorre: { label: 'Horas - Torre de Controle', desc: 'Tempo para configurar o módulo Torre de Controle.' },
+        horasVale: { label: 'Horas - Vale Pedágio Obrigatório', desc: 'Tempo para configurar o módulo VPO.' },
+        horasFrete: { label: 'Horas - Pagamento de Frete', desc: 'Tempo para configurar o módulo Pagamento de Frete.' },
+        horasAuditoria: { label: 'Horas - Auditoria de Fretes', desc: 'Tempo para configurar o módulo Auditoria de Fretes.' },
+        horasGoLive: { label: 'Horas - Go Live', desc: 'Tempo para acompanhamento de entrada em produção.' },
+        horasSustentacao: { label: 'Horas - Sustentação', desc: 'Tempo de suporte operacional pós-implantação.' },
+        horasTreinamento: { label: 'Horas - Treinamento', desc: 'Tempo fixo para treinamento.' }
+    };
+
+    // ---- Agrupamentos ----
+    const sections = {
+        CARGO: [
+            { title: '⏱️ Tempos Base', keys: ['horasPorCnpj', 'horasPorUsuario', 'horasPorCnpjModulo'] },
+            { title: '📦 Módulos e Serviços', keys: ['horasContaDigital', 'horasTreinamento'] },
+            { title: '📅 Jornada', keys: ['jornadaDiaria', 'jornadaSemanal'] }
+        ],
+        MOVE: [
+            { title: '🏗️ Ambientes e Cadastro', keys: ['baseAmbientes', 'baseCadastro'] },
+            { title: '👤 Usuários', keys: ['baseUsuarios', 'incrementoUsuarios'] },
+            { title: '📱 App Conector', keys: ['baseApp'] },
+            { title: '📊 Fatores de Ajuste', keys: ['fatorAmbientes', 'fatorUsuarios'] }
+        ],
+        ELOG: [
+            { title: '🏗️ Ambientes e Cadastro', keys: ['baseAmbientes', 'incrementoAmbientes', 'baseCadastro', 'incrementoCadastro'] },
+            { title: '👤 Usuários', keys: ['baseUsuarios', 'incrementoUsuarios'] },
+            { title: '🔗 Integrações', keys: ['horasPedidos', 'horasEventos', 'horasPagamento'] },
+            { title: '📦 Módulos', keys: ['horasEssencial', 'horasTorre', 'horasVale', 'horasFrete', 'horasAuditoria'] },
+            { title: '🚀 Go Live e Sustentação', keys: ['horasGoLive', 'horasSustentacao', 'horasTreinamento'] },
+            { title: '📅 Jornada', keys: ['jornadaDiaria', 'jornadaSemanal'] },
+            { title: '📊 Fatores de Ajuste', keys: ['fatorAmbientes', 'fatorUsuarios'] }
+        ]
     };
 
     let currentProduct = 'CARGO';
@@ -242,9 +308,7 @@
         setTimeout(() => carregarProduto(), 500);
     };
 
-    function getToken() {
-        return tokenInput.value.trim();
-    }
+    function getToken() { return tokenInput.value.trim(); }
 
     function selecionarProduto(prod) {
         currentProduct = prod;
@@ -265,37 +329,24 @@
         else statusDiv.style.display = 'block';
     }
 
-    // ---- Carregar JSON do GitHub ----
+    // ---- Carregar JSON ----
     async function carregarProduto() {
         const token = getToken();
-        if (!token) {
-            setStatus('⚠️ Insira um token do GitHub.', 'error');
-            return;
-        }
+        if (!token) { setStatus('⚠️ Insira um token do GitHub.', 'error'); return; }
 
         const filePath = produtos[currentProduct].path;
         const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${filePath}?ref=${BRANCH}`;
 
-        console.log('🔍 URL:', url);
         setStatus('🔄 Carregando arquivo...', 'loading');
 
         try {
             const response = await fetch(url, {
-                headers: {
-                    'Authorization': `token ${token}`,
-                    'Accept': 'application/vnd.github.v3+json'
-                }
+                headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
             });
 
-            console.log('📡 Status:', response.status);
-
             if (!response.ok) {
-                if (response.status === 404) {
-                    throw new Error(`Arquivo ${filePath} não encontrado.\nVerifique:\n- O arquivo existe na pasta "${currentProduct.toLowerCase()}"?\n- O nome está exatamente igual?\n- Foi commitado no branch ${BRANCH}?`);
-                }
-                if (response.status === 401 || response.status === 403) {
-                    throw new Error('Token inválido ou sem permissão. Gere um novo token com permissão "repo".');
-                }
+                if (response.status === 404) throw new Error(`Arquivo ${filePath} não encontrado.`);
+                if (response.status === 401 || response.status === 403) throw new Error('Token inválido.');
                 const err = await response.json();
                 throw new Error(err.message || `Erro ${response.status}`);
             }
@@ -303,82 +354,83 @@
             const data = await response.json();
             const content = atob(data.content);
             currentSha = data.sha;
-
-            try {
-                currentData = JSON.parse(content);
-                renderForm(currentData);
-                jsonPreview.textContent = JSON.stringify(currentData, null, 2);
-                setStatus(`✅ ${produtos[currentProduct].file} carregado de ${filePath}!`, 'success');
-            } catch (e) {
-                throw new Error('Erro ao parsear JSON: ' + e.message);
-            }
-
+            currentData = JSON.parse(content);
+            renderForm(currentData);
+            jsonPreview.textContent = JSON.stringify(currentData, null, 2);
+            setStatus(`✅ ${produtos[currentProduct].file} carregado!`, 'success');
         } catch (error) {
-            setStatus(`❌ Erro: ${error.message}`, 'error');
-            console.error('❌ Erro detalhado:', error);
+            setStatus(`❌ ${error.message}`, 'error');
+            console.error(error);
         }
     }
 
-    // ---- Renderizar formulário ----
+    // ---- Renderizar formulário com seções e descrições ----
     function renderForm(data) {
         if (!data || typeof data !== 'object') {
             formContainer.innerHTML = '<p style="color:red;">Dados inválidos.</p>';
             return;
         }
 
+        const productSections = sections[currentProduct] || [];
         let html = '';
-        for (const [key, value] of Object.entries(data)) {
-            if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
-                html += `<div class="param-group">
-                    <label for="param_${key}">${key} (objeto)</label>
-                    <textarea id="param_${key}" rows="4">${JSON.stringify(value, null, 2)}</textarea>
-                </div>`;
-            } else if (Array.isArray(value)) {
-                html += `<div class="param-group">
-                    <label for="param_${key}">${key} (array)</label>
-                    <textarea id="param_${key}" rows="4">${JSON.stringify(value, null, 2)}</textarea>
-                </div>`;
-            } else {
-                html += `<div class="param-group">
-                    <label for="param_${key}">${key}</label>
-                    <input type="text" id="param_${key}" value="${value !== undefined && value !== null ? value : ''}">
-                </div>`;
+
+        for (const section of productSections) {
+            html += `<div class="section-title">${section.title}</div>`;
+            for (const key of section.keys) {
+                if (data[key] === undefined) continue;
+                const value = data[key];
+                const labelInfo = labels[key] || { label: key, desc: '' };
+                const isObject = typeof value === 'object' && value !== null && !Array.isArray(value);
+                const isArray = Array.isArray(value);
+
+                html += `<div class="param-group">`;
+                html += `<label for="param_${key}">${labelInfo.label}</label>`;
+                if (labelInfo.desc) html += `<div class="description">${labelInfo.desc}</div>`;
+
+                if (isObject || isArray) {
+                    html += `<textarea id="param_${key}" rows="4">${JSON.stringify(value, null, 2)}</textarea>`;
+                } else {
+                    html += `<input type="text" id="param_${key}" value="${value !== undefined && value !== null ? value : ''}">`;
+                }
+                html += `</div>`;
             }
         }
+
+        // Se não houver seções definidas, exibe todos os campos em ordem alfabética
+        if (!html) {
+            for (const [key, value] of Object.entries(data)) {
+                const labelInfo = labels[key] || { label: key, desc: '' };
+                html += `<div class="param-group">`;
+                html += `<label for="param_${key}">${labelInfo.label}</label>`;
+                if (labelInfo.desc) html += `<div class="description">${labelInfo.desc}</div>`;
+                if (typeof value === 'object' && value !== null) {
+                    html += `<textarea id="param_${key}" rows="4">${JSON.stringify(value, null, 2)}</textarea>`;
+                } else {
+                    html += `<input type="text" id="param_${key}" value="${value !== undefined && value !== null ? value : ''}">`;
+                }
+                html += `</div>`;
+            }
+        }
+
         formContainer.innerHTML = html;
     }
 
-    // ---- Salvar no GitHub ----
+    // ---- Salvar ----
     async function salvarArquivo() {
-        if (!currentData) {
-            setStatus('⚠️ Nenhum dado carregado. Clique em "Carregar" primeiro.', 'error');
-            return;
-        }
-
+        if (!currentData) { setStatus('⚠️ Nenhum dado carregado.', 'error'); return; }
         const token = getToken();
-        if (!token) {
-            setStatus('⚠️ Insira um token do GitHub.', 'error');
-            return;
-        }
+        if (!token) { setStatus('⚠️ Insira um token.', 'error'); return; }
 
         const updatedData = {};
         const inputs = formContainer.querySelectorAll('input, textarea');
         for (const el of inputs) {
             const key = el.id.replace('param_', '');
             if (el.tagName === 'TEXTAREA') {
-                try {
-                    updatedData[key] = JSON.parse(el.value);
-                } catch (e) {
-                    setStatus(`❌ Erro no campo "${key}": JSON inválido.`, 'error');
-                    return;
-                }
+                try { updatedData[key] = JSON.parse(el.value); }
+                catch (e) { setStatus(`❌ Erro no campo "${key}": JSON inválido.`, 'error'); return; }
             } else {
                 let val = el.value;
-                if (!isNaN(val) && val !== '') {
-                    updatedData[key] = Number(val);
-                } else {
-                    updatedData[key] = val;
-                }
+                updatedData[key] = (!isNaN(val) && val !== '') ? Number(val) : val;
             }
         }
 
@@ -394,7 +446,7 @@
             branch: BRANCH
         };
 
-        setStatus('🔄 Enviando para GitHub...', 'loading');
+        setStatus('🔄 Enviando...', 'loading');
 
         try {
             const response = await fetch(url, {
@@ -415,17 +467,15 @@
             const result = await response.json();
             currentSha = result.content.sha;
             currentData = updatedData;
-            setStatus(`✅ ${produtos[currentProduct].file} atualizado em ${filePath}!`, 'success');
-
+            setStatus(`✅ ${produtos[currentProduct].file} atualizado!`, 'success');
         } catch (error) {
-            setStatus(`❌ Erro ao salvar: ${error.message}`, 'error');
+            setStatus(`❌ ${error.message}`, 'error');
             console.error(error);
         }
     }
 
-    // ---- Deploy ----
     async function fazerDeploy() {
-        setStatus('🚀 Deploy: enviando commit...', 'loading');
+        setStatus('🚀 Deploy...', 'loading');
         await salvarArquivo();
     }
 </script>
