@@ -944,14 +944,10 @@
         let base = null;
         let carregando = false;
 
-        // ---- Função para carregar a base (SEM FALLBACK) ----
-        function carregarBase() {
-            if (base) {
-                console.log('✅ Base já carregada.');
-                return Promise.resolve(base);
-            }
+        // ---- Função para carregar a base (SEMPRE atual, sem cache, sem fallback) ----
+        async function carregarBase() {
+            // Se já está carregando, aguarda
             if (carregando) {
-                console.log('⏳ Carregamento já em andamento...');
                 return new Promise((resolve) => {
                     const checkInterval = setInterval(() => {
                         if (base) {
@@ -963,67 +959,35 @@
             }
 
             carregando = true;
-            console.log('🔍 Tentando carregar BASE_CARGO.json...');
+            // Adiciona timestamp para evitar cache do navegador
+            const url = `BASE_CARGO.json?t=${Date.now()}`;
+            console.log('🔍 Buscando BASE_CARGO.json (atual)...');
 
-            // Tenta fetch (funciona em servidores)
-            return fetch('BASE_CARGO.json')
-                .then(response => {
-                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                    return response.json();
-                })
-                .then(data => {
-                    base = data;
-                    carregando = false;
-                    console.log('✅ Base carregada:', base);
-                    if (window._calcularPending) {
-                        calcular();
-                        window._calcularPending = false;
+            try {
+                const response = await fetch(url, {
+                    cache: 'no-store',
+                    headers: {
+                        'Cache-Control': 'no-cache, no-store, must-revalidate',
+                        'Pragma': 'no-cache',
+                        'Expires': '0'
                     }
-                    return base;
-                })
-                .catch(fetchError => {
-                    console.warn('⚠️ Fetch falhou, tentando XMLHttpRequest...', fetchError);
-                    // Fallback com XMLHttpRequest
-                    return new Promise((resolve, reject) => {
-                        const xhr = new XMLHttpRequest();
-                        xhr.open('GET', 'BASE_CARGO.json', true);
-                        xhr.onreadystatechange = function() {
-                            if (xhr.readyState === 4) {
-                                if (xhr.status === 200) {
-                                    try {
-                                        const data = JSON.parse(xhr.responseText);
-                                        resolve(data);
-                                    } catch (e) {
-                                        reject(e);
-                                    }
-                                } else {
-                                    reject(new Error(`XHR status ${xhr.status}`));
-                                }
-                            }
-                        };
-                        xhr.onerror = function() {
-                            reject(new Error('XHR network error'));
-                        };
-                        xhr.send();
-                    })
-                    .then(data => {
-                        base = data;
-                        carregando = false;
-                        console.log('✅ Base carregada (XHR):', base);
-                        if (window._calcularPending) {
-                            calcular();
-                            window._calcularPending = false;
-                        }
-                        return base;
-                    })
-                    .catch(xhrError => {
-                        carregando = false;
-                        console.error('❌ Falha ao carregar BASE_CARGO.json:', xhrError);
-                        alert('❌ Arquivo BASE_CARGO.json não encontrado.\n\nVerifique se o arquivo está na mesma pasta.\n\nO cálculo não será executado.');
-                        // Não chama calcular() - trava a execução
-                        return Promise.reject(xhrError);
-                    });
                 });
+
+                if (!response.ok) {
+                    throw new Error(`Arquivo BASE_CARGO.json não encontrado (status ${response.status})`);
+                }
+
+                const data = await response.json();
+                base = data;
+                carregando = false;
+                console.log('✅ Base carregada (atualizada):', base);
+                return base;
+            } catch (error) {
+                carregando = false;
+                console.error('❌ Erro ao carregar BASE_CARGO.json:', error);
+                alert('❌ Não foi possível carregar o arquivo BASE_CARGO.json.\n\nVerifique se o arquivo existe e está acessível.\n\nO cálculo não será executado.');
+                throw error; // Propaga o erro para quem chamou
+            }
         }
 
         // ---- Elementos do formulário ----
@@ -1126,15 +1090,25 @@
         // CÁLCULO PRINCIPAL (usando base)
         // ============================================================
         function calcular() {
-            if (!base) {
-                console.warn('⏳ Base não carregada, carregando...');
-                window._calcularPending = true;
-                carregarBase().then(() => {
-                    if (window._calcularPending) {
-                        window._calcularPending = false;
-                        calcular();
-                    }
+            // SEMPRE carrega a base mais atual antes de calcular
+            window._calcularPending = true;
+            carregarBase()
+                .then(() => {
+                    window._calcularPending = false;
+                    // Agora executa o cálculo de fato
+                    executarCalculo();
+                })
+                .catch(() => {
+                    window._calcularPending = false;
+                    // Se falhou, não faz nada (o alerta já foi exibido)
                 });
+        }
+
+        // Extrai a lógica de cálculo para uma função separada
+        function executarCalculo() {
+            // Garante que a base existe
+            if (!base) {
+                alert('Base não carregada. Tente novamente.');
                 return;
             }
 
