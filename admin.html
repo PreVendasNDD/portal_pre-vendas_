@@ -222,7 +222,6 @@
 </div>
 
 <script>
-    // ---- CONFIGURAÇÕES ----
     const REPO_OWNER = 'PreVendasNDD';
     const REPO_NAME = 'portal_pre-vendas_';
     const BRANCH = 'main';
@@ -233,7 +232,6 @@
         ELOG:  { file: 'BASE_ELOG.json',  path: 'elog/BASE_ELOG.json' }
     };
 
-    // ---- MAPEAMENTO DE NOMES AMIGÁVEIS (incluindo subetapas) ----
     const labels = {
         horasPorCnpj: { label: 'Horas por CNPJ', desc: 'Tempo para cadastrar cada CNPJ na parametrização operacional.' },
         horasPorUsuario: { label: 'Horas por Usuário', desc: 'Tempo para criar e configurar cada usuário.' },
@@ -264,7 +262,6 @@
         subetapas: { label: '📋 Subetapas (detalhamento)', desc: 'Estrutura de subetapas para o modelo detalhado. Edite o JSON com cuidado.' }
     };
 
-    // ---- AGRUPAMENTOS (incluindo subetapas no MOVE) ----
     const sections = {
         CARGO: [
             { title: '⏱️ Tempos Base', keys: ['horasPorCnpj', 'horasPorUsuario', 'horasPorCnpjModulo'] },
@@ -276,7 +273,7 @@
             { title: '👤 Usuários', keys: ['baseUsuarios', 'incrementoUsuarios'] },
             { title: '📱 App Conector', keys: ['baseApp'] },
             { title: '📊 Fatores de Ajuste', keys: ['fatorAmbientes', 'fatorUsuarios'] },
-            { title: '📋 Subetapas (detalhamento)', keys: ['subetapas'] }  // NOVA SEÇÃO
+            { title: '📋 Subetapas (detalhamento)', keys: ['subetapas'] }
         ],
         ELOG: [
             { title: '🏗️ Ambientes e Cadastro', keys: ['baseAmbientes', 'incrementoAmbientes', 'baseCadastro', 'incrementoCadastro'] },
@@ -296,7 +293,6 @@
     const statusDiv = document.getElementById('status');
     const formContainer = document.getElementById('formContainer');
 
-    // ---- TOKEN (oculto no localStorage) ----
     let storedToken = localStorage.getItem('githubToken') || '';
 
     function mostrarModalToken() {
@@ -346,7 +342,6 @@
         else statusDiv.style.display = 'block';
     }
 
-    // ---- Carregar JSON ----
     async function carregarProduto() {
         const token = getToken();
         if (!token) {
@@ -392,7 +387,6 @@
         }
     }
 
-    // ---- Renderizar formulário ----
     function renderForm(data) {
         if (!data || typeof data !== 'object') {
             formContainer.innerHTML = '<p style="color:red;">Dados inválidos.</p>';
@@ -424,40 +418,48 @@
             }
         }
 
-        // Se ainda houver chaves não incluídas nas seções, exibe como campos extras
+        // Chaves extras (que não estão nas seções)
         const allKeys = new Set(productSections.flatMap(s => s.keys));
         const extraKeys = Object.keys(data).filter(k => !allKeys.has(k));
-        for (const key of extraKeys) {
-            if (data[key] === undefined) continue;
-            const value = data[key];
-            const labelInfo = labels[key] || { label: key, desc: '' };
-            html += `<div class="param-group">`;
-            html += `<label for="param_${key}">${labelInfo.label}</label>`;
-            if (labelInfo.desc) html += `<div class="description">${labelInfo.desc}</div>`;
-            if (typeof value === 'object' && value !== null) {
-                html += `<textarea id="param_${key}" rows="4">${JSON.stringify(value, null, 2)}</textarea>`;
-            } else {
-                html += `<input type="text" id="param_${key}" value="${value !== undefined && value !== null ? value : ''}">`;
+        if (extraKeys.length > 0) {
+            html += `<div class="section-title">🔧 Outros Parâmetros</div>`;
+            for (const key of extraKeys) {
+                const value = data[key];
+                const labelInfo = labels[key] || { label: key, desc: '' };
+                html += `<div class="param-group">`;
+                html += `<label for="param_${key}">${labelInfo.label}</label>`;
+                if (labelInfo.desc) html += `<div class="description">${labelInfo.desc}</div>`;
+                if (typeof value === 'object' && value !== null) {
+                    html += `<textarea id="param_${key}" rows="4">${JSON.stringify(value, null, 2)}</textarea>`;
+                } else {
+                    html += `<input type="text" id="param_${key}" value="${value !== undefined && value !== null ? value : ''}">`;
+                }
+                html += `</div>`;
             }
-            html += `</div>`;
         }
 
         formContainer.innerHTML = html;
     }
 
-    // ---- Salvar ----
     async function salvarArquivo() {
         if (!currentData) { setStatus('⚠️ Nenhum dado carregado.', 'error'); return; }
         const token = getToken();
         if (!token) { mostrarModalToken(); return; }
 
-        const updatedData = {};
+        // Começa com uma cópia do JSON original
+        const updatedData = { ...currentData };
+
+        // Sobrescreve apenas os campos que estão nos inputs
         const inputs = formContainer.querySelectorAll('input, textarea');
         for (const el of inputs) {
             const key = el.id.replace('param_', '');
             if (el.tagName === 'TEXTAREA') {
-                try { updatedData[key] = JSON.parse(el.value); }
-                catch (e) { setStatus(`❌ Erro no campo "${key}": JSON inválido.`, 'error'); return; }
+                try {
+                    updatedData[key] = JSON.parse(el.value);
+                } catch (e) {
+                    setStatus(`❌ Erro no campo "${key}": JSON inválido.`, 'error');
+                    return;
+                }
             } else {
                 let val = el.value;
                 updatedData[key] = (!isNaN(val) && val !== '') ? Number(val) : val;
@@ -513,7 +515,6 @@
         await salvarArquivo();
     }
 
-    // ---- Inicialização ----
     window.onload = function() {
         if (storedToken) {
             setTimeout(() => carregarProduto(), 500);
