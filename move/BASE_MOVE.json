@@ -1,17 +1,29 @@
-"subetapas": {
-  "configuracaoAmbientes": [
-    { "nome": "Configuração do ambiente HMG", "pct": 0.36 },
-    { "nome": "Configuração do ambiente PRD", "pct": 0.36 },
-    { "nome": "Ajustes e parametrização", "pct": 0.27 }
-  ],
-  "cadastroParametrizacao": [
-    { "nome": "Cadastro dos CNPJ's", "pct": 0.60 },
-    { "nome": "Parametrização", "pct": 0.20 },
-    { "nome": "Testes e validações", "pct": 0.20 }
-  ],
-  "criacaoUsuarios": [
-    { "nome": "Criação de usuários", "pct": 0.40 },
-    { "nome": "Configuração de perfis", "pct": 0.40 },
-    { "nome": "Validação com cliente", "pct": 0.20 }
-  ]
+{
+  "baseAmbientes": 4,
+  "baseCadastro": 2,
+  "horasPorUsuario": 1,
+  "baseApp": 4,
+  "baseGoLive": 2,
+  "baseSustentacao": 4,
+  "baseTreinamento": 2,
+  "fatorAmbientes": 0.99,
+  "jornadaDiaria": 8,
+  "jornadaSemanal": 40,
+  "subetapas": {
+    "configuracaoAmbientes": [
+      { "nome": "Configuração do ambiente HMG", "pct": 0.36 },
+      { "nome": "Configuração do ambiente PRD", "pct": 0.36 },
+      { "nome": "Ajustes e parametrização", "pct": 0.27 }
+    ],
+    "cadastroParametrizacao": [
+      { "nome": "Cadastro dos CNPJ's", "pct": 0.60 },
+      { "nome": "Parametrização", "pct": 0.20 },
+      { "nome": "Testes e validações", "pct": 0.20 }
+    ],
+    "criacaoUsuarios": [
+      { "nome": "Criação de usuários", "pct": 0.40 },
+      { "nome": "Configuração de perfis", "pct": 0.40 },
+      { "nome": "Validação com cliente", "pct": 0.20 }
+    ]
+  }
 }
