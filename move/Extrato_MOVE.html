@@ -976,7 +976,9 @@
             }
 
             carregando = true;
-            const url = `move/BASE_MOVE.json?t=${Date.now()}`;
+            // Adiciona timestamp para evitar cache do navegador
+            const url = `BASE_MOVE.json?t=${Date.now()}`;
+            console.log('🔍 Buscando BASE_MOVE.json (atual)...');
 
             try {
                 const response = await fetch(url, {
