@@ -132,7 +132,7 @@
         }
         .section-title:first-of-type { margin-top: 0; }
 
-        /* ---------- ESTILOS PARA TABELAS (CARGO e ELOG) ---------- */
+        /* ---------- ESTILOS PARA TABELAS ---------- */
         .param-table {
             width: 100%;
             border-collapse: collapse;
@@ -250,9 +250,12 @@
         ELOG:  { file: 'BASE_ELOG.json',  path: 'elog/BASE_ELOG.json' }
     };
 
-    // ---- MAPEAMENTO DE NOMES AMIGÁVEIS (ATUALIZADO PARA CARGO) ----
+    // ---- CHAVES OCULTAS (não aparecem na interface, mas são mantidas no JSON) ----
+    const hiddenKeys = ['subetapas', 'fatorAmbientes', 'fatorUsuarios'];
+
+    // ---- MAPEAMENTO DE NOMES AMIGÁVEIS ----
     const labels = {
-        // ---- CARGO (CONFORME A IMAGEM) ----
+        // ---- CARGO ----
         horasCIOT: { label: 'Emissão CIOT', desc: 'Valor Fixo se adere ao módulo e Cadastro adicional de CNPJ for Ponto Emissor, se não, é correspondente a quantidade informada no questionário pelo usuário.' },
         horasFrete: { label: 'Pagamento de Frete', desc: 'Valor Fixo se adere ao módulo e Cadastro adicional de CNPJ for Ponto Emissor, se não, é correspondente a quantidade informada no questionário pelo usuário.' },
         horasVale: { label: 'Vale Pedágio Obrigatório', desc: 'Valor Fixo se adere ao módulo e Cadastro adicional de CNPJ for Ponto Emissor, se não, é correspondente a quantidade informada no questionário pelo usuário.' },
@@ -264,20 +267,16 @@
         jornadaDiaria: { label: 'Jornada Diária (horas)', desc: 'Quantas horas tem um dia útil de trabalho.' },
         jornadaSemanal: { label: 'Jornada Semanal (horas)', desc: 'Quantas horas tem uma semana de trabalho.' },
 
-        // ---- MOVE (mantido) ----
-        baseAmbientes: { label: 'Base - Ambientes', desc: 'Tempo base para configuração de ambientes (HMG + PRD).' },
-        baseCadastro: { label: 'Base - Cadastro', desc: 'Tempo base para cadastro e parametrização.' },
-        baseUsuarios: { label: 'Base - Usuários', desc: 'Tempo base para criação de usuários (primeiros usuários).' },
-        incrementoUsuarios: { label: 'Incremento por Usuário', desc: 'Horas adicionais por usuário extra.' },
-        baseApp: { label: 'Base - App Conector', desc: 'Tempo para configuração e instalação do App Conector.' },
-        fatorAmbientes: { label: 'Fator - Ambientes', desc: 'Percentual aplicado sobre o tempo de ambientes (ex: 0.99 = 99%).' },
-        fatorUsuarios: { label: 'Fator - Usuários', desc: 'Percentual aplicado sobre o tempo de usuários.' },
-        baseGoLive: { label: 'Base - Go Live', desc: 'Tempo base para acompanhamento Go Live.' },
-        baseSustentacao: { label: 'Base - Sustentação', desc: 'Tempo base para suporte pós Go Live.' },
-        baseTreinamento: { label: 'Base - Treinamento', desc: 'Tempo base para treinamento.' },
-        subetapas: { label: '📋 Subetapas (detalhamento)', desc: 'Estrutura de subetapas para o modelo detalhado. Edite o JSON com cuidado.' },
+        // ---- MOVE ----
+        baseApp: { label: 'App Conector', desc: 'Valor Fixo.' },
+        baseAmbientes: { label: 'Configuração de Ambientes', desc: '4h + 1h por CNPJ adicional.' },
+        baseCadastro: { label: 'Cadastro e Parametrização', desc: '2h + 1h por CNPJ adicional.' },
+        baseUsuarios: { label: 'Criação e Configuração de Usuários', desc: '2h + 1h por usuário adicional.' },
+        baseGoLive: { label: 'Go Live', desc: 'Valor Fixo.' },
+        baseSustentacao: { label: 'Sustentação Pós Go Live', desc: 'Valor Fixo.' },
+        baseTreinamento: { label: 'Treinamentos', desc: 'Valor Fixo.' },
 
-        // ---- ELOG (mantido) ----
+        // ---- ELOG ----
         horasEssencial: { label: 'Essencial', desc: 'Valor Fixo se adere ao módulo.' },
         horasTorre: { label: 'Torre de Controle', desc: 'Valor Fixo se adere ao módulo.' },
         horasVale: { label: 'Vale Pedágio / VPO', desc: 'Valor Fixo se adere ao módulo.' },
@@ -296,7 +295,7 @@
         incrementoUsuarios: { label: 'Usuário', desc: 'Valor base para cálculo' }
     };
 
-    // ---- AGRUPAMENTOS (ATUALIZADO PARA CARGO E ELOG) ----
+    // ---- AGRUPAMENTOS (sem as chaves ocultas) ----
     const sections = {
         CARGO: {
             grupos: [
@@ -306,23 +305,20 @@
                 { title: '📅 Jornada', keys: ['jornadaDiaria', 'jornadaSemanal'] }
             ]
         },
-        MOVE: [
-            { title: '🏗️ Ambientes e Cadastro', keys: ['baseAmbientes', 'baseCadastro'] },
-            { title: '👤 Usuários', keys: ['horasPorUsuario'] },
-            { title: '📱 App Conector', keys: ['baseApp'] },
-            { title: '🚀 Go Live e Sustentação', keys: ['baseGoLive', 'baseSustentacao', 'baseTreinamento'] },
-            { title: '📊 Fatores de Ajuste', keys: ['fatorAmbientes'] },
-            { title: '📅 Jornada', keys: ['jornadaDiaria', 'jornadaSemanal'] },
-            { title: '📋 Subetapas (detalhamento)', keys: ['subetapas'] }
-        ],
+        MOVE: {
+            grupos: [
+                { title: '🔗 Integração', keys: ['baseApp'] },
+                { title: '🏗️ Etapas', keys: ['baseAmbientes', 'baseCadastro', 'baseUsuarios', 'baseGoLive', 'baseSustentacao', 'baseTreinamento'] },
+                { title: '📊 Itens de valor unitário', keys: ['baseAmbientes', 'baseCadastro', 'baseUsuarios'] }
+            ]
+        },
         ELOG: {
             grupos: [
                 { title: '📦 Módulos', keys: ['horasEssencial', 'horasTorre', 'horasVale', 'horasFrete', 'horasAuditoria'] },
                 { title: '🏗️ Etapas', keys: ['baseAmbientes', 'baseCadastro', 'baseUsuarios', 'horasGoLive', 'horasSustentacao', 'horasTreinamento'] },
                 { title: '🔗 Processos', keys: ['horasPedidos', 'horasEventos', 'horasPagamento'] },
                 { title: '📊 Itens de valor unitário', keys: ['incrementoAmbientes', 'incrementoUsuarios'] },
-                { title: '📅 Jornada', keys: ['jornadaDiaria', 'jornadaSemanal'] },
-                { title: '⚙️ Configurações adicionais', keys: ['fatorAmbientes', 'fatorUsuarios'] }
+                { title: '📅 Jornada', keys: ['jornadaDiaria', 'jornadaSemanal'] }
             ]
         }
     };
@@ -430,7 +426,7 @@
         }
     }
 
-    // ---- Renderizar formulário (com tabela para CARGO e ELOG, lista para MOVE) ----
+    // ---- Renderizar formulário (ocultando chaves especificadas) ----
     function renderForm(data) {
         if (!data || typeof data !== 'object') {
             formContainer.innerHTML = '<p style="color:red;">Dados inválidos.</p>';
@@ -438,111 +434,74 @@
         }
 
         let html = '';
+        const productSections = sections[currentProduct];
 
-        if (currentProduct === 'CARGO') {
-            // ---- CARGO: exibe em tabela ----
-            const cargoSections = sections.CARGO.grupos;
-            for (const section of cargoSections) {
-                html += `<div class="section-title">${section.title}</div>`;
-                html += `<table class="param-table">
-                    <thead>
-                        <tr>
-                            <th>Item</th>
-                            <th style="text-align:center;">Valor</th>
-                            <th style="text-align:center;">Unidade</th>
-                            <th>Observações</th>
-                        </tr>
-                    </thead>
-                    <tbody>`;
-                for (const key of section.keys) {
-                    if (data[key] === undefined) continue;
-                    const value = data[key];
-                    const labelInfo = labels[key] || { label: key, desc: '' };
-                    html += `<tr>
-                        <td><strong>${labelInfo.label}</strong></td>
-                        <td style="text-align:center;">
-                            <input type="text" id="param_${key}" value="${value !== undefined && value !== null ? value : ''}" class="input-valor">
-                        </td>
-                        <td class="unidade">horas</td>
-                        <td>${labelInfo.desc}</td>
-                    </tr>`;
-                }
-                html += `</tbody></table>`;
-            }
-        } else if (currentProduct === 'ELOG') {
-            // ---- ELOG: exibe em tabela ----
-            const elogSections = sections.ELOG.grupos;
-            for (const section of elogSections) {
-                html += `<div class="section-title">${section.title}</div>`;
-                html += `<table class="param-table">
-                    <thead>
-                        <tr>
-                            <th>Item</th>
-                            <th style="text-align:center;">Valor</th>
-                            <th style="text-align:center;">Unidade</th>
-                            <th>Observações</th>
-                        </tr>
-                    </thead>
-                    <tbody>`;
-                for (const key of section.keys) {
-                    if (data[key] === undefined) continue;
-                    const value = data[key];
-                    const labelInfo = labels[key] || { label: key, desc: '' };
-                    html += `<tr>
-                        <td><strong>${labelInfo.label}</strong></td>
-                        <td style="text-align:center;">
-                            <input type="text" id="param_${key}" value="${value !== undefined && value !== null ? value : ''}" class="input-valor">
-                        </td>
-                        <td class="unidade">horas</td>
-                        <td>${labelInfo.desc}</td>
-                    </tr>`;
-                }
-                html += `</tbody></table>`;
-            }
-        } else {
-            // ---- MOVE: exibe em lista (como antes) ----
-            const moveSections = sections.MOVE;
-            for (const section of moveSections) {
-                html += `<div class="section-title">${section.title}</div>`;
-                for (const key of section.keys) {
-                    if (data[key] === undefined) continue;
-                    const value = data[key];
-                    const labelInfo = labels[key] || { label: key, desc: '' };
-                    const isObject = typeof value === 'object' && value !== null && !Array.isArray(value);
-                    const isArray = Array.isArray(value);
+        if (!productSections) {
+            formContainer.innerHTML = '<p style="color:red;">Seção não encontrada para este produto.</p>';
+            return;
+        }
 
-                    html += `<div class="param-group">`;
-                    html += `<label for="param_${key}">${labelInfo.label}</label>`;
-                    if (labelInfo.desc) html += `<div class="description">${labelInfo.desc}</div>`;
+        // Renderiza apenas as chaves visíveis (excluindo as ocultas)
+        for (const section of productSections.grupos) {
+            // Filtra chaves que não estão na lista de ocultas
+            const visibleKeys = section.keys.filter(key => !hiddenKeys.includes(key));
+            if (visibleKeys.length === 0) continue; // Se não houver chaves visíveis, pula a seção
 
-                    if (isObject || isArray) {
-                        html += `<textarea id="param_${key}" rows="4">${JSON.stringify(value, null, 2)}</textarea>`;
-                    } else {
-                        html += `<input type="text" id="param_${key}" value="${value !== undefined && value !== null ? value : ''}">`;
-                    }
-                    html += `</div>`;
-                }
+            html += `<div class="section-title">${section.title}</div>`;
+            html += `<table class="param-table">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th style="text-align:center;">Valor</th>
+                        <th style="text-align:center;">Unidade</th>
+                        <th>Observações</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+            for (const key of visibleKeys) {
+                if (data[key] === undefined) continue;
+                const value = data[key];
+                const labelInfo = labels[key] || { label: key, desc: '' };
+                html += `<tr>
+                    <td><strong>${labelInfo.label}</strong></td>
+                    <td style="text-align:center;">
+                        <input type="text" id="param_${key}" value="${value !== undefined && value !== null ? value : ''}" class="input-valor">
+                    </td>
+                    <td class="unidade">horas</td>
+                    <td>${labelInfo.desc}</td>
+                </tr>`;
             }
+            html += `</tbody></table>`;
+        }
 
-            // ---- Chaves extras (para MOVE) ----
-            const allKeys = new Set(sections.MOVE.flatMap(s => s.keys));
-            const extraKeys = Object.keys(data).filter(k => !allKeys.has(k));
-            if (extraKeys.length > 0) {
-                html += `<div class="section-title">🔧 Outros Parâmetros</div>`;
-                for (const key of extraKeys) {
-                    const value = data[key];
-                    const labelInfo = labels[key] || { label: key, desc: '' };
-                    html += `<div class="param-group">`;
-                    html += `<label for="param_${key}">${labelInfo.label}</label>`;
-                    if (labelInfo.desc) html += `<div class="description">${labelInfo.desc}</div>`;
-                    if (typeof value === 'object' && value !== null) {
-                        html += `<textarea id="param_${key}" rows="4">${JSON.stringify(value, null, 2)}</textarea>`;
-                    } else {
-                        html += `<input type="text" id="param_${key}" value="${value !== undefined && value !== null ? value : ''}">`;
-                    }
-                    html += `</div>`;
-                }
+        // ---- Chaves extras (excluindo também as ocultas) ----
+        const allKeys = new Set(productSections.grupos.flatMap(s => s.keys));
+        const extraKeys = Object.keys(data).filter(k => !allKeys.has(k) && !hiddenKeys.includes(k));
+        if (extraKeys.length > 0) {
+            html += `<div class="section-title">🔧 Outros Parâmetros</div>`;
+            html += `<table class="param-table">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th style="text-align:center;">Valor</th>
+                        <th style="text-align:center;">Unidade</th>
+                        <th>Observações</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+            for (const key of extraKeys) {
+                const value = data[key];
+                const labelInfo = labels[key] || { label: key, desc: '' };
+                html += `<tr>
+                    <td><strong>${labelInfo.label}</strong></td>
+                    <td style="text-align:center;">
+                        <input type="text" id="param_${key}" value="${value !== undefined && value !== null ? value : ''}" class="input-valor">
+                    </td>
+                    <td class="unidade">horas</td>
+                    <td>${labelInfo.desc}</td>
+                </tr>`;
             }
+            html += `</tbody></table>`;
         }
 
         formContainer.innerHTML = html;
