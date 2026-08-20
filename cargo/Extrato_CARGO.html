@@ -1129,17 +1129,19 @@
             const freteAtivo = modFrete.checked;
             const valeAtivo = modVale.checked;
 
-            // ---- Extrair valores da base ----
-            const hCnpj = base.horasPorCnpj || 1;
-            const hUsuario = base.horasPorUsuario || 0.5;
-            const hModulo = base.horasPorCnpjModulo || 8;
+            // ---- Extrair valores da base (novas chaves) ----
+            const hCadastro = base.horasCadastro || 1;
+            const hUsuario = base.horasUsuario || 0.5;
+            const hCIOT = base.horasCIOT || 8;
+            const hFrete = base.horasFrete || 8;
+            const hVale = base.horasVale || 8;
             const hConta = base.horasContaDigital || 6;
-            const hTreino = base.horasTreinamento || 2;
+            const hTreino = base.horasTreinamento || 4;
             const jornadaDia = base.jornadaDiaria || 8;
             const jornadaSemana = base.jornadaSemanal || 40;
 
-            // ---- Cálculos ----
-            let cadastroReal = temPontos ? Math.abs(cnpjs - pontos) * hCnpj : cnpjs * hCnpj;
+            // ---- Cálculos (usando novas chaves) ----
+            let cadastroReal = temPontos ? Math.abs(cnpjs - pontos) * hCadastro : cnpjs * hCadastro;
             const cadastroExibido = cadastroReal;
 
             const usuariosReal = usuarios * hUsuario;
@@ -1147,19 +1149,19 @@
 
             let ciotReal = 0;
             if (ciotAtivo) {
-                ciotReal = temPontos ? Math.abs(cnpjs - pontos) * hModulo : cnpjs * hModulo;
+                ciotReal = temPontos ? Math.abs(cnpjs - pontos) * hCIOT : cnpjs * hCIOT;
             }
             const ciotExibido = ciotReal;
 
             let freteReal = 0;
             if (freteAtivo) {
-                freteReal = temPontos ? Math.abs(cnpjs - pontos) * hModulo : cnpjs * hModulo;
+                freteReal = temPontos ? Math.abs(cnpjs - pontos) * hFrete : cnpjs * hFrete;
             }
             const freteExibido = freteReal;
 
             let valeReal = 0;
             if (valeAtivo) {
-                valeReal = temPontos ? Math.abs(cnpjs - pontos) * hModulo : cnpjs * hModulo;
+                valeReal = temPontos ? Math.abs(cnpjs - pontos) * hVale : cnpjs * hVale;
             }
             const valeExibido = valeReal;
 
