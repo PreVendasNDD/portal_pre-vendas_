@@ -914,7 +914,9 @@
             }
 
             carregando = true;
-            const url = `elog/BASE_ELOG.json?t=${Date.now()}`;
+            // Adiciona timestamp para evitar cache do navegador
+            const url = `BASE_ELOG.json?t=${Date.now()}`;
+            console.log('🔍 Buscando BASE_ELOG.json (atual)...');
 
             try {
                 const response = await fetch(url, {
