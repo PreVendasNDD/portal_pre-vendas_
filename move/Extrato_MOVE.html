@@ -958,6 +958,7 @@
     (function() {
         'use strict';
 
+        // ---- Variáveis ----
         let base = null;
         let carregando = false;
 
@@ -988,7 +989,7 @@
                 });
 
                 if (!response.ok) {
-                    throw new Error(`Arquivo não encontrado (status ${response.status})`);
+                    throw new Error(`Arquivo move/BASE_MOVE.json não encontrado (status ${response.status})`);
                 }
 
                 base = await response.json();
@@ -996,7 +997,7 @@
                 return base;
             } catch (error) {
                 carregando = false;
-                alert('❌ ERRO: Não foi possível carregar move/BASE_MOVE.json.\n\nVerifique:\n1. O arquivo existe na pasta "move"?\n2. O GitHub Pages está servindo essa pasta?\n3. O arquivo foi commitado?\n\nO cálculo NÃO será executado.');
+                alert('❌ Não foi possível carregar move/BASE_MOVE.json.\n\nVerifique se o arquivo existe na pasta "move".\n\nO cálculo não será executado.');
                 throw error;
             }
         }
@@ -1038,6 +1039,7 @@
         const extrato1 = document.getElementById('extrato-modelo1');
         const extrato2 = document.getElementById('extrato-modelo2');
 
+        // ---- Data atual ----
         function setDataAtual() {
             const hoje = new Date();
             const dia = String(hoje.getDate()).padStart(2, '0');
@@ -1051,6 +1053,7 @@
         }
         setDataAtual();
 
+        // ---- Utilitários ----
         function getNumber(id) {
             const val = document.getElementById(id).value.trim();
             if (val === '') return NaN;
@@ -1061,6 +1064,7 @@
             return Math.round(v * 10) / 10;
         }
 
+        // ---- Limpar ----
         function limparCampos() {
             inputCliente.value = '';
             inputCNPJs.value = '';
@@ -1070,6 +1074,7 @@
             calcular();
         }
 
+        // ---- Obter modelo selecionado ----
         function getModeloSelecionado() {
             for (const radio of radioModelo) {
                 if (radio.checked) return parseInt(radio.value);
@@ -1077,6 +1082,7 @@
             return 1;
         }
 
+        // ---- Mostrar/esconder modelos ----
         function mostrarModelo(modelo) {
             if (modelo === 1) {
                 extrato1.classList.add('active');
