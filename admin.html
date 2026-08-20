@@ -41,7 +41,7 @@
             border-radius: 10px;
             margin-bottom: 25px;
             border: 1px solid #e9e9e9;
-            display: none; /* oculto inicialmente */
+            display: none;
         }
         .token-section label { font-weight: 600; font-size: 13px; display: block; margin-bottom: 4px; }
         .token-section input { width: 100%; padding: 8px 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
@@ -65,36 +65,11 @@
             width: 90%;
             box-shadow: 0 8px 24px rgba(0,0,0,0.3);
         }
-        #tokenModal .modal-box h3 {
-            color: #1a2f4f;
-            margin-bottom: 10px;
-        }
-        #tokenModal .modal-box p {
-            color: #777;
-            font-size: 14px;
-            margin-bottom: 15px;
-        }
-        #tokenModal .modal-box input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 14px;
-            margin-bottom: 10px;
-        }
-        #tokenModal .modal-box .btn-group-modal {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-        }
-        #tokenModal .modal-box .btn {
-            padding: 8px 25px;
-            border: none;
-            border-radius: 25px;
-            font-weight: 700;
-            font-size: 14px;
-            cursor: pointer;
-        }
+        #tokenModal .modal-box h3 { color: #1a2f4f; margin-bottom: 10px; }
+        #tokenModal .modal-box p { color: #777; font-size: 14px; margin-bottom: 15px; }
+        #tokenModal .modal-box input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; margin-bottom: 10px; }
+        #tokenModal .modal-box .btn-group-modal { display: flex; gap: 10px; justify-content: flex-end; }
+        #tokenModal .modal-box .btn { padding: 8px 25px; border: none; border-radius: 25px; font-weight: 700; font-size: 14px; cursor: pointer; }
         #tokenModal .modal-box .btn-primary { background: #ff7079; color: #fff; }
         #tokenModal .modal-box .btn-primary:hover { background: #e05a61; }
         #tokenModal .modal-box .btn-secondary { background: #6c757d; color: #fff; }
@@ -170,7 +145,7 @@
         }
         .section-title:first-of-type { margin-top: 0; }
 
-        /* ---------- BOTÕES CENTRALIZADOS ---------- */
+        /* ---------- BOTÕES ---------- */
         .btn-group {
             display: flex;
             gap: 15px;
@@ -258,7 +233,7 @@
         ELOG:  { file: 'BASE_ELOG.json',  path: 'elog/BASE_ELOG.json' }
     };
 
-    // ---- MAPEAMENTO DE NOMES AMIGÁVEIS ----
+    // ---- MAPEAMENTO DE NOMES AMIGÁVEIS (incluindo subetapas) ----
     const labels = {
         horasPorCnpj: { label: 'Horas por CNPJ', desc: 'Tempo para cadastrar cada CNPJ na parametrização operacional.' },
         horasPorUsuario: { label: 'Horas por Usuário', desc: 'Tempo para criar e configurar cada usuário.' },
@@ -285,10 +260,11 @@
         horasFrete: { label: 'Horas - Pagamento de Frete', desc: 'Tempo para configurar o módulo Pagamento de Frete.' },
         horasAuditoria: { label: 'Horas - Auditoria de Fretes', desc: 'Tempo para configurar o módulo Auditoria de Fretes.' },
         horasGoLive: { label: 'Horas - Go Live', desc: 'Tempo para acompanhamento de entrada em produção.' },
-        horasSustentacao: { label: 'Horas - Sustentação', desc: 'Tempo de suporte operacional pós-implantação.' }
+        horasSustentacao: { label: 'Horas - Sustentação', desc: 'Tempo de suporte operacional pós-implantação.' },
+        subetapas: { label: '📋 Subetapas (detalhamento)', desc: 'Estrutura de subetapas para o modelo detalhado. Edite o JSON com cuidado.' }
     };
 
-    // ---- AGRUPAMENTOS ----
+    // ---- AGRUPAMENTOS (incluindo subetapas no MOVE) ----
     const sections = {
         CARGO: [
             { title: '⏱️ Tempos Base', keys: ['horasPorCnpj', 'horasPorUsuario', 'horasPorCnpjModulo'] },
@@ -299,7 +275,8 @@
             { title: '🏗️ Ambientes e Cadastro', keys: ['baseAmbientes', 'baseCadastro'] },
             { title: '👤 Usuários', keys: ['baseUsuarios', 'incrementoUsuarios'] },
             { title: '📱 App Conector', keys: ['baseApp'] },
-            { title: '📊 Fatores de Ajuste', keys: ['fatorAmbientes', 'fatorUsuarios'] }
+            { title: '📊 Fatores de Ajuste', keys: ['fatorAmbientes', 'fatorUsuarios'] },
+            { title: '📋 Subetapas (detalhamento)', keys: ['subetapas'] }  // NOVA SEÇÃO
         ],
         ELOG: [
             { title: '🏗️ Ambientes e Cadastro', keys: ['baseAmbientes', 'incrementoAmbientes', 'baseCadastro', 'incrementoCadastro'] },
@@ -322,7 +299,6 @@
     // ---- TOKEN (oculto no localStorage) ----
     let storedToken = localStorage.getItem('githubToken') || '';
 
-    // ---- Mostrar modal de token ----
     function mostrarModalToken() {
         document.getElementById('tokenModal').style.display = 'flex';
         document.getElementById('modalTokenInput').value = '';
@@ -346,12 +322,10 @@
         }
     }
 
-    // Fechar modal ao clicar fora
     document.getElementById('tokenModal').addEventListener('click', function(e) {
         if (e.target === this) fecharModalToken();
     });
 
-    // ---- Funções ----
     function getToken() { return storedToken; }
 
     function selecionarProduto(prod) {
@@ -395,7 +369,6 @@
 
             if (!response.ok) {
                 if (response.status === 401 || response.status === 403) {
-                    // Token inválido → mostra modal
                     mostrarModalToken();
                     setStatus('', '');
                     return;
@@ -451,19 +424,22 @@
             }
         }
 
-        if (!html) {
-            for (const [key, value] of Object.entries(data)) {
-                const labelInfo = labels[key] || { label: key, desc: '' };
-                html += `<div class="param-group">`;
-                html += `<label for="param_${key}">${labelInfo.label}</label>`;
-                if (labelInfo.desc) html += `<div class="description">${labelInfo.desc}</div>`;
-                if (typeof value === 'object' && value !== null) {
-                    html += `<textarea id="param_${key}" rows="4">${JSON.stringify(value, null, 2)}</textarea>`;
-                } else {
-                    html += `<input type="text" id="param_${key}" value="${value !== undefined && value !== null ? value : ''}">`;
-                }
-                html += `</div>`;
+        // Se ainda houver chaves não incluídas nas seções, exibe como campos extras
+        const allKeys = new Set(productSections.flatMap(s => s.keys));
+        const extraKeys = Object.keys(data).filter(k => !allKeys.has(k));
+        for (const key of extraKeys) {
+            if (data[key] === undefined) continue;
+            const value = data[key];
+            const labelInfo = labels[key] || { label: key, desc: '' };
+            html += `<div class="param-group">`;
+            html += `<label for="param_${key}">${labelInfo.label}</label>`;
+            if (labelInfo.desc) html += `<div class="description">${labelInfo.desc}</div>`;
+            if (typeof value === 'object' && value !== null) {
+                html += `<textarea id="param_${key}" rows="4">${JSON.stringify(value, null, 2)}</textarea>`;
+            } else {
+                html += `<input type="text" id="param_${key}" value="${value !== undefined && value !== null ? value : ''}">`;
             }
+            html += `</div>`;
         }
 
         formContainer.innerHTML = html;
@@ -539,7 +515,6 @@
 
     // ---- Inicialização ----
     window.onload = function() {
-        // Se já tiver token, carrega automaticamente
         if (storedToken) {
             setTimeout(() => carregarProduto(), 500);
         } else {
